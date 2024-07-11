@@ -1,0 +1,16 @@
+# MySQL configuration
+DB_NAME=mydatabase
+DB_PASS=mysecretpassword
+DB_PORT=3306
+DB_HOST=mysql
+
+# Redis configuration
+RD_PORT=6379
+RD_HOST=redis
+
+# API service configuration
+API_PORT=8080
+
+# JWT Secret
+JWT_SECRET=supersecretjwtkey
+
