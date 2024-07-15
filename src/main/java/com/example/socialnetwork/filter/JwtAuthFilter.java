@@ -1,4 +1,4 @@
-package com.example.socialnetwork.infrastructure.filter;
+package com.example.socialnetwork.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -2,8 +2,8 @@ package com.example.socialnetwork.config;
 
 import com.example.socialnetwork.exception.handler.CustomAccessDeniedHandler;
 import com.example.socialnetwork.exception.handler.CustomAuthEntryPoint;
-import com.example.socialnetwork.infrastructure.filter.CORSFilter;
-import com.example.socialnetwork.infrastructure.filter.JwtAuthFilter;
+import com.example.socialnetwork.filter.CORSFilter;
+import com.example.socialnetwork.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

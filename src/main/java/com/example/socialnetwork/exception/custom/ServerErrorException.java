@@ -1,4 +1,4 @@
-package com.example.socialnetwork.exception;
+package com.example.socialnetwork.exception.custom;
 
 public class ServerErrorException extends RuntimeException {
 
