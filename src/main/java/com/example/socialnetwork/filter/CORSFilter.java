@@ -1,4 +1,4 @@
-package com.example.socialnetwork.infrastructure.filter;
+package com.example.socialnetwork.filter;
 
 import com.example.socialnetwork.config.CorsProperties;
 import jakarta.servlet.FilterChain;

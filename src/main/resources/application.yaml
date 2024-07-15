@@ -20,16 +20,24 @@ spring:
     redis:
       host: ${RD_HOST}
       port: ${RD_PORT}
-  token:
-    secret-key: ${JWT_SECRET}
-    access-expiration: 604800000 # 7200000 # 1000 * 60 * 60 * 2 = 2 hours
-    refresh-expiration: 604800000 # 1000 * 60 * 60 * 24 * 7 = 7 days
-    verified-expiration: 900000 # 1000 * 60 * 15 = 15 minutes
-  cors:
-    headers:
-      access-control-allow-origin: "*"
-      access-control-allow-methods: "*"
-      access-control-max-age: "3600"
-      access-control-allow-headers: "content-type, authorization, xsrf-token"
-      access-control-allow-credentials: "true"
-      access-control-expose-headers: "xsrf-token"
+token:
+  secret-key: ${JWT_SECRET}
+  access-expiration: 604800000 # 7200000 # 1000 * 60 * 60 * 2 = 2 hours
+  refresh-expiration: 604800000 # 1000 * 60 * 60 * 24 * 7 = 7 days
+  verified-expiration: 900000 # 1000 * 60 * 15 = 15 minutes
+cors:
+  headers:
+    access-control-allow-origin: "*"
+    access-control-allow-methods: "*"
+    access-control-max-age: "3600"
+    access-control-allow-headers: "content-type, authorization, xsrf-token"
+    access-control-allow-credentials: "true"
+    access-control-expose-headers: "xsrf-token"
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+    s3:
+      aws-region: ${AWS_REGION}
+      bucket-name: ${AWS_BUCKET_NAME}

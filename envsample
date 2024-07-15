@@ -1,16 +1,19 @@
-# MySQL configuration
-DB_NAME=mydatabase
-DB_PASS=mysecretpassword
-DB_PORT=3306
-DB_HOST=mysql
+# Database Configuration
+DB_HOST=your_db_host
+DB_PORT=your_db_port
+DB_NAME=your_db_name
+DB_USER=your_db_username
+DB_PASS=your_db_password
 
-# Redis configuration
-RD_PORT=6379
-RD_HOST=redis
+# Redis Configuration
+RD_HOST=your_redis_host
+RD_PORT=your_redis_port
 
-# API service configuration
-API_PORT=8080
+# JWT Configuration
+JWT_SECRET=your_jwt_secret
 
-# JWT Secret
-JWT_SECRET=supersecretjwtkey
-
+# AWS Configuration
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+AWS_REGION=your_aws_region
+AWS_BUCKET_NAME=your_aws_bucket_name

@@ -1,8 +1,8 @@
 package com.example.socialnetwork.exception.handler;
 
-import com.example.socialnetwork.exception.ClientErrorException;
-import com.example.socialnetwork.exception.ConflictException;
-import com.example.socialnetwork.exception.NotFoundException;
+import com.example.socialnetwork.exception.custom.ClientErrorException;
+import com.example.socialnetwork.exception.custom.ConflictException;
+import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
