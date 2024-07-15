@@ -15,7 +15,7 @@ public class UserConfig {
     @Bean
     public UserDetailsService userDetailsService() {
 //        return email -> userRepository.findByEmail(email)
-//                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", email)));
+//                .orElseThrow(() -> new UsernameNotFoundException(String.format("UserDomain %s not found", email)));
         return null;
     }
 

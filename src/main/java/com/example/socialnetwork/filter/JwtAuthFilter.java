@@ -39,8 +39,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 //            String jwt = authHeader.substring(7);
 //            UUID userId = jwtService.extractUserId(jwt);
 //            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//                User user = userRepository.findById(userId).orElseThrow(
-//                        () -> new NotFoundException("User not found")
+//                UserDomain user = userRepository.findById(userId).orElseThrow(
+//                        () -> new NotFoundException("UserDomain not found")
 //                );
 //                if (jwtService.isTokenValid(jwt)) {
 //                    UsernamePasswordAuthenticationToken authToken
