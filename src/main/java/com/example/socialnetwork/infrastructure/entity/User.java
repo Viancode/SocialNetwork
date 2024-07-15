@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -64,10 +63,10 @@ public class User {
     private String education;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     @Size(max = 255)
     @Column(name = "avatar")
@@ -80,10 +79,6 @@ public class User {
     @Column(name = "age")
     private Integer age;
 
-    @Column(name = "token")
-    private String token;
-
-    @OneToMany(mappedBy = "user")
-    private Set<ChatMember> chatMembers = new LinkedHashSet<>();
-
+    @Column(name = "is_email_verified")
+    private boolean isEmailVerified = false;
 }

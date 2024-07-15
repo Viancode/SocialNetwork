@@ -58,6 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public FormErrorResponse handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         Map<String, List<String>> groupedErrors = new HashMap<>();
         Object targetObject = e.getBindingResult().getTarget();
 
@@ -109,6 +110,7 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFileException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
     }
 
@@ -119,12 +121,14 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.CONFLICT);
     }
 
@@ -134,6 +138,7 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbiddenException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.FORBIDDEN);
     }
 //

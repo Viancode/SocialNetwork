@@ -51,9 +51,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/login")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/refresh")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/users/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/register")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/register/verify")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/logout")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/logout/all")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/register")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/register/verify")).permitAll()
                 .anyRequest().authenticated()
         );
         http.authenticationProvider(authenticationProvider());
