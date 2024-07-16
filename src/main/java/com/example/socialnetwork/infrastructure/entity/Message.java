@@ -13,6 +13,7 @@ import java.time.Instant;
 @Table(name = "messages")
 public class Message {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id", nullable = false)
     private Long id;
 

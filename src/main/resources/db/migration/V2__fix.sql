@@ -1,1 +1,1 @@
-alter table users add column age int;
+alter table users add column date_of_birth DATE;
