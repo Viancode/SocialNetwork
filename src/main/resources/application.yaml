@@ -33,11 +33,11 @@ cors:
     access-control-allow-headers: "content-type, authorization, xsrf-token"
     access-control-allow-credentials: "true"
     access-control-expose-headers: "xsrf-token"
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY_ID}
-      secret-key: ${AWS_SECRET_ACCESS_KEY}
-    s3:
-      aws-region: ${AWS_REGION}
-      bucket-name: ${AWS_BUCKET_NAME}
+#cloud:
+#  aws:
+#    credentials:
+#      access-key: ${AWS_ACCESS_KEY_ID}
+#      secret-key: ${AWS_SECRET_ACCESS_KEY}
+#    s3:
+#      aws-region: ${AWS_REGION}
+#      bucket-name: ${AWS_BUCKET_NAME}
