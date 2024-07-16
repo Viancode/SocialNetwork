@@ -11,8 +11,9 @@ import java.time.Instant;
 @Entity
 @Table(name = "post_reactions")
 public class PostReaction {
-    @EmbeddedId
-    private PostReactionId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

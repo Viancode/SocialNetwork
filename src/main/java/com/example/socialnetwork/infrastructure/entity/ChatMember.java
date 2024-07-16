@@ -11,8 +11,9 @@ import java.time.Instant;
 @Entity
 @Table(name = "chat_members")
 public class ChatMember {
-    @EmbeddedId
-    private ChatMemberId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

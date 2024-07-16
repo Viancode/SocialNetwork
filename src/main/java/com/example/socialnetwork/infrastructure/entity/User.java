@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -77,8 +78,8 @@ public class User {
     @Column(name = "background_image")
     private String backgroundImage;
 
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "birth_of_date")
+    private LocalDateTime birthOfDate;
 
     @Column(name = "token")
     private String token;

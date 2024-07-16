@@ -11,8 +11,9 @@ import java.time.Instant;
 @Entity
 @Table(name = "friends")
 public class Friend {
-    @EmbeddedId
-    private FriendId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
