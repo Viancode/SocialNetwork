@@ -7,10 +7,12 @@ import com.example.socialnetwork.common.constant.TokenType;
 import com.example.socialnetwork.domain.port.api.AuthServicePort;
 import com.example.socialnetwork.domain.port.api.JwtServicePort;
 import com.example.socialnetwork.domain.port.api.TokenServicePort;
-import com.example.socialnetwork.domain.port.spi.UserServicePort;
+import com.example.socialnetwork.domain.port.api.UserServicePort;
+import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.exception.custom.DuplicateException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,36 +22,30 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthServicePort {
     private final JwtServicePort jwtService;
     private final TokenServicePort tokenService;
     private final UserRepository userRepository;
     private final UserServicePort userService;
+    private final UserDatabasePort userDatabase;
     private final AuthenticationManager authenticationManager;
     @Value("${token.verified-expiration}")
     private long verifyExpiration;
     @Value("${token.refresh-expiration}")
     private long refreshExpiration;
 
-    public AuthServiceImpl(JwtServicePort jwtService, TokenServicePort tokenService, UserRepository userRepository, UserServicePort userService, AuthenticationManager authenticationManager) {
-        this.jwtService = jwtService;
-        this.tokenService = tokenService;
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.authenticationManager = authenticationManager;
-    }
-
     @Override
     public void register(RegisterRequest registerRequest) {
         com.example.socialnetwork.infrastructure.entity.User user = userRepository.findByEmail(registerRequest.getEmail()).orElse(null);
         if (user == null) {
-            user = userService.createUser(registerRequest);
+            user = userDatabase.createUser(registerRequest);
         } else {
             if (!user.isEmailVerified()) {
                 tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
 
                 userRepository.delete(user);
-                user = userService.createUser(registerRequest);
+                user = userDatabase.createUser(registerRequest);
             } else {
                 throw new DuplicateException("This email is being used by another user");
             }
