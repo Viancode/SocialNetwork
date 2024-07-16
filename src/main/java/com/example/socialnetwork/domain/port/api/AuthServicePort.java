@@ -7,11 +7,13 @@ import org.springframework.security.core.userdetails.User;
 
 public interface AuthServicePort {
     void register(RegisterRequest registerRequest);
-    void verifyToken(String token);
-    AuthResponse forgotPassword(String email);
-    void changePassword(User user, String newPassword);
+    void verifyRegisterToken(String token);
+    void verifyForgetPassToken(String token);
+    void forgotPassword(String email);
+    void changePassword(User user, String newPassword, String oldPassword);
     AuthResponse login(AuthRequest authRequest);
     AuthResponse refreshToken(String refreshToken);
     void logout(String refreshToken, User user);
     void logoutAllDevices(User user);
+    void resetPasswordWithToken(String token, String newPassword);
 }

@@ -55,4 +55,4 @@ cloud:
 link:
   front-end-domain: ${FRONT-END-DOMAIN}
   forgot-password-verify: /forgot-password/verify?token=
-  confirm-email-verify: /signup/verify?token=
+  confirm-email-verify: /register/verify?token=

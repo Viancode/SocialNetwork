@@ -13,14 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.time.Instant;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +30,8 @@ public class UserService implements UserServicePort {
     private String domain;
     @Value("${link.confirm-email-verify}")
     private String confirmEmailVerifyLink;
+    @Value("${link.forgot-password-verify}")
+    private String resetPasswordVerifyLink;
     @Override
     public User createUser(RegisterRequest registerRequest) {
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElse(null);
@@ -74,18 +73,24 @@ public class UserService implements UserServicePort {
     }
 
     @Override
+    public void sendEmailResetPassword(User user, String token) {
+        String subject = "Reset your password, " + user.getFirstName();
+        Map<String, Object> model = new HashMap<>();
+        String link = domain + resetPasswordVerifyLink + token;
+        model.put("link", link);
+        model.put("name", user.getFirstName());
+        emailService.send(subject, user.getEmail(), "email/forgot-password.html", model);
+    }
+
+    @Override
+    @Transactional
     public void confirmEmail(String token) {
         String userId = tokenService.getTokenInfo(token, TokenType.VERIFIED);
         User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new NotFoundException("User not found"));
         user.setEmailVerified(true);
+        user.getRole().getName(); // This line is just to trigger the lazy loading within the transaction
         userRepository.save(user);
 
-        org.springframework.security.core.userdetails.User userDetails = (org.springframework.security.core.userdetails.User) org.springframework.security.core.userdetails.User.builder()
-                .username(String.valueOf(user.getId()))
-                .authorities(user.getRole().getName())
-                .password(user.getPassword())
-                .build();
-
-        tokenService.revokeAllUserTokens(userDetails, TokenType.VERIFIED);
+        tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
     }
 }

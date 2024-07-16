@@ -10,7 +10,6 @@ import com.example.socialnetwork.domain.port.api.TokenServicePort;
 import com.example.socialnetwork.domain.port.spi.UserServicePort;
 import com.example.socialnetwork.exception.custom.DuplicateException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
-import com.example.socialnetwork.infrastructure.adapter.UserService;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 public class AuthServiceImpl implements AuthServicePort {
     private final JwtServicePort jwtService;
@@ -46,12 +46,7 @@ public class AuthServiceImpl implements AuthServicePort {
             user = userService.createUser(registerRequest);
         } else {
             if (!user.isEmailVerified()) {
-                tokenService.revokeAllUserTokens((User) User.builder()
-                        .username(String.valueOf(user.getId()))
-                        .authorities(user.getRole().getName())
-                        .password(user.getPassword())
-                        .build(),
-                        TokenType.VERIFIED);
+                tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
 
                 userRepository.delete(user);
                 user = userService.createUser(registerRequest);
@@ -61,24 +56,55 @@ public class AuthServiceImpl implements AuthServicePort {
         }
 
         String confirmToken = jwtService.generateVerifyToken();
-        tokenService.saveToken(confirmToken, user.getUsername(), TokenType.VERIFIED, verifyExpiration);
+        tokenService.saveToken(confirmToken, String.valueOf(user.getId()), TokenType.VERIFIED, verifyExpiration);
         userService.sendVerificationEmail(user, confirmToken);
     }
 
     @Override
-    public void verifyToken(String token) {
-        userService.confirmEmail(token);
+    @Transactional
+    public void verifyRegisterToken(String token) {
+        String userId = tokenService.getTokenInfo(token, TokenType.VERIFIED);
+        com.example.socialnetwork.infrastructure.entity.User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new NotFoundException("User not found"));
+        user.setEmailVerified(true);
+        user.getRole().getName(); // This line is just to trigger the lazy loading within the transaction
+        userRepository.save(user);
+
+        tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
     }
 
     @Override
-    public AuthResponse forgotPassword(String email) {
-        return null;
+    public void verifyForgetPassToken(String token) {
+        String userId = tokenService.getTokenInfo(token, TokenType.VERIFIED);
+
+        if (userId == null) {
+            throw new NotFoundException("Invalid token");
+        }
+    }
+
+
+    @Override
+    public void forgotPassword(String email) {
+        com.example.socialnetwork.infrastructure.entity.User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        String resetToken = jwtService.generateVerifyToken();
+        tokenService.saveToken(resetToken, String.valueOf(user.getId()), TokenType.VERIFIED, verifyExpiration);
+        userService.sendEmailResetPassword(user, resetToken);
     }
 
     @Override
-    public void changePassword(User user, String newPassword) {
-        tokenService.revokeAllUserTokens(user, TokenType.REFRESH);
+    public void changePassword(User user, String newPassword, String oldPassword) {
+        com.example.socialnetwork.infrastructure.entity.User currentUser = userRepository.findById(Long.parseLong(user.getUsername()))
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        // Check if the old password matches the one in the database
+        if (!encoder.matches(oldPassword, currentUser.getPassword())) {
+            throw new IllegalArgumentException("Old password does not match");
+        }
+
+        tokenService.revokeAllUserTokens(user.getUsername(), TokenType.REFRESH);
         String hashedPassword = encoder.encode(newPassword);
         userRepository.updatePassword(Integer.valueOf(user.getUsername()), hashedPassword);
     }
@@ -93,13 +119,19 @@ public class AuthServiceImpl implements AuthServicePort {
 
         User user = (User) authentication.getPrincipal();
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken();
-        tokenService.saveToken(refreshToken, user.getUsername(), TokenType.REFRESH, refreshExpiration );
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        boolean isEmailVerify = userRepository.findUserById(Long.parseLong(user.getUsername())).orElseThrow(() -> new NotFoundException("User not found")).isEmailVerified();
+
+        if (!isEmailVerify) {
+            throw new NotFoundException("Email is not verified");
+        } else {
+            String accessToken = jwtService.generateAccessToken(user);
+            String refreshToken = jwtService.generateRefreshToken();
+            tokenService.saveToken(refreshToken, user.getUsername(), TokenType.REFRESH, refreshExpiration );
+            return AuthResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
     }
 
     @Override
@@ -108,7 +140,7 @@ public class AuthServiceImpl implements AuthServicePort {
 
 
         UserDetails user = userRepository.findUserById(Long.parseLong(userId)).map(userInfo -> {
-            // Ensure you're using Spring Security's User class here
+            // build user detail
             return User.builder()
                     .username(String.valueOf(userInfo.getId()))
                     .password("")
@@ -117,7 +149,7 @@ public class AuthServiceImpl implements AuthServicePort {
         }).orElseThrow(() -> new NotFoundException("User not found"));
 
         // Remove the refreshToken from Redis
-        tokenService.revokeAllUserTokens((User) user, TokenType.REFRESH);
+        tokenService.revokeAllUserTokens(user.getUsername(), TokenType.REFRESH);
 
         // Generate new accessToken and refreshToken
         String newAccessToken = jwtService.generateAccessToken((User) user);
@@ -137,6 +169,18 @@ public class AuthServiceImpl implements AuthServicePort {
 
     @Override
     public void logoutAllDevices(User user) {
-        tokenService.revokeAllUserTokens(user, TokenType.REFRESH);
+        tokenService.revokeAllUserTokens(user.getUsername(), TokenType.REFRESH);
+    }
+
+    @Override
+    public void resetPasswordWithToken(String token, String newPassword) {
+        String userId = tokenService.getTokenInfo(token, TokenType.VERIFIED);
+        com.example.socialnetwork.infrastructure.entity.User user = userRepository.findById(Long.parseLong(userId))
+                .orElseThrow(() -> new NotFoundException("User not found or invalid token"));
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(newPassword);
+        userRepository.updatePassword(Integer.valueOf(userId), hashedPassword);
+        tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.REFRESH);
     }
 }

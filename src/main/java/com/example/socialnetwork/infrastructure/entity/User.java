@@ -4,14 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,5 +78,5 @@ public class User {
     private Integer age;
 
     @Column(name = "is_email_verified")
-    private boolean isEmailVerified = false;
+    private boolean isEmailVerified;
 }

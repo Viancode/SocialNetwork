@@ -18,8 +18,8 @@ public class TokenServiceImpl implements TokenServicePort {
         this.redisTemplate = redisTemplate;
     }
     @Override
-    public void revokeAllUserTokens(User user, TokenType tokenType) {
-        String keyPattern = String.format(KEY_PATTERN, tokenType.name(), user.getUsername(), "*");
+    public void revokeAllUserTokens(String userId, TokenType tokenType) {
+        String keyPattern = String.format(KEY_PATTERN, tokenType.name(), userId, "*");
         Set<String> refreshTokens = redisTemplate.keys(keyPattern);
         if (refreshTokens != null && !refreshTokens.isEmpty()) {
            refreshTokens.forEach(redisTemplate::delete);

@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,32 +22,50 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest registerRequest
     ) {
         authService.register(registerRequest);
-        return ResponseEntity.ok("Register successfully");
+        return ResponseEntity.ok("Please check your email to verify your account");
     }
 
     @PostMapping("register/verify")
-    public ResponseEntity<?> verifyToken(
+    public ResponseEntity<?> verifyRegisterToken(
             @RequestParam("token") String token
     ) {
-        authService.verifyToken(token);
+        authService.verifyRegisterToken(token);
         return ResponseEntity.ok("Token is valid");
     }
 
-//    @PostMapping("/forgot-pass") ///
-//    public ResponseEntity<?> forgotPassword(
-//            @RequestParam("email") String email
+    @PostMapping("/forgot-pass")
+    public ResponseEntity<?> forgotPassword(
+            @RequestParam("email") String email
+    ) {
+        authService.forgotPassword(email);
+        return ResponseEntity.ok("Reset password request has been sent to your email");
+    }
+
+//    @PostMapping("/forgot-pass/verify")
+//    public ResponseEntity<?> verifyForgotPassToken(
+//            @RequestParam("token") String token
 //    ) {
-//        AuthResponse authResponse = authService.forgotPassword(email);
-//        return ResponseEntity.ok(authResponse);
+//        authService.verifyForgetPassToken(token);
+//        return ResponseEntity.ok("Token is valid");
 //    }
+
+    @PostMapping("/reset-pass")
+    public ResponseEntity<?> resetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("newPassword") String newPassword
+    ) {
+        authService.resetPasswordWithToken(token, newPassword);
+        return ResponseEntity.ok("Password has been reset");
+    }
 
     @PostMapping("/change-pass") ///
     public ResponseEntity<?> changePassword(
             @RequestParam("newPassword") String newPassword,
+            @RequestParam("oldPassword") String oldPassword,
             Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        authService.changePassword(user, newPassword);
+        authService.changePassword(user, newPassword, oldPassword);
         return ResponseEntity.ok("Change password successfully");
     }
 

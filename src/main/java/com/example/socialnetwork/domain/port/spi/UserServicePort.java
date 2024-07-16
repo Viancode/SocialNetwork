@@ -7,5 +7,7 @@ public interface UserServicePort {
     User createUser(RegisterRequest registerRequest);
 
     void sendVerificationEmail(User user, String confirmToken);
+
+    void sendEmailResetPassword(User user, String resetToken);
     void confirmEmail(String token);
 }
