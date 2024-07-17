@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthServicePort {
         if (user == null) {
             user = userDatabase.createUser(registerRequest);
         } else {
-            if (!user.isEmailVerified()) {
+            if (!user.getEmailVerified()) {
                 tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
 
                 userRepository.delete(user);
@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthServicePort {
 
         User user = (User) authentication.getPrincipal();
 
-        boolean isEmailVerify = userRepository.findUserById(Long.parseLong(user.getUsername())).orElseThrow(() -> new NotFoundException("User not found")).isEmailVerified();
+        boolean isEmailVerify = userRepository.findUserById(Long.parseLong(user.getUsername())).orElseThrow(() -> new NotFoundException("User not found")).getEmailVerified();
 
         if (!isEmailVerify) {
             throw new NotFoundException("Email is not verified");

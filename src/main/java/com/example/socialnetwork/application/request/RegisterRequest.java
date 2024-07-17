@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @Setter
@@ -26,11 +29,10 @@ public class RegisterRequest {
     private String education;
     private String avatar;
     private String backgroundImage;
-    private Integer age;
+    private LocalDate dateOfBirth;
     @NotNull(message = "Password cannot be null")
     @NotBlank(message = "Password cannot be blank")
     private String password;
     private Integer roleId;
     private boolean isEmailVerified;
-
 }

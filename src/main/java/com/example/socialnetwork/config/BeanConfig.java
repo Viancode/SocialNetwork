@@ -1,10 +1,15 @@
 package com.example.socialnetwork.config;
 
+import com.example.socialnetwork.common.mapper.RelationshipMapper;
+import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.config.aws.S3Properties;
 import com.example.socialnetwork.domain.port.api.*;
+import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.domain.service.*;
+import com.example.socialnetwork.infrastructure.adapter.RelationshipDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
+import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +53,17 @@ public class BeanConfig {
     }
 
     @Bean
-    public UserDatabasePort userDatabasePort(UserRepository userRepository, PasswordEncoder encoder) {
-        return new UserDatabaseAdapter(encoder,userRepository);
+    public UserDatabasePort userDatabasePort(UserRepository userRepository, PasswordEncoder encoder, UserMapper userMapper) {
+        return new UserDatabaseAdapter(encoder,userRepository, userMapper);
+    }
+
+    @Bean
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort);
+    }
+
+    @Bean
+    RelationshipDatabasePort relationshipDatabasePort(RelationshipRepository relationshipRepository, RelationshipMapper relationshipMapper) {
+        return new RelationshipDatabaseAdapter(relationshipRepository, relationshipMapper);
     }
 }

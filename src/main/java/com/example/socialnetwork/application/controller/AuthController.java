@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthServicePort authService;
 
-    @PostMapping("/register") ///
+    @PostMapping("/register")
     public ResponseEntity<?> register(
             @Valid @RequestBody RegisterRequest registerRequest
     ) {
