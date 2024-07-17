@@ -74,8 +74,8 @@ public class User {
     @Column(name = "background_image")
     private String backgroundImage;
 
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "date_of_birth")
+    private LocalDateTime dateOfBirth;
 
     @Column(name = "is_email_verified")
     private boolean isEmailVerified;
