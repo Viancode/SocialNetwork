@@ -2,16 +2,20 @@ package com.example.socialnetwork.infrastructure.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
@@ -40,6 +44,10 @@ public class User {
     private String lastName;
 
     @Lob
+    @Column(name = "gender")
+    private String gender;
+
+    @Lob
     @Column(name = "visibility")
     private String visibility;
 
@@ -64,10 +72,10 @@ public class User {
     private String education;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     @Size(max = 255)
     @Column(name = "avatar")
@@ -77,13 +85,26 @@ public class User {
     @Column(name = "background_image")
     private String backgroundImage;
 
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
-    @Column(name = "token")
-    private String token;
+    @ColumnDefault("0")
+    @Column(name = "is_email_verified")
+    private Boolean emailVerified;
 
     @OneToMany(mappedBy = "user")
-    private Set<ChatMember> chatMembers = new LinkedHashSet<>();
+    private List<CommentReaction> commentReactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<PostReaction> postReactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taggedUser")
+    private List<Tag> tags = new ArrayList<>();
 
 }

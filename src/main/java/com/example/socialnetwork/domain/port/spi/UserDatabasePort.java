@@ -1,0 +1,8 @@
+package com.example.socialnetwork.domain.port.spi;
+
+import com.example.socialnetwork.application.request.RegisterRequest;
+import com.example.socialnetwork.infrastructure.entity.User;
+
+public interface UserDatabasePort {
+    User createUser(RegisterRequest registerRequest);
+}
