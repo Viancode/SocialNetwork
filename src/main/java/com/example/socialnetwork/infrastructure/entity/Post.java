@@ -41,8 +41,7 @@ public class Post {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    @Size(max = 255)
-    @Column(name = "photo_lists")
+    @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")

@@ -47,7 +47,7 @@ CREATE TABLE posts (
                        created_at DATETIME,
                        updated_at DATETIME,
                        is_deleted BIT(1),
-                       photo_lists VARCHAR(255),
+                       photo_lists MEDIUMTEXT,
                        CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
