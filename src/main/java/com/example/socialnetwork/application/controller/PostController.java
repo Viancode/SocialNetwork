@@ -2,9 +2,12 @@ package com.example.socialnetwork.application.controller;
 
 import com.example.socialnetwork.application.request.PostRequest;
 import com.example.socialnetwork.application.response.PostResponse;
+import com.example.socialnetwork.application.response.ResultResponse;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
+import com.example.socialnetwork.infrastructure.entity.Post;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +18,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/post")
 @RequiredArgsConstructor
-public class PostController {
+public class PostController extends BaseController {
     private final PostServicePort postServicePort;
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<PostResponse>> getPosts(@RequestParam Long userId){
-        return ResponseEntity.ok(postServicePort.getAllPosts(userId));
+    public ResponseEntity<ResultResponse> getPosts(@RequestParam Long userId,
+                                                   @RequestParam(defaultValue = "0") int offset,
+                                                   @RequestParam(defaultValue = "10") int pageSize) {
+        Page<PostDomain> posts = postServicePort.getAllPosts(userId, offset, pageSize);
+        return buildResponse("Successfully get all post from userId", posts);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<PostDomain> createPost(
+    public ResponseEntity<?> createPost(
             @RequestParam("userId") Long userId,
             @RequestParam("content") String content,
             @RequestParam("visibility") String visibility,
@@ -37,17 +43,17 @@ public class PostController {
         postRequest.setPhotoLists(photoLists);
 
         PostDomain postDomain = postServicePort.createPost(postRequest);
-        return ResponseEntity.ok(postDomain);
+        return buildResponse("Create post successfully", postDomain);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deletePost(@RequestParam Long postId){
+    public ResponseEntity<?> deletePost(@RequestParam Long postId){
         postServicePort.deletePost(postId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return buildResponse("Delete post successfully", HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<PostDomain> updatePost(
+    public ResponseEntity<?> updatePost(
             @RequestParam("postId") Long postId,
             @RequestParam("userId") Long userId,
             @RequestParam("content") String content,
@@ -61,6 +67,6 @@ public class PostController {
         postRequest.setVisibility(visibility);
         postRequest.setPhotoLists(photoLists);
         PostDomain postDomain = postServicePort.updatePost(postRequest);
-        return ResponseEntity.ok(postDomain);
+        return buildResponse("Update post successfully", postDomain);
     }
 }

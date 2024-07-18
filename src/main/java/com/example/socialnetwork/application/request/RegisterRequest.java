@@ -32,7 +32,5 @@ public class RegisterRequest {
     @NotNull(message = "Password cannot be null")
     @NotBlank(message = "Password cannot be blank")
     private String password;
-    private Integer roleId;
-    private boolean isEmailVerified;
 
 }

@@ -3,20 +3,23 @@ package com.example.socialnetwork.domain.service;
 import com.example.socialnetwork.common.constant.TokenType;
 import com.example.socialnetwork.config.TokenProperties;
 import com.example.socialnetwork.domain.port.api.TokenServicePort;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+@RequiredArgsConstructor
 public class TokenServiceImpl implements TokenServicePort {
     private static final String KEY_PATTERN = "%s::%s::%s";
-    private final long refreshExpiration;
+//    private final TokenProperties tokenProperties;
+//    private final long refreshExpiration = tokenProperties.getRefreshExpiration();
     private final RedisTemplate<String, String> redisTemplate;
-    public TokenServiceImpl(TokenProperties tokenProperties, RedisTemplate<String, String> redisTemplate) {
-        this.refreshExpiration = tokenProperties.getRefreshExpiration();
-        this.redisTemplate = redisTemplate;
-    }
+//    public TokenServiceImpl(TokenProperties tokenProperties, RedisTemplate<String, String> redisTemplate) {
+//        this.refreshExpiration = tokenProperties.getRefreshExpiration();
+//        this.redisTemplate = redisTemplate;
+//    }
     @Override
     public void revokeAllUserTokens(String userId, TokenType tokenType) {
         String keyPattern = String.format(KEY_PATTERN, tokenType.name(), userId, "*");

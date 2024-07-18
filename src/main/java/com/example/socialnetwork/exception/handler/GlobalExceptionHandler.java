@@ -11,6 +11,8 @@ import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -141,13 +143,13 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.FORBIDDEN);
     }
-//
-//    @ExceptionHandler({
-//            AuthenticationException.class,
-//            InvalidBearerTokenException.class,
-//    })
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    public ErrorResponse handleUnauthorizedException(Exception e, HttpServletRequest request) {
-//        return buildErrorResponse(e, request, HttpStatus.UNAUTHORIZED);
-//    }
+
+    @ExceptionHandler({
+            AuthenticationException.class,
+            InvalidBearerTokenException.class,
+    })
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleUnauthorizedException(Exception e, HttpServletRequest request) {
+        return buildErrorResponse(e, request, HttpStatus.UNAUTHORIZED);
+    }
 }

@@ -20,3 +20,5 @@ AWS_BUCKET_NAME=your_aws_bucket_name
 
 GM_USERNAME=
 GM_PASSWORD=
+
+FRONT_END_DOMAIN=your_frontend_domain

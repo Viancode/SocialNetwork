@@ -1,13 +1,17 @@
 package com.example.socialnetwork.config;
 
+import com.example.socialnetwork.common.mapper.TagMapper;
 import com.example.socialnetwork.config.aws.S3Properties;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
+import com.example.socialnetwork.domain.port.spi.TagDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.domain.service.*;
 import com.example.socialnetwork.infrastructure.adapter.PostDatabaseAdapter;
+import com.example.socialnetwork.infrastructure.adapter.TagDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.repository.PostRepository;
+import com.example.socialnetwork.infrastructure.repository.TagRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -37,8 +41,13 @@ public class BeanConfig {
     }
 
     @Bean
-    public TokenServicePort tokenServicePort(TokenProperties tokenProperties, RedisTemplate<String, String> redisTemplate) {
-        return new TokenServiceImpl(tokenProperties, redisTemplate);
+    public TokenServicePort tokenServicePort(RedisTemplate<String, String> redisTemplate) {
+        return new TokenServiceImpl(redisTemplate);
+    }
+
+    @Bean
+    public JwtServicePort jwtServicePort(TokenProperties tokenProperties) {
+        return new JwtServiceImpl(tokenProperties);
     }
 
     @Bean
@@ -69,5 +78,20 @@ public class BeanConfig {
     @Bean
     public PostServicePort postServicePort(PostDatabasePort postDatabasePort, S3ServicePort s3Service) {
         return new PortServiceImpl(postDatabasePort,s3Service);
+    }
+
+    @Bean
+    public TagMapper tagMapper(UserRepository userRepository, PostRepository postRepository) {
+        return  new TagMapper(userRepository,postRepository);
+    }
+
+    @Bean
+    public TagDatabasePort tagDatabasePort(TagRepository repository, TagMapper tagMapper) {
+        return new TagDatabaseAdapter(repository,tagMapper);
+    }
+
+    @Bean
+    public TagServicePort tagServicePort(TagDatabasePort tagDatabasePort) {
+        return new  TagServiceImpl(tagDatabasePort);
     }
 }

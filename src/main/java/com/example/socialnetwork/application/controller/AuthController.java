@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController extends BaseController {
     private final AuthServicePort authService;
 
     @PostMapping("/register") ///
@@ -22,7 +22,7 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest registerRequest
     ) {
         authService.register(registerRequest);
-        return ResponseEntity.ok("Please check your email to verify your account");
+        return buildResponse("Please check your email to verify your account");
     }
 
     @PostMapping("register/verify")
@@ -30,7 +30,7 @@ public class AuthController {
             @RequestParam("token") String token
     ) {
         authService.verifyRegisterToken(token);
-        return ResponseEntity.ok("Token is valid");
+        return buildResponse("Token is valid");
     }
 
     @PostMapping("/forgot-pass")
@@ -38,7 +38,7 @@ public class AuthController {
             @RequestParam("email") String email
     ) {
         authService.forgotPassword(email);
-        return ResponseEntity.ok("Reset password request has been sent to your email");
+        return buildResponse("Reset password request has been sent to your email");
     }
 
 //    @PostMapping("/forgot-pass/verify")
@@ -55,7 +55,7 @@ public class AuthController {
             @RequestParam("newPassword") String newPassword
     ) {
         authService.resetPasswordWithToken(token, newPassword);
-        return ResponseEntity.ok("Password has been reset");
+        return buildResponse("Password has been reset");
     }
 
     @PostMapping("/change-pass") ///
@@ -66,7 +66,7 @@ public class AuthController {
     ) {
         User user = (User) authentication.getPrincipal();
         authService.changePassword(user, newPassword, oldPassword);
-        return ResponseEntity.ok("Change password successfully");
+        return buildResponse("Change password successfully");
     }
 
     @PostMapping("/login")
@@ -74,7 +74,7 @@ public class AuthController {
             @Valid @RequestBody AuthRequest authRequest
     ) {
         AuthResponse authResponse = authService.login(authRequest);
-        return ResponseEntity.ok(authResponse);
+        return buildResponse("Successfully logged in", authResponse);
     }
 
     @PostMapping("/refresh")
@@ -82,7 +82,7 @@ public class AuthController {
             @RequestParam("refreshToken") String refreshToken
     ) {
         AuthResponse authResponse = authService.refreshToken(refreshToken);
-        return ResponseEntity.ok(authResponse);
+        return buildResponse("Successfully refreshed token", authResponse);
     }
 
     @PostMapping("/logout")
@@ -92,7 +92,7 @@ public class AuthController {
     ) {
         User user = (User) authentication.getPrincipal();
         authService.logout(refreshToken, user);
-        return ResponseEntity.ok("Logout successfully");
+        return buildResponse("Logout successfully");
     }
 
     @PostMapping("/logout/all")
@@ -101,7 +101,7 @@ public class AuthController {
     ) {
         User user = (User) authentication.getPrincipal();
         authService.logoutAllDevices(user);
-        return ResponseEntity.ok("Logout from all devices successfully");
+        return buildResponse("Logout from all devices successfully");
     }
 }
 

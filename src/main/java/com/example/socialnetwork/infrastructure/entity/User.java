@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,7 +90,7 @@ public class User {
 
     @ColumnDefault("0")
     @Column(name = "is_email_verified")
-    private Boolean emailVerified;
+    private Boolean isEmailVerified;
 
     @OneToMany(mappedBy = "user")
     private List<CommentReaction> commentReactions = new ArrayList<>();
@@ -106,5 +106,6 @@ public class User {
 
     @OneToMany(mappedBy = "taggedUser")
     private List<Tag> tags = new ArrayList<>();
+
 
 }

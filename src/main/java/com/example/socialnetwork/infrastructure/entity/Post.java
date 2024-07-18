@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -44,12 +45,15 @@ public class Post {
     @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
     private List<PostReaction> postReactions = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
     private List<Tag> tags = new ArrayList<>();
 

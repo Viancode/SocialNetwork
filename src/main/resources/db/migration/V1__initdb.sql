@@ -12,7 +12,7 @@ CREATE TABLE users (
                        password VARCHAR(255),
                        first_name VARCHAR(255),
                        last_name VARCHAR(255),
-                        gender ENUM('MALE','FEMALE','OTHERS'),
+                       gender ENUM('MALE','FEMALE','OTHERS'),
                        visibility ENUM('PUBLIC', 'FRIEND', 'PRIVATE'),
                        role_id BIGINT,
                        bio VARCHAR(255),
@@ -23,20 +23,20 @@ CREATE TABLE users (
                        updated_at DATETIME,
                        avatar VARCHAR(255),
                        background_image VARCHAR(255),
-                        date_of_birth DATE,
+                       date_of_birth DATE,
                        is_email_verified BOOLEAN default false,
                        CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
 CREATE TABLE relationships (
-                        relationship_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                         user_id BIGINT,
-                         friend_id BIGINT,
-                         created_at DATETIME,
-                        status INT,
-                        relation ENUM('FRIEND', 'BLOCK','LOVER','RELATIVE'),
-                         CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id),
-                         CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES users(user_id)
+                               relationship_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                               user_id BIGINT,
+                               friend_id BIGINT,
+                               created_at DATETIME,
+                               status INT,
+                               relation ENUM('FRIEND', 'BLOCK','LOVER','RELATIVE'),
+                               CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+                               CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE posts (
@@ -167,7 +167,6 @@ INSERT INTO comment_reactions (user_id, comment_id, reaction_type, created_at) V
 INSERT INTO tags (tagged_user_id, post_id, tagged_by_user_id) VALUES
                                                                   (2, 1, 1),
                                                                   (1, 2, 2);
-
 
 
 

@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthServicePort {
         if (user == null) {
             user = userDatabase.createUser(registerRequest);
         } else {
-            if (!user.getEmailVerified()) {
+            if (!user.getIsEmailVerified()) {
                 tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
 
                 userRepository.delete(user);
@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthServicePort {
     public void verifyRegisterToken(String token) {
         String userId = tokenService.getTokenInfo(token, TokenType.VERIFIED);
         com.example.socialnetwork.infrastructure.entity.User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new NotFoundException("User not found"));
-        user.setEmailVerified(true);
+        user.setIsEmailVerified(true);
         user.getRole().getName(); // This line is just to trigger the lazy loading within the transaction
         userRepository.save(user);
 
@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthServicePort {
 
         User user = (User) authentication.getPrincipal();
 
-        boolean isEmailVerify = userRepository.findUserById(Long.parseLong(user.getUsername())).orElseThrow(() -> new NotFoundException("User not found")).getEmailVerified();
+        boolean isEmailVerify = userRepository.findUserById(Long.parseLong(user.getUsername())).orElseThrow(() -> new NotFoundException("User not found")).getIsEmailVerified();
 
         if (!isEmailVerify) {
             throw new NotFoundException("Email is not verified");

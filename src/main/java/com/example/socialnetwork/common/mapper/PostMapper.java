@@ -1,6 +1,5 @@
 package com.example.socialnetwork.common.mapper;
 
-import com.example.socialnetwork.application.request.PostRequest;
 import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.infrastructure.entity.Comment;
