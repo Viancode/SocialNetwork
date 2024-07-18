@@ -45,13 +45,13 @@ public class Post {
     @Column(name = "photo_lists")
     private String photoLists;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
     private List<PostReaction> postReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
     private List<Tag> tags = new ArrayList<>();
 
 }

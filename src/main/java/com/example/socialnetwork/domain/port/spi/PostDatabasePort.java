@@ -9,4 +9,6 @@ public interface PostDatabasePort {
     PostDomain updatePost(PostDomain postDomain);
     void deletePost(Long postId);
     List<PostDomain> getAllPosts(Long userId);
+
+    PostDomain findById(Long id);
 }

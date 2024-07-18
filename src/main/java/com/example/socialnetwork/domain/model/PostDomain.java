@@ -1,17 +1,11 @@
 package com.example.socialnetwork.domain.model;
 
-import com.example.socialnetwork.infrastructure.entity.Comment;
-import com.example.socialnetwork.infrastructure.entity.PostReaction;
-import com.example.socialnetwork.infrastructure.entity.Tag;
-import com.example.socialnetwork.infrastructure.entity.User;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,17 +13,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostDomain {
+    private Long id;
+
     private Long userId;
 
     private String content;
 
     private String visibility;
 
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     private String photoLists;
 

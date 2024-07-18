@@ -5,6 +5,7 @@ spring:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: ${DB_USER}
     password: ${DB_PASS}
+
   jpa:
     properties:
       hibernate:
@@ -31,6 +32,11 @@ spring:
     redis:
       host: ${RD_HOST}
       port: ${RD_PORT}
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2MB
+      max-request-size: 2MB
 token:
   secret-key: ${JWT_SECRET}
   access-expiration: 604800000 # 7200000 # 1000 * 60 * 60 * 2 = 2 hours
@@ -56,3 +62,4 @@ link:
   front-end-domain: ${FRONT_END_DOMAIN}
   forgot-password-verify: /forgot-password/verify?token=
   confirm-email-verify: /register/verify?token=
+

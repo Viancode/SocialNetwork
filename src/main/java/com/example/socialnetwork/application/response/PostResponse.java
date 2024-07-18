@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +13,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponse {
+    private Long id;
+
     private Long userId;
 
     private String content;
 
     private String visibility;
 
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     private String photoLists;
 

@@ -21,6 +21,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 public class BeanConfig {
+
     @Value("${AWS_BUCKET_NAME}")
     private String bucketName;
 
@@ -66,7 +67,7 @@ public class BeanConfig {
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort) {
-        return new PortServiceImpl(postDatabasePort);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, S3ServicePort s3Service) {
+        return new PortServiceImpl(postDatabasePort,s3Service);
     }
 }

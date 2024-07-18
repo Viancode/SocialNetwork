@@ -17,7 +17,7 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     @Override
     public PostDomain createPost(PostDomain postDomain) {
         Post post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
-        return  PostMapper.INSTANCE.postToPostDomain(post);
+        return PostMapper.INSTANCE.postToPostDomain(post);
     }
 
     @Override
@@ -28,12 +28,21 @@ public class PostDatabaseAdapter implements PostDatabasePort {
 
     @Override
     public void deletePost(Long postId) {
-        postRepository.deleteById(postId);
+        Post post = postRepository.findById(postId).isPresent() ? postRepository.findById(postId).get() : null;
+        if (post != null) {
+            post.setIsDeleted(true);
+            postRepository.save(post);
+        }
     }
 
     @Override
     public List<PostDomain> getAllPosts(Long userId) {
         List<Post> posts = postRepository.findAllByUserId(userId);
-        return posts.stream().map(PostMapper.INSTANCE::postToPostDomain).collect(Collectors.toList());
+        return posts.stream().filter(x -> !x.getIsDeleted()).map(PostMapper.INSTANCE::postToPostDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public PostDomain findById(Long id) {
+        return PostMapper.INSTANCE.postToPostDomain(postRepository.findById(id).isPresent()? postRepository.findById(id).get():null);
     }
 }
