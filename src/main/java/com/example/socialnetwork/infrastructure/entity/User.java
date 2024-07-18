@@ -4,12 +4,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import org.hibernate.annotations.ColumnDefault;
 
-@Entity
-@Table(name = "users")
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
+@Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +41,10 @@ public class User {
     @Size(max = 255)
     @Column(name = "last_name")
     private String lastName;
+
+    @Lob
+    @Column(name = "gender")
+    private String gender;
 
     @Lob
     @Column(name = "visibility")
@@ -75,8 +85,28 @@ public class User {
     private String backgroundImage;
 
     @Column(name = "date_of_birth")
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
 
+    @ColumnDefault("0")
     @Column(name = "is_email_verified")
-    private boolean isEmailVerified;
+    private Boolean isEmailVerified;
+
+    @OneToMany(mappedBy = "user")
+    private Set<ChatMember> chatMembers = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<CommentReaction> commentReactions = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Comment> comments = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "sender")
+    private Set<Message> messages = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<PostReaction> postReactions = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Post> posts = new LinkedHashSet<>();
+
 }

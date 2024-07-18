@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -13,12 +15,21 @@ import java.time.Instant;
 @Table(name = "comments")
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id")
+    private Comment parentComment;
 
     @Size(max = 255)
     @Column(name = "content")
@@ -35,5 +46,11 @@ public class Comment {
 
     @Column(name = "is_hidden")
     private Boolean isHidden;
+
+    @OneToMany(mappedBy = "comment")
+    private Set<CommentReaction> commentReactions = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "parentComment")
+    private Set<Comment> comments = new LinkedHashSet<>();
 
 }

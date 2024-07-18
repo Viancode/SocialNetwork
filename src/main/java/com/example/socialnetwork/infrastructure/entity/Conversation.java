@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,5 +31,11 @@ public class Conversation {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+
+    @OneToMany(mappedBy = "conversation")
+    private Set<ChatMember> chatMembers = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "conversation")
+    private Set<Message> messages = new LinkedHashSet<>();
 
 }

@@ -11,13 +11,18 @@ import java.time.Instant;
 @Entity
 @Table(name = "comment_reactions")
 public class CommentReaction {
-    @EmbeddedId
-    private CommentReactionId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_reaction_id", nullable = false)
+    private Long id;
 
-    @MapsId("userId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
 
     @Lob
     @Column(name = "reaction_type")

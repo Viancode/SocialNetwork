@@ -28,8 +28,13 @@ public class BeanConfig {
     }
 
     @Bean
-    public TokenServicePort tokenServicePort(TokenProperties tokenProperties, RedisTemplate<String, String> redisTemplate) {
-        return new TokenServiceImpl(tokenProperties, redisTemplate);
+    public TokenServicePort tokenServicePort(RedisTemplate<String, String> redisTemplate) {
+        return new TokenServiceImpl(redisTemplate);
+    }
+
+    @Bean
+    public JwtServicePort jwtServicePort(TokenProperties tokenProperties) {
+        return new JwtServiceImpl(tokenProperties);
     }
 
     @Bean

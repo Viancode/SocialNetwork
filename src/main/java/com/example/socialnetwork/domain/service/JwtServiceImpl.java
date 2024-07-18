@@ -6,11 +6,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import io.jsonwebtoken.io.Decoders;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
-import org.springframework.stereotype.Service;
+
 import java.security.Key;
 import java.util.Collection;
 import java.util.Date;
@@ -19,7 +20,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-@Service
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtServicePort {
     private final String secretKey;
     private final long accessExpiration;
@@ -28,6 +29,7 @@ public class JwtServiceImpl implements JwtServicePort {
         this.secretKey = tokenProperties.getSecretKey();
         this.accessExpiration = tokenProperties.getAccessExpiration();
     }
+
     @Override
     public User validateAndExtractUser(String token) {
         try {
@@ -45,7 +47,6 @@ public class JwtServiceImpl implements JwtServicePort {
                     .collect(Collectors.toList());
             return new User(userName, "", authorities);
         } catch (Exception e) {
-            // Log the exception or handle it as needed
             return null;
         }
     }

@@ -2,12 +2,14 @@ package com.example.socialnetwork.domain.service;
 
 import com.example.socialnetwork.config.aws.S3Properties;
 import com.example.socialnetwork.domain.port.api.S3ServicePort;
+import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+@RequiredArgsConstructor
 public class S3ServiceImpl implements S3ServicePort {
     private final S3Client s3Client;
     private final String bucketName;

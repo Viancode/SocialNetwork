@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -13,6 +15,7 @@ import java.time.Instant;
 @Table(name = "posts")
 public class Post {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id", nullable = false)
     private Long id;
 
@@ -40,5 +43,14 @@ public class Post {
     @Size(max = 255)
     @Column(name = "photo_lists")
     private String photoLists;
+
+    @OneToMany(mappedBy = "post")
+    private Set<Comment> comments = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "post")
+    private Set<PostReaction> postReactions = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "post")
+    private Set<Tag> tags = new LinkedHashSet<>();
 
 }

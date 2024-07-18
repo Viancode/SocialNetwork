@@ -49,16 +49,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/register")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/register/verify")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/forgot-pass")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/forgot-pass/verify")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/reset-pass")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/change-pass")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/login")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/refresh")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/logout")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/logout/all")).permitAll()
+                .requestMatchers("/api/v1/auth/login").permitAll()
+                .requestMatchers("/api/v1/auth/refresh").permitAll()
+                .requestMatchers("/api/v1/auth/register").permitAll()
+                .requestMatchers("/api/v1/auth/register/verify").permitAll()
+                .requestMatchers("/api/v1/auth/forgot-pass").permitAll()
+                .requestMatchers("/api/v1/auth/reset-pass").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
         );
         http.authenticationProvider(authenticationProvider());

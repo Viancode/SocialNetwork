@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class UserDatabaseAdapter implements UserDatabasePort {
             user.setBackgroundImage(registerRequest.getBackgroundImage());
             user.setDateOfBirth(registerRequest.getDateOfBirth());
             user.setRole(Role.builder().id(1L).build());
-            user.setEmailVerified(false);
+            user.setIsEmailVerified(false);
             user.setUsername(registerRequest.getFirstName() + " " + registerRequest.getLastName());
 
             user.setCreatedAt(LocalDateTime.now());

@@ -1,27 +1,30 @@
 package com.example.socialnetwork.infrastructure.entity;
 
-import com.fasterxml.jackson.core.JsonToken;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "roles")
+@AllArgsConstructor
 public class Role {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id", nullable = false)
     private Long id;
 
     @Size(max = 255)
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy = "role")
+    private Set<User> users = new LinkedHashSet<>();
 
 }
