@@ -19,8 +19,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.thymeleaf.TemplateEngine;
+import software.amazon.awssdk.services.docdbelastic.model.Auth;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
@@ -70,6 +72,8 @@ public class BeanConfig {
     public UserDatabasePort userDatabasePort(UserRepository userRepository, PasswordEncoder encoder) {
         return new UserDatabaseAdapter(encoder,userRepository);
     }
+
+
     @Bean
     public PostDatabasePort postDatabasePort(PostRepository repository) {
         return new PostDatabaseAdapter(repository);

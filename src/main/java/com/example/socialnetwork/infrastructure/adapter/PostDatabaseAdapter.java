@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,15 +22,35 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     private final PostRepository postRepository;
 
     @Override
-    public PostDomain createPost(PostDomain postDomain) {
-        Post post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+    public PostDomain createPost(PostDomain postDomain, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        long userId = Long.parseLong(user.getUsername());
+        Post post;
+        if(userId == postDomain.getUserId()){
+            post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+        }else{
+            throw new NotFoundException("User can`t create post");
+        }
         return PostMapper.INSTANCE.postToPostDomain(post);
     }
 
     @Override
-    public PostDomain updatePost(PostDomain postDomain) {
-        Post post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+    public PostDomain updatePost(PostDomain postDomain, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        long userId = Long.parseLong(user.getUsername());
+        System.out.println("userId: " + userId);
+        Post post ;
+        if(userId == postDomain.getUserId()){
+            post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+        }else{
+            throw new NotFoundException("User can`t update post");
+        }
         return PostMapper.INSTANCE.postToPostDomain(post);
+    }
+    
+    public long getUserIdLogin(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return Long.parseLong(user.getUsername());
     }
 
     @Override
