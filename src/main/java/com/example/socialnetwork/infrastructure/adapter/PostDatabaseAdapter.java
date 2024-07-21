@@ -3,6 +3,7 @@ package com.example.socialnetwork.infrastructure.adapter;
 import com.example.socialnetwork.common.mapper.PostMapper;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
+import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import com.example.socialnetwork.infrastructure.repository.PostRepository;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +40,6 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     public PostDomain updatePost(PostDomain postDomain, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         long userId = Long.parseLong(user.getUsername());
-        System.out.println("userId: " + userId);
         Post post ;
         if(userId == postDomain.getUserId()){
             post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));

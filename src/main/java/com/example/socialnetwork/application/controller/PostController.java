@@ -1,11 +1,10 @@
 package com.example.socialnetwork.application.controller;
 
 import com.example.socialnetwork.application.request.PostRequest;
-import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.application.response.ResultResponse;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
-import com.example.socialnetwork.infrastructure.entity.Post;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/post")
@@ -34,7 +32,7 @@ public class PostController extends BaseController {
     public ResponseEntity<?> createPost(
             @RequestParam("userId") Long userId,
             @RequestParam("content") String content,
-            @RequestParam("visibility") String visibility,
+            @RequestParam(value = "visibility", defaultValue = "PUBLIC") String visibility,
             @RequestParam("photoLists") MultipartFile[] photoLists,
             Authentication authentication
     ) {

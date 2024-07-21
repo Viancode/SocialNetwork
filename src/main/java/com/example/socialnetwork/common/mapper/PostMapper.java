@@ -25,13 +25,10 @@ public interface PostMapper {
     PostDomain postToPostDomain(Post post);
 
     @Mapping(source = "userId", target = "user.id")
-    @Mapping(target = "postReactions", ignore = true) // MapStruct không tự động hỗ trợ chuyển đổi danh sách ID sang đối tượng
-    @Mapping(target = "comments", ignore = true)  // MapStruct không tự động hỗ trợ chuyển đổi danh sách ID sang đối tượng
-    @Mapping(target = "tags", ignore = true)      // MapStruct không tự động hỗ trợ chuyển đổi danh sách ID sang đối tượng
+    @Mapping(target = "postReactions", ignore = true)
+    @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "tags", ignore = true)
     Post postDomainToPost(PostDomain postDomain);
-
-//    @Mapping(source = "userId", target = "userId")
-//    PostDomain postRequestToPostDomain(PostRequest postRequest);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "userId", target = "userId")
