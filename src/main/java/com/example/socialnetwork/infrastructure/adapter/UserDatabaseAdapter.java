@@ -2,6 +2,7 @@ package com.example.socialnetwork.infrastructure.adapter;
 
 import com.example.socialnetwork.application.request.RegisterRequest;
 import com.example.socialnetwork.common.constant.Gender;
+import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
@@ -41,7 +42,8 @@ public class UserDatabaseAdapter implements UserDatabasePort {
             user.setGender(Gender.valueOf(registerRequest.getGender()));
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
-            user.setVisibility("PUBLIC");
+            user.setVisibility(String.valueOf(Visibility.PUBLIC));
+
             return userRepository.save(user);
         } else {
             return user;
