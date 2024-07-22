@@ -12,7 +12,7 @@ CREATE TABLE users (
                        password VARCHAR(255),
                        first_name VARCHAR(255),
                        last_name VARCHAR(255),
-                        gender ENUM('MALE','FEMALE','OTHERS'),
+                       gender ENUM('MALE','FEMALE','OTHERS'),
                        visibility ENUM('PUBLIC', 'FRIEND', 'PRIVATE'),
                        role_id BIGINT,
                        bio VARCHAR(255),

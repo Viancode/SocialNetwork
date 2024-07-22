@@ -16,7 +16,7 @@ public class SocialNetworkApplication {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 		// Mã hóa một chuỗi
-		String originalPassword = "password";
+		String originalPassword = "123456";
 		String encodedPassword = encoder.encode(originalPassword);
 
 		// In chuỗi đã mã hóa ra màn hình console

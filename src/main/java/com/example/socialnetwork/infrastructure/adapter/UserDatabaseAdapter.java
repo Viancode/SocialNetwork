@@ -50,6 +50,6 @@ public class UserDatabaseAdapter implements UserDatabasePort {
 
     @Override
     public UserDomain findById(long id) {
-        return userMapper.toUserDomain(userRepository.findById(id));
+        return userMapper.toUserDomain(userRepository.findById(id).get());
     }
 }

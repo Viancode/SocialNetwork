@@ -58,12 +58,12 @@ public class BeanConfig {
     }
 
     @Bean
-    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort) {
-        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort);
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserMapper userMapper) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userMapper);
     }
 
     @Bean
-    RelationshipDatabasePort relationshipDatabasePort(RelationshipRepository relationshipRepository, RelationshipMapper relationshipMapper) {
-        return new RelationshipDatabaseAdapter(relationshipRepository, relationshipMapper);
+    RelationshipDatabasePort relationshipDatabasePort(RelationshipRepository relationshipRepository, RelationshipMapper relationshipMapper, UserRepository userRepository, UserMapper userMapper) {
+        return new RelationshipDatabaseAdapter(relationshipRepository, relationshipMapper, userRepository, userMapper);
     }
 }
