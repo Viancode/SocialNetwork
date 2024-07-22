@@ -49,11 +49,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/login")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/refresh")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/users/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/register")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/register/verify")).permitAll()
+                .requestMatchers("/api/v1/auth/login").permitAll()
+                .requestMatchers("/api/v1/auth/refresh").permitAll()
+                .requestMatchers("/api/v1/auth/register").permitAll()
+                .requestMatchers("/api/v1/auth/register/verify").permitAll()
+                .requestMatchers("/api/v1/auth/forgot-pass").permitAll()
+                .requestMatchers("/api/v1/auth/reset-pass").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
         );
         http.authenticationProvider(authenticationProvider());
@@ -65,4 +68,5 @@ public class SecurityConfig {
         );
         return http.build();
     }
+
 }

@@ -2,12 +2,17 @@ package com.example.socialnetwork.infrastructure.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "roles")
 public class Role {
     @Id
@@ -18,5 +23,8 @@ public class Role {
     @Size(max = 255)
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy = "role")
+    private Set<User> users = new LinkedHashSet<>();
 
 }

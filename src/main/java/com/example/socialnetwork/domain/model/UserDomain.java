@@ -1,16 +1,13 @@
 package com.example.socialnetwork.domain.model;
 
-import com.example.socialnetwork.common.constant.Role;
+import com.example.socialnetwork.common.constant.ERole;
+import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.constant.Visibility;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import software.amazon.awssdk.services.polly.model.Gender;
 
 
 import java.time.LocalDate;
@@ -21,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDomain {
+    long id;
     String username;
     String password;
     String email;
@@ -29,17 +27,15 @@ public class UserDomain {
     String bio;
     Gender gender;
     LocalDate dateOfBirth;
-    Role role;
+    ERole ERole;
     String location;
     String work;
     String education;
     String avatar;
     String backgroundImage;
-    String refreshToken;
     Visibility visibility;
-    int token;
-    boolean enabled;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     boolean isEmailVerified;
+
 }

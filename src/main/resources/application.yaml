@@ -5,6 +5,7 @@ spring:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: ${DB_USER}
     password: ${DB_PASS}
+
   jpa:
     properties:
       hibernate:
@@ -12,6 +13,17 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
     open-in-view: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GM_USERNAME}
+    password: ${GM_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -20,6 +32,11 @@ spring:
     redis:
       host: ${RD_HOST}
       port: ${RD_PORT}
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2MB
+      max-request-size: 2MB
 token:
   secret-key: ${JWT_SECRET}
   access-expiration: 604800000 # 7200000 # 1000 * 60 * 60 * 2 = 2 hours
@@ -41,3 +58,8 @@ cloud:
     s3:
       aws-region: ${AWS_REGION}
       bucket-name: ${AWS_BUCKET_NAME}
+link:
+  front-end-domain: ${FRONT_END_DOMAIN}
+  forgot-password-verify: /forgot-password/verify?token=
+  confirm-email-verify: /register/verify?token=
+

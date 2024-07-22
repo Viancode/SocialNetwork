@@ -11,6 +11,8 @@ import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,6 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public FormErrorResponse handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         Map<String, List<String>> groupedErrors = new HashMap<>();
         Object targetObject = e.getBindingResult().getTarget();
 
@@ -106,9 +109,11 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
             ClientErrorException.class
+
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFileException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
     }
 
@@ -119,12 +124,14 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.CONFLICT);
     }
 
@@ -134,15 +141,16 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbiddenException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.FORBIDDEN);
     }
-//
-//    @ExceptionHandler({
-//            AuthenticationException.class,
-//            InvalidBearerTokenException.class,
-//    })
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    public ErrorResponse handleUnauthorizedException(Exception e, HttpServletRequest request) {
-//        return buildErrorResponse(e, request, HttpStatus.UNAUTHORIZED);
-//    }
+
+    @ExceptionHandler({
+            AuthenticationException.class,
+            InvalidBearerTokenException.class,
+    })
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleUnauthorizedException(Exception e, HttpServletRequest request) {
+        return buildErrorResponse(e, request, HttpStatus.UNAUTHORIZED);
+    }
 }

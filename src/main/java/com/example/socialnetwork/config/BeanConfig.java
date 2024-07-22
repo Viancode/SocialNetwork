@@ -1,23 +1,116 @@
 package com.example.socialnetwork.config;
 
+import com.example.socialnetwork.common.mapper.RelationshipMapper;
+import com.example.socialnetwork.common.mapper.UserMapper;
+import com.example.socialnetwork.common.mapper.TagMapper;
 import com.example.socialnetwork.config.aws.S3Properties;
-import com.example.socialnetwork.domain.service.S3ServiceImpl;
-import com.example.socialnetwork.domain.service.StorageServiceImpl;
-import com.example.socialnetwork.domain.port.api.S3ServicePort;
-import com.example.socialnetwork.domain.port.api.StorageServicePort;
+import com.example.socialnetwork.domain.port.api.*;
+import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
+import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
+import com.example.socialnetwork.domain.port.spi.TagDatabasePort;
+import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
+import com.example.socialnetwork.domain.service.*;
+import com.example.socialnetwork.infrastructure.adapter.PostDatabaseAdapter;
+import com.example.socialnetwork.infrastructure.adapter.TagDatabaseAdapter;
+import com.example.socialnetwork.infrastructure.adapter.RelationshipDatabaseAdapter;
+import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
+import com.example.socialnetwork.infrastructure.repository.PostRepository;
+import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
+import com.example.socialnetwork.infrastructure.repository.TagRepository;
+import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
+import com.example.socialnetwork.infrastructure.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.thymeleaf.TemplateEngine;
+import software.amazon.awssdk.services.docdbelastic.model.Auth;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 public class BeanConfig {
+
+    @Value("${AWS_BUCKET_NAME}")
+    private String bucketName;
+
+
     @Bean
-    S3ServicePort s3Service(S3Client s3Client, S3Properties s3Properties) {
-        return new S3ServiceImpl(s3Client, s3Properties);
+    public S3ServicePort s3Service(S3Client s3Client) {
+        return new S3ServiceImpl(s3Client, bucketName);
     }
 
     @Bean
-    StorageServicePort storageService(S3ServicePort s3Service) {
+    public StorageServicePort storageService(S3ServicePort s3Service) {
         return new StorageServiceImpl(s3Service);
+    }
+
+    @Bean
+    public TokenServicePort tokenServicePort(RedisTemplate<String, String> redisTemplate) {
+        return new TokenServiceImpl(redisTemplate);
+    }
+
+    @Bean
+    public JwtServicePort jwtServicePort(TokenProperties tokenProperties) {
+        return new JwtServiceImpl(tokenProperties);
+    }
+
+    @Bean
+    public AuthServicePort authServicePort(JwtServicePort jwtService, TokenServicePort tokenService, UserRepository userRepository, UserServicePort userService, UserDatabasePort userDatabase, AuthenticationManager authenticationManager) {
+        return new AuthServiceImpl(jwtService, tokenService, userRepository, userService, userDatabase, authenticationManager);
+    }
+
+    @Bean
+    public EmailServicePort emailServicePort(JavaMailSender emailSender, TemplateEngine templateEngine) {
+        return new EmailServiceImpl(emailSender, templateEngine);
+    }
+
+    @Bean
+    public UserServicePort userServicePort(UserRepository userRepository, EmailServicePort emailService, TokenServicePort tokenService) {
+        return new UserServiceImpl(userRepository, emailService, tokenService);
+    }
+
+    @Bean
+    public UserDatabasePort userDatabasePort(UserRepository userRepository, PasswordEncoder encoder, UserMapper userMapper) {
+        return new UserDatabaseAdapter(encoder,userRepository, userMapper);
+    }
+
+    @Bean
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, UserMapper userMapper) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, userMapper);
+    }
+
+    @Bean
+    RelationshipDatabasePort relationshipDatabasePort(RelationshipRepository relationshipRepository, RelationshipMapper relationshipMapper, UserRepository userRepository, UserMapper userMapper) {
+        return new RelationshipDatabaseAdapter(relationshipRepository, relationshipMapper, userRepository, userMapper);
+    }
+
+
+    @Bean
+    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository) {
+        return new PostDatabaseAdapter(repository,relationshipRepository);
+    }
+
+    @Bean
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, StorageServicePort storageServicePort) {
+        return new PortServiceImpl(postDatabasePort,storageServicePort);
+    }
+
+    @Bean
+    public TagMapper tagMapper(UserRepository userRepository, PostRepository postRepository) {
+        return  new TagMapper(userRepository,postRepository);
+    }
+
+    @Bean
+    public TagDatabasePort tagDatabasePort(TagRepository repository, TagMapper tagMapper) {
+        return new TagDatabaseAdapter(repository,tagMapper);
+    }
+
+    @Bean
+    public TagServicePort tagServicePort(TagDatabasePort tagDatabasePort) {
+        return new  TagServiceImpl(tagDatabasePort);
     }
 }
