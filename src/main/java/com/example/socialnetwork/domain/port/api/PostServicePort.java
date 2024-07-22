@@ -13,5 +13,5 @@ public interface PostServicePort {
     PostDomain updatePost(PostRequest postRequest, Authentication authentication);
     void deletePost(Long postId);
 //    List<PostResponse> getAllPosts(Long userId);
-    Page<PostDomain> getAllPosts(Long userId, int offset, int pageSize);
+    Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize);
 }

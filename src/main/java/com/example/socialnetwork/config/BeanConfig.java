@@ -11,6 +11,7 @@ import com.example.socialnetwork.infrastructure.adapter.PostDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.adapter.TagDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.repository.PostRepository;
+import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.TagRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,8 +76,8 @@ public class BeanConfig {
 
 
     @Bean
-    public PostDatabasePort postDatabasePort(PostRepository repository) {
-        return new PostDatabaseAdapter(repository);
+    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository) {
+        return new PostDatabaseAdapter(repository,relationshipRepository);
     }
 
     @Bean

@@ -15,5 +15,5 @@ public interface PostDatabasePort {
 
     PostDomain findById(Long id);
 
-    Page<PostDomain> getAllPosts(Long userId, int offset, int pageSize);
+    Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize);
 }

@@ -22,9 +22,10 @@ public class PostController extends BaseController {
 
     @GetMapping("/getAll")
     public ResponseEntity<ResultResponse> getPosts(@RequestParam Long userId,
+                                                   @RequestParam Long otherUserId,
                                                    @RequestParam(defaultValue = "0") int offset,
                                                    @RequestParam(defaultValue = "10") int pageSize) {
-        Page<PostDomain> posts = postServicePort.getAllPosts(userId, offset, pageSize);
+        Page<PostDomain> posts = postServicePort.getAllPosts(userId,otherUserId, offset-1, pageSize);
         return buildResponse("Successfully get all post from userId", posts);
     }
 

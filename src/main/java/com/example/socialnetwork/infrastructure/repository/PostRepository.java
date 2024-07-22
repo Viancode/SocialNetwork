@@ -12,5 +12,7 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSortingRepository<Post, Long> {
     List<Post> findAllByUserId(Long userId);
 
-    Page<Post> findByUserId(Long userId, Pageable pageable);
+    Page<Post> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable);
+    Page<Post> findByUserIdAndVisibilityAndIsDeletedFalse(Long userId,String visibility, Pageable pageable);
+
 }

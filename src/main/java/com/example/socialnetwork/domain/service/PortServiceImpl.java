@@ -69,8 +69,8 @@ public class PortServiceImpl implements PostServicePort {
 //    }
 
     @Override
-    public Page<PostDomain> getAllPosts(Long userId, int offset, int pageSize) {
-        return postDatabasePort.getAllPosts(userId, offset, pageSize);
+    public Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize) {
+        return postDatabasePort.getAllPosts(userId,otherUserId, offset, pageSize);
     }
 
     public String loadFileImage(PostRequest postRequest) {
