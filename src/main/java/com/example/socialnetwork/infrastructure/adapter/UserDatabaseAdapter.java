@@ -33,8 +33,8 @@ public class UserDatabaseAdapter implements UserDatabasePort {
             user.setLocation(registerRequest.getLocation());
             user.setWork(registerRequest.getWork());
             user.setEducation(registerRequest.getEducation());
-            user.setAvatar(registerRequest.getAvatar());
-            user.setBackgroundImage(registerRequest.getBackgroundImage());
+            user.setAvatar(null);
+            user.setBackgroundImage(null);
             user.setDateOfBirth(registerRequest.getDateOfBirth());
             user.setRole(Role.builder().id(1L).build());
             user.setIsEmailVerified(false);
