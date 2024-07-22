@@ -92,19 +92,19 @@ public class User {
     @Column(name = "is_email_verified")
     private Boolean isEmailVerified;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<CommentReaction> commentReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<PostReaction> postReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "taggedUser")
+    @OneToMany(mappedBy = "taggedUser", cascade = CascadeType.REMOVE)
     private List<Tag> tags = new ArrayList<>();
 
 

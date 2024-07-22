@@ -18,8 +18,6 @@ public class RelationshipDomain {
 
     UserDomain friend;
 
-    int status;
-
     ERelationship relation;
 
     LocalDateTime createdAt;

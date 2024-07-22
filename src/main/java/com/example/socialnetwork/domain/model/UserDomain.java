@@ -37,4 +37,5 @@ public class UserDomain {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     boolean isEmailVerified;
+
 }

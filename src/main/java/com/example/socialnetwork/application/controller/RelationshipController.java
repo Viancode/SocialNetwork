@@ -1,16 +1,13 @@
 package com.example.socialnetwork.application.controller;
 
+import com.example.socialnetwork.application.request.FriendRequest;
 import com.example.socialnetwork.application.request.MakeFriendRequest;
-import com.example.socialnetwork.application.request.UpdateRelationshipRequest;
-import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,78 +18,49 @@ public class RelationshipController  extends BaseController{
     private final RelationshipMapper relationshipMapper;
 
     @PostMapping("/send_request")
-    public ResponseEntity<?> createRequest(@RequestBody MakeFriendRequest makeFriendRequest, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        System.out.println(user.getUsername());
-        System.out.println(makeFriendRequest.getFriendId());
-        if(relationshipService.sendRequestMakeFriendship(Long.parseLong(user.getUsername()), makeFriendRequest.getFriendId()))
-            return buildResponse("Sent friend request successfully");
-        else return buildResponse("failed to send friend request");
+    public ResponseEntity<?> createRequest(@RequestBody MakeFriendRequest makeFriendRequest){
+        relationshipService.sendRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+        return buildResponse("Sent friend request successfully");
     }
 
     @PostMapping("/delete_request")
-    public ResponseEntity<?> deleteRequest(@RequestBody MakeFriendRequest makeFriendRequest, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        if(relationshipService.deleteRequestMakeFriendship(Long.parseLong(user.getUsername()), makeFriendRequest.getFriendId()))
-            return buildResponse("Delete request successfully");
-        else return buildResponse("failed to delete request");
+    public ResponseEntity<?> deleteRequest(@RequestBody MakeFriendRequest makeFriendRequest){
+        relationshipService.deleteRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+        return buildResponse("Delete request successfully");
     }
 
     @PostMapping("/accept_request")
-    public ResponseEntity<?> acceptRequest(@RequestBody MakeFriendRequest makeFriendRequest, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        if(relationshipService.acceptRequestMakeFriendship(Long.parseLong(user.getUsername()), makeFriendRequest.getFriendId()))
-            return buildResponse("Accept the friend request successfully");
-        else return buildResponse("failed to accept the friend request");
+    public ResponseEntity<?> acceptRequest(@RequestBody MakeFriendRequest makeFriendRequest){
+        relationshipService.acceptRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+        return buildResponse("Accept the friend request successfully");
     }
 
     @PostMapping("/refuse_request")
-    public ResponseEntity<?> refuseRequest(@RequestBody MakeFriendRequest makeFriendRequest, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        if(relationshipService.refuseRequestMakeFriendship(Long.parseLong(user.getUsername()), makeFriendRequest.getFriendId()))
-            return buildResponse("Refuse the friend request successfully");
-        else return buildResponse("failed to refuse the friend request");
+    public ResponseEntity<?> refuseRequest(@RequestBody MakeFriendRequest makeFriendRequest){
+        relationshipService.refuseRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+        return buildResponse("Refuse the friend request successfully");
     }
 
     @GetMapping("/get_list_requests")
-    public ResponseEntity<?> getListRequest(Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        return buildResponse("Get list requests successfully", relationshipMapper.toResponse(relationshipService.getListRequest(Long.parseLong(user.getUsername()))));
+    public ResponseEntity<?> getListRequest(@RequestParam long userId){
+        return buildResponse("Get list requests successfully", relationshipMapper.toResponse(relationshipService.getListRequest(userId)));
     }
 
     @GetMapping("/get_list_friends")
-    public ResponseEntity<?> getListFriend(Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        return buildResponse("Get list friends successfully", relationshipService.getListFriend(Long.parseLong(user.getUsername())));
+    public ResponseEntity<?> getListFriend(@RequestParam long userId){
+        return buildResponse("Get list friends successfully", relationshipService.getListFriend(userId));
     }
 
 
     @PostMapping("/delete_friend")
-    public ResponseEntity<?> removeFriend(@RequestBody MakeFriendRequest makeFriendRequest, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        if(relationshipService.deleteRelationship(Long.parseLong(user.getUsername()), makeFriendRequest.getFriendId()))
-            return buildResponse("Delete friend successfully");
-        else return buildResponse("failed to delete friend request");
+    public ResponseEntity<?> removeFriend(@RequestBody FriendRequest friendRequest){
+        relationshipService.deleteRelationship(friendRequest.getUserId(), friendRequest.getFriendId());
+        return buildResponse("Delete friend successfully");
     }
 
-    @PostMapping("/update_relationship")
-    public ResponseEntity<?> updateRelationship(@RequestBody UpdateRelationshipRequest updateRelationshipRequest, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        ERelationship relationship = ERelationship.valueOf(updateRelationshipRequest.getRelationship().toUpperCase());
-        if(relationshipService.updateRelationship(Long.parseLong(user.getUsername()), updateRelationshipRequest.getFriendId(), relationship.name()))
-            return buildResponse("Update relationship successfully");
-        else return buildResponse("failed to update relationship");
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<?> search(@RequestParam(value = "name") String name, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok().body(relationshipService.search(Long.parseLong(user.getUsername()), name));
-    }
-
-    @GetMapping("/view_friend_suggestions")
-    public ResponseEntity<?> suggestFriend(Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok().body(relationshipService.viewSuggest(Long.parseLong(user.getUsername())));
+    @PostMapping("/block")
+    public ResponseEntity<?> block(@RequestBody FriendRequest friendRequest){
+        relationshipService.block(friendRequest.getUserId(), friendRequest.getFriendId());
+        return buildResponse("Block friend successfully");
     }
 }

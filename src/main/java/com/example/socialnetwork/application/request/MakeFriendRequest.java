@@ -11,5 +11,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MakeFriendRequest {
-    long friendId;
+    long senderId;
+    long receiverId;
 }

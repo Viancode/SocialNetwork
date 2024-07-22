@@ -1,6 +1,5 @@
 package com.example.socialnetwork.application.request;
 
-import com.example.socialnetwork.common.constant.ERelationship;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateRelationshipRequest {
+public class FriendRequest {
+    long userId;
     long friendId;
-    String relationship;
 }
