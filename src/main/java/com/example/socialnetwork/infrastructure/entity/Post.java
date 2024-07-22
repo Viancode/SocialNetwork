@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.example.socialnetwork.common.constant.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -31,7 +32,8 @@ public class Post {
 
     @Lob
     @Column(name = "visibility")
-    private String visibility;
+    @Enumerated(EnumType.STRING)
+    private Visibility visibility;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

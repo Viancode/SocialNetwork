@@ -12,8 +12,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface RelationshipMapper {
-    Relationship toRelationship(RelationshipDomain relationshipDomain);
-
     RelationshipDomain toRelationshipDomain(Relationship relationship);
 
     List<RelationshipDomain> toRelationshipDomain(List<Relationship> relationships);

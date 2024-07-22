@@ -4,6 +4,7 @@ import com.example.socialnetwork.application.request.PostRequest;
 import com.example.socialnetwork.application.response.PageInfo;
 import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.common.constant.FileType;
+import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
@@ -36,7 +37,7 @@ public class PortServiceImpl implements PostServicePort {
         PostDomain postDomain = new PostDomain();
         postDomain.setUserId(postRequest.getUserId());
         postDomain.setContent(postRequest.getContent());
-        postDomain.setVisibility(postRequest.getVisibility());
+        postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
 
         String photoPaths = loadFileImage(postRequest);
         postDomain.setPhotoLists(photoPaths);
@@ -52,7 +53,7 @@ public class PortServiceImpl implements PostServicePort {
         } else {
             postDomain.setContent(postRequest.getContent());
         }
-        postDomain.setVisibility(postRequest.getVisibility());
+        postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
 
         String photoPaths = loadFileImage(postRequest);
         postDomain.setPhotoLists(photoPaths);

@@ -1,6 +1,7 @@
 package com.example.socialnetwork.domain.model;
 
 
+import com.example.socialnetwork.common.constant.Visibility;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ public class PostDomain {
 
     private String content;
 
-    private String visibility;
+    private Visibility visibility;
 
     private LocalDateTime createdAt;
 

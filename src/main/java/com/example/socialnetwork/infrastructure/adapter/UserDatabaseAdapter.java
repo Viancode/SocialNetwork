@@ -1,6 +1,7 @@
 package com.example.socialnetwork.infrastructure.adapter;
 
 import com.example.socialnetwork.application.request.RegisterRequest;
+import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
@@ -37,11 +38,10 @@ public class UserDatabaseAdapter implements UserDatabasePort {
             user.setRole(Role.builder().id(1L).build());
             user.setIsEmailVerified(false);
             user.setUsername(registerRequest.getFirstName() + " " + registerRequest.getLastName());
-
+            user.setGender(Gender.valueOf(registerRequest.getGender()));
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
             user.setVisibility("PUBLIC");
-
             return userRepository.save(user);
         } else {
             return user;
@@ -50,6 +50,6 @@ public class UserDatabaseAdapter implements UserDatabasePort {
 
     @Override
     public UserDomain findById(long id) {
-        return userMapper.toUserDomain(userRepository.findById(id).get());
+        return userMapper.toUserDomain(userRepository.findById(id).orElse(null));
     }
 }

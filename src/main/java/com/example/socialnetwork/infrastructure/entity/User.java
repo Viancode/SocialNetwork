@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.example.socialnetwork.common.constant.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -44,8 +45,9 @@ public class User {
     private String lastName;
 
     @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
     @Lob
     @Column(name = "visibility")

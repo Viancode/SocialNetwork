@@ -35,23 +35,31 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     @Override
     public void sendRequestMakeFriendship(long senderId, long receiverId) {
         checkCurrentUser(senderId);
-        checkCurrentUser(receiverId);
+        checkFriend(receiverId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain != null) {
-            throw new RuntimeException("Cannot make friendship");
-        }else {
+        if(relationshipDomain == null){
             relationshipDatabasePort.createRelationship(senderId, receiverId, ERelationship.PENDING);
-            }
+        } else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
+            throw new RuntimeException("You have sent a friend request to this person before");
+        }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
+            throw new RuntimeException("Cannot send friend request because you two are already friends");
+        else {
+            throw new RuntimeException("Cannot send friend request");
+        }
     }
 
     @Override
     public void deleteRequestMakeFriendship(long senderId, long receiverId) {
         checkCurrentUser(senderId);
-        checkCurrentUser(receiverId);
+        checkFriend(receiverId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain.getRelation() == ERelationship.PENDING) {
+        if(relationshipDomain == null) {
+            throw new NotFoundException("Friend request not found");
+        }else if(relationshipDomain.getRelation() == ERelationship.PENDING)
             relationshipDatabasePort.deleteRequest(senderId, receiverId);
-        }else {
+        else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
+            throw new RuntimeException("Cannot delete friend request because you two are already friends");
+        else {
             throw new RuntimeException("Cannot delete friend request");
         }
     }
@@ -59,11 +67,15 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     @Override
     public void acceptRequestMakeFriendship(long senderId, long receiverId) {
         checkCurrentUser(receiverId);
-        checkCurrentUser(senderId);
+        checkFriend(senderId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain.getRelation() == ERelationship.PENDING) {
+        if(relationshipDomain == null) {
+            throw new NotFoundException("Friend request not found");
+        }else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
             relationshipDatabasePort.updateRelation(senderId, receiverId, ERelationship.FRIEND);
-        }else {
+        }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
+            throw new RuntimeException("Cannot accept friend request because you two are already friends");
+        else {
             throw new RuntimeException("Cannot accept friend request");
         }
     }
@@ -71,11 +83,15 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     @Override
     public void refuseRequestMakeFriendship(long senderId, long receiverId) {
         checkCurrentUser(receiverId);
-        checkCurrentUser(senderId);
+        checkFriend(senderId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain.getRelation() == ERelationship.PENDING) {
+        if(relationshipDomain == null) {
+            throw new NotFoundException("Friend request not found");
+        }else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
             relationshipDatabasePort.deleteRequest(senderId, receiverId);
-        }else {
+        }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
+            throw new RuntimeException("Cannot refuse friend request because you two are already friends");
+        else {
             throw new RuntimeException("Cannot refuse friend request");
         }
     }

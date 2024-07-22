@@ -15,7 +15,6 @@ import java.util.List;
 @Repository
 @EnableJpaRepositories
 public interface RelationshipRepository extends JpaRepository<Relationship, Long> {
-    Relationship findByUserIdAndFriendId(Long userId, Long friendId);
     Relationship findByUser_IdAndFriend_Id(long userId, long friend_id);
 
     List<Relationship> findByFriend_IdAndRelation(long userId, ERelationship relation);

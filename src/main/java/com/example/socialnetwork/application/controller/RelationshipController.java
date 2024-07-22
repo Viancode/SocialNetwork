@@ -23,7 +23,7 @@ public class RelationshipController  extends BaseController{
         return buildResponse("Sent friend request successfully");
     }
 
-    @PostMapping("/delete_request")
+    @DeleteMapping("/delete_request")
     public ResponseEntity<?> deleteRequest(@RequestBody MakeFriendRequest makeFriendRequest){
         relationshipService.deleteRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
         return buildResponse("Delete request successfully");
@@ -52,7 +52,7 @@ public class RelationshipController  extends BaseController{
     }
 
 
-    @PostMapping("/delete_friend")
+    @DeleteMapping("/delete_friend")
     public ResponseEntity<?> removeFriend(@RequestBody FriendRequest friendRequest){
         relationshipService.deleteRelationship(friendRequest.getUserId(), friendRequest.getFriendId());
         return buildResponse("Delete friend successfully");
@@ -61,6 +61,6 @@ public class RelationshipController  extends BaseController{
     @PostMapping("/block")
     public ResponseEntity<?> block(@RequestBody FriendRequest friendRequest){
         relationshipService.block(friendRequest.getUserId(), friendRequest.getFriendId());
-        return buildResponse("Block friend successfully");
+        return buildResponse("Block user successfully");
     }
 }

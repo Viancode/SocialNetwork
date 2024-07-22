@@ -53,10 +53,13 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     public void deleteFriend(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
         relationship = (relationship == null) ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
-        if(relationship == null) {
-            throw new NotFoundException("Not found relationship");
+        if(relationship == null || relationship.getRelation() == ERelationship.PENDING) {
+            throw new NotFoundException("you two are not friends");
+        }else if(relationship.getRelation() == ERelationship.BLOCK) {
+            throw new NotFoundException("You have been blocked by this person");
+        }else {
+            relationshipRepository.delete(relationship);
         }
-        relationshipRepository.delete(relationship);
     }
 
     @Override

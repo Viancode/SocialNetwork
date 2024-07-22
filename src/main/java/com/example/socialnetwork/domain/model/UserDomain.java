@@ -1,13 +1,13 @@
 package com.example.socialnetwork.domain.model;
 
 import com.example.socialnetwork.common.constant.ERole;
+import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.constant.Visibility;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import software.amazon.awssdk.services.polly.model.Gender;
 
 
 import java.time.LocalDate;

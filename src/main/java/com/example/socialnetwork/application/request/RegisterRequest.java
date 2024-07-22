@@ -1,6 +1,7 @@
 package com.example.socialnetwork.application.request;
 
 import com.example.socialnetwork.common.ValidationRegex;
+import com.example.socialnetwork.common.constant.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ public class RegisterRequest {
     private String lastName;
     private String bio;
     private String location;
+    private String gender;
     private String work;
     private String education;
     private String avatar;

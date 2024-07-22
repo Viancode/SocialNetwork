@@ -1,9 +1,10 @@
 package com.example.socialnetwork.infrastructure.adapter;
 
+import com.example.socialnetwork.common.constant.ERelationship;
+import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
-import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
@@ -13,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -81,24 +82,24 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     public Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize) {
         Pageable pageable = PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Post> posts= null;
-        if(userId == otherUserId || otherUserId == null){
+        if(Objects.equals(userId, otherUserId) || otherUserId == null){
             posts = postRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
             return posts.map(PostMapper.INSTANCE::postToPostDomain);
         }else {
-            Relationship relationship = relationshipRepository.findByUserIdAndFriendId(userId, otherUserId);
+            Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, otherUserId);
             if(relationship != null){
-                if(relationship.getRelation().equals("FRIEND")){
+                if(relationship.getRelation().equals(ERelationship.FRIEND)){
                     List<Post> postsList = new ArrayList<>();
-                    postsList.addAll(postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId,"FRIEND",pageable).getContent());
-                    postsList.addAll(postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId,"PUBLIC",pageable).getContent());
+                    postsList.addAll(postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId,Visibility.FRIEND,pageable).getContent());
+                    postsList.addAll(postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId,Visibility.PRIVATE,pageable).getContent());
                     return new PageImpl<>(postsList.stream().map(PostMapper.INSTANCE::postToPostDomain).collect(Collectors.toList()), pageable, postsList.size());
                 }
             }else{
-                posts = postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId,"PUBLIC",pageable);
+                posts = postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId, Visibility.PUBLIC,pageable);
                 return posts.map(PostMapper.INSTANCE::postToPostDomain);
             }
         }
-        return posts != null? posts.map(PostMapper.INSTANCE::postToPostDomain):null;
+        return (posts != null) ? posts.map(PostMapper.INSTANCE::postToPostDomain) :null;
     }
 
 

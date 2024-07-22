@@ -139,8 +139,8 @@ INSERT INTO users (username, email, password, first_name, last_name, gender, vis
 
 -- Thêm dữ liệu vào bảng relationships
 INSERT INTO relationships (user_id, friend_id, created_at, relation) VALUES
-                                                                                 (1, 2, NOW(), 'FRIEND'),
-                                                                                 (2, 1, NOW(), 'FRIEND');
+                                                                                 (1, 2, NOW(), 'FRIEND');
+
 
 -- Thêm dữ liệu vào bảng posts
 INSERT INTO posts (user_id, content, visibility, created_at, updated_at, is_deleted, photo_lists) VALUES
