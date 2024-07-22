@@ -3,10 +3,12 @@ package com.example.socialnetwork.domain.service;
 import com.example.socialnetwork.application.request.PostRequest;
 import com.example.socialnetwork.application.response.PageInfo;
 import com.example.socialnetwork.application.response.PostResponse;
+import com.example.socialnetwork.common.constant.FileType;
 import com.example.socialnetwork.common.mapper.PostMapper;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
 import com.example.socialnetwork.domain.port.api.S3ServicePort;
+import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 public class PortServiceImpl implements PostServicePort {
 
     private final PostDatabasePort postDatabasePort;
-    private final S3ServicePort s3Service;
+    private final StorageServicePort storageServicePort;
 
     @Override
     public PostDomain createPost(PostRequest postRequest, Authentication authentication) {
@@ -73,26 +75,14 @@ public class PortServiceImpl implements PostServicePort {
         return postDatabasePort.getAllPosts(userId,otherUserId, offset, pageSize);
     }
 
-    public String loadFileImage(PostRequest postRequest) {
+    public String loadFileImage(PostRequest postRequest){
         StringBuilder photoPaths = new StringBuilder();
         if (postRequest.getPhotoLists() != null) {
             if(postRequest.getPhotoLists().length < 4){
                 for (MultipartFile photo : postRequest.getPhotoLists()) {
-                    if(!photo.getOriginalFilename().endsWith(".jpg") &&
-                            !photo.getOriginalFilename().endsWith(".jpeg") && !photo.getOriginalFilename().endsWith(".png")) {
-                        throw new ClientErrorException("File format error");
-                    }
-                    if (photo.getSize() >3000000){
-                        throw new ClientErrorException("File size is too large");
-                    }
-                    String uniqueFilename = UUID.randomUUID().toString() + "-" + photo.getOriginalFilename();
-                    try {
-                        s3Service.putFile(uniqueFilename, photo.getContentType(), photo.getBytes());
-                        String photoUrl = s3Service.getFileUrl(uniqueFilename);
-                        photoPaths.append(photoUrl).append(",");
-                    } catch (Exception e) {
-                        throw new RuntimeException("Error while uploading file to S3", e);
-                    }
+                    String filePath = storageServicePort.store(FileType.IMAGE, photo);
+                    String photoUrl = storageServicePort.getUrl(filePath);
+                    photoPaths.append(photoUrl).append(",");
                 }
                 // Remove trailing comma
                 if (!photoPaths.isEmpty()) {

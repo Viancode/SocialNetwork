@@ -95,8 +95,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, S3ServicePort s3Service) {
-        return new PortServiceImpl(postDatabasePort,s3Service);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, StorageServicePort storageServicePort) {
+        return new PortServiceImpl(postDatabasePort,storageServicePort);
     }
 
     @Bean
