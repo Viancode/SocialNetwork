@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.example.socialnetwork.common.constant.ERelationship;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,10 +29,7 @@ public class Relationship {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "status")
-    private Integer status;
-
-    @Lob
     @Column(name = "relation")
-    private String relation;
+    @Enumerated(EnumType.STRING)
+    private ERelationship relation;
 }

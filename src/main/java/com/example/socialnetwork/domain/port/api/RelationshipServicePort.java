@@ -2,32 +2,24 @@ package com.example.socialnetwork.domain.port.api;
 
 import com.example.socialnetwork.application.response.FriendSuggestionsResponse;
 import com.example.socialnetwork.application.response.ListFriendResponse;
-import com.example.socialnetwork.application.response.MakeFriendResponse;
-import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
-import com.example.socialnetwork.domain.model.UserDomain;
-import org.aspectj.asm.internal.Relationship;
 
 import java.util.List;
 
 public interface RelationshipServicePort {
-    boolean deleteRelationship(long userId, long friendId);
+    void deleteRelationship(long userId, long friendId);
 
-    boolean updateRelationship(long userId, long friendId, String relationship);
+    void sendRequestMakeFriendship(long senderId, long receiverId);
 
-    boolean sendRequestMakeFriendship(long userId, long friendId);
+    void deleteRequestMakeFriendship(long senderId, long receiverId);
 
-    boolean deleteRequestMakeFriendship(long userId, long friendId);
+    void acceptRequestMakeFriendship(long senderId, long receiverId);
 
-    boolean acceptRequestMakeFriendship(long userId, long friendId);
+    void refuseRequestMakeFriendship(long senderId, long receiverId);
 
-    boolean refuseRequestMakeFriendship(long userId, long friendId);
+    void block(long userId, long friendId);
 
-    List<RelationshipDomain> getListRequest(long userId);
+    List<RelationshipDomain> getListRequest(long senderId);
 
-    List<ListFriendResponse> getListFriend(long userId);
-
-    List<ListFriendResponse> search(long userId, String name);
-
-    List<FriendSuggestionsResponse> viewSuggest(long userId);
+    List<ListFriendResponse> getListFriend(long senderId);
 }

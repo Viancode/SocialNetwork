@@ -4,18 +4,19 @@ import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
-import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
+import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
-import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,24 +28,6 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     private final UserMapper userMapper;
 
     @Override
-    public RelationshipDomain changeStatusAndSave(long userId, long friendId, int status) {
-        Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
-        if(relationship != null) {
-            if(status == 1) {
-                relationship.setCreatedAt(LocalDateTime.now());
-                relationship.setRelation(ERelationship.FRIEND.name());
-            }
-            relationship.setStatus(status);
-            return relationshipMapper.toRelationshipDomain(relationshipRepository.save(relationship));
-        }
-        relationship = new Relationship();
-        relationship.setStatus(0);
-        relationship.setUser(userRepository.findUserById(userId).get());
-        relationship.setFriend(userRepository.findUserById(friendId).get());
-        return relationshipMapper.toRelationshipDomain(relationshipRepository.save(relationship));
-    }
-
-    @Override
     public RelationshipDomain find(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
         return relationshipMapper.toRelationshipDomain(relationship);
@@ -52,39 +35,48 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     public List<RelationshipDomain> getListRequest(long userId) {
-        return relationshipMapper.toRelationshipDomain(relationshipRepository.findByFriend_IdAndStatus(userId, 0));
+        return relationshipMapper.toRelationshipDomain(relationshipRepository.findByFriend_IdAndRelation(userId, ERelationship.PENDING));
     }
 
     @Override
-    public boolean deleteRelationship(long userId, long friendId) {
-        Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
-        relationship = relationship == null ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
-        if(relationship == null) {
-            return false;
-        }
+    public void deleteRequest(long senderId, long receiverId) {
+        Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(senderId, receiverId);
         relationshipRepository.delete(relationship);
-        return true;
-    }
-
-    @Override
-    public List<RelationshipDomain> search(long userId, String name) {
-        return relationshipMapper.toRelationshipDomain(relationshipRepository.search(userId, name));
     }
 
     @Override
     public List<RelationshipDomain> getListFriend(long userId) {
-        return relationshipMapper.toRelationshipDomain(relationshipRepository.getListFriend(userId));
+        return relationshipMapper.toRelationshipDomain(relationshipRepository.getListFriend(userId, ERelationship.FRIEND));
     }
 
     @Override
-    public boolean updateRelationship(long userId, long friendId, String eRelationship) {
+    public void deleteFriend(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
         relationship = (relationship == null) ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
         if(relationship == null) {
-            return false;
+            throw new NotFoundException("Not found relationship");
+        }
+        relationshipRepository.delete(relationship);
+    }
+
+    @Override
+    public void updateRelation(long userId, long friendId, ERelationship eRelationship) {
+        Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
+        relationship = (relationship == null) ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
+        if(relationship == null) {
+            throw new NotFoundException("Not found relationship");
         }
         relationship.setRelation(eRelationship);
         relationshipRepository.save(relationship);
-        return true;
+    }
+
+    @Override
+    public void createRelationship(long userId, long friendId, ERelationship relation) {
+        Relationship relationship = new Relationship();
+        relationship.setUser(userRepository.findUserById(userId).get());
+        relationship.setFriend(userRepository.findUserById(friendId).get());
+        relationship.setRelation(relation);
+        relationship.setCreatedAt(LocalDateTime.now());
+        relationshipRepository.save(relationship);
     }
 }
