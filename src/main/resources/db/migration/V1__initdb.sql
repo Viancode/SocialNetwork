@@ -47,7 +47,7 @@ CREATE TABLE posts (
                        created_at DATETIME,
                        updated_at DATETIME,
                        is_deleted BIT(1),
-                       photo_lists VARCHAR(255),
+                       photo_lists MEDIUMTEXT,
                        CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -167,7 +167,6 @@ INSERT INTO comment_reactions (user_id, comment_id, reaction_type, created_at) V
 INSERT INTO tags (tagged_user_id, post_id, tagged_by_user_id) VALUES
                                                                   (2, 1, 1),
                                                                   (1, 2, 2);
-
 
 
 

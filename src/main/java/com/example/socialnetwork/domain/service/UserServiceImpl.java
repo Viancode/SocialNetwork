@@ -7,7 +7,6 @@ import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;

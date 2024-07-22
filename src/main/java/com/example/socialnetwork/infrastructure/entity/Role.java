@@ -11,9 +11,9 @@ import java.util.Set;
 @Setter
 @Entity
 @Builder
-@RequiredArgsConstructor
-@Table(name = "roles")
+@NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "roles")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

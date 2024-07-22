@@ -14,11 +14,6 @@ public class S3ServiceImpl implements S3ServicePort {
     private final S3Client s3Client;
     private final String bucketName;
 
-    public S3ServiceImpl(S3Client s3Client, S3Properties s3Properties) {
-        this.s3Client = s3Client;
-        this.bucketName = s3Properties.getBucketName();
-    }
-
     @Override
     public void putFile(String fileName, String type, byte[] fileBytes) {
         PutObjectRequest objectRequest = PutObjectRequest.builder()

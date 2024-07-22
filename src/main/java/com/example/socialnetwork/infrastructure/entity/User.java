@@ -2,20 +2,21 @@ package com.example.socialnetwork.infrastructure.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "users")
 @Getter
 @Setter
-@Entity
-@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,21 +93,19 @@ public class User {
     private Boolean isEmailVerified;
 
     @OneToMany(mappedBy = "user")
-    private Set<ChatMember> chatMembers = new LinkedHashSet<>();
+    private List<CommentReaction> commentReactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<CommentReaction> commentReactions = new LinkedHashSet<>();
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<Comment> comments = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "sender")
-    private Set<Message> messages = new LinkedHashSet<>();
+    private List<PostReaction> postReactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<PostReaction> postReactions = new LinkedHashSet<>();
+    private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<Post> posts = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "taggedUser")
+    private List<Tag> tags = new ArrayList<>();
+
 
 }

@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,6 +30,6 @@ public class CommentReaction {
     private String reactionType;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
 }

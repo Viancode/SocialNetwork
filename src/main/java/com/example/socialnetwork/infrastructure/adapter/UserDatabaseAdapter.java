@@ -7,10 +7,7 @@ import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor

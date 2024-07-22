@@ -1,13 +1,15 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,25 +34,27 @@ public class Post {
     private String visibility;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    @Size(max = 255)
-    @Column(name = "photo_lists")
+    @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;
 
-    @OneToMany(mappedBy = "post")
-    private Set<Comment> comments = new LinkedHashSet<>();
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
+    private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
-    private Set<PostReaction> postReactions = new LinkedHashSet<>();
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
+    private List<PostReaction> postReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
-    private Set<Tag> tags = new LinkedHashSet<>();
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
+    private List<Tag> tags = new ArrayList<>();
 
 }
