@@ -1,12 +1,15 @@
 package com.example.socialnetwork.infrastructure.adapter;
 
 import com.example.socialnetwork.application.request.RegisterRequest;
+import com.example.socialnetwork.common.mapper.UserMapper;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
-import com.example.socialnetwork.infrastructure.entity.Role;
 import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.socialnetwork.infrastructure.entity.Role;
+
 
 import java.time.LocalDateTime;
 
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 public class UserDatabaseAdapter implements UserDatabasePort {
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     @Override
     public User createUser(RegisterRequest registerRequest) {
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElse(null);
@@ -42,5 +46,10 @@ public class UserDatabaseAdapter implements UserDatabasePort {
         } else {
             return user;
         }
+    }
+
+    @Override
+    public UserDomain findById(long id) {
+        return userMapper.toUserDomain(userRepository.findById(id).get());
     }
 }

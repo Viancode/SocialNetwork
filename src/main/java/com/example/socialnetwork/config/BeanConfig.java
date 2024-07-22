@@ -1,18 +1,23 @@
 package com.example.socialnetwork.config;
 
+import com.example.socialnetwork.common.mapper.RelationshipMapper;
+import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.common.mapper.TagMapper;
 import com.example.socialnetwork.config.aws.S3Properties;
 import com.example.socialnetwork.domain.port.api.*;
+import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.domain.port.spi.TagDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.domain.service.*;
 import com.example.socialnetwork.infrastructure.adapter.PostDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.adapter.TagDatabaseAdapter;
+import com.example.socialnetwork.infrastructure.adapter.RelationshipDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.repository.PostRepository;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.TagRepository;
+import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -68,10 +73,19 @@ public class BeanConfig {
         return new UserServiceImpl(userRepository, emailService, tokenService);
     }
 
+    @Bean
+    public UserDatabasePort userDatabasePort(UserRepository userRepository, PasswordEncoder encoder, UserMapper userMapper) {
+        return new UserDatabaseAdapter(encoder,userRepository, userMapper);
+    }
 
     @Bean
-    public UserDatabasePort userDatabasePort(UserRepository userRepository, PasswordEncoder encoder) {
-        return new UserDatabaseAdapter(encoder,userRepository);
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserMapper userMapper) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userMapper);
+    }
+
+    @Bean
+    RelationshipDatabasePort relationshipDatabasePort(RelationshipRepository relationshipRepository, RelationshipMapper relationshipMapper, UserRepository userRepository, UserMapper userMapper) {
+        return new RelationshipDatabaseAdapter(relationshipRepository, relationshipMapper, userRepository, userMapper);
     }
 
 

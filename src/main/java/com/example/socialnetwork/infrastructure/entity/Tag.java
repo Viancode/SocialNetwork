@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "tags")
+@Table(name = "tags", schema = "socialnetwork")
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -109,11 +109,19 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
             ClientErrorException.class
+
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFileException(Exception e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleEnumException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
+        return buildErrorResponse("Invalid relationship", request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({
