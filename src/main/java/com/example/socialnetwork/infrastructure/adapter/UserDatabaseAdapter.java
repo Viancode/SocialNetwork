@@ -1,6 +1,7 @@
 package com.example.socialnetwork.infrastructure.adapter;
 
 import com.example.socialnetwork.application.request.RegisterRequest;
+import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
@@ -31,8 +32,8 @@ public class UserDatabaseAdapter implements UserDatabasePort {
             user.setLocation(registerRequest.getLocation());
             user.setWork(registerRequest.getWork());
             user.setEducation(registerRequest.getEducation());
-            user.setAvatar(registerRequest.getAvatar());
-            user.setBackgroundImage(registerRequest.getBackgroundImage());
+            user.setAvatar(null);
+            user.setBackgroundImage(null);
             user.setDateOfBirth(registerRequest.getDateOfBirth());
             user.setRole(Role.builder().id(1L).build());
             user.setIsEmailVerified(false);
@@ -40,7 +41,7 @@ public class UserDatabaseAdapter implements UserDatabasePort {
 
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
-            user.setVisibility("PUBLIC");
+            user.setVisibility(String.valueOf(Visibility.PUBLIC));
 
             return userRepository.save(user);
         } else {

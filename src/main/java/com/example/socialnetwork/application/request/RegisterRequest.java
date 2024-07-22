@@ -26,8 +26,6 @@ public class RegisterRequest {
     private String location;
     private String work;
     private String education;
-    private String avatar;
-    private String backgroundImage;
     private LocalDate dateOfBirth;
     @NotNull(message = "Password cannot be null")
     @NotBlank(message = "Password cannot be blank")
