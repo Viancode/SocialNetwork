@@ -33,10 +33,7 @@ public class UserDomain {
     String education;
     String avatar;
     String backgroundImage;
-    String refreshToken;
     Visibility visibility;
-    int token;
-    boolean enabled;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     boolean isEmailVerified;
