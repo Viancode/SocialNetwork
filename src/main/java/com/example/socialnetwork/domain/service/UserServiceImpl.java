@@ -50,10 +50,20 @@ public class UserServiceImpl implements UserServicePort {
         // 1. get own profile
         // 2. target user is public
         // 3. visibility is FRIEND + relation between source and target is friend
-        if (Objects.equals(sourceUserId, targetUserID) ||
-                targetUser.getVisibility() == Visibility.PUBLIC ||
-                (targetUser.getVisibility() == Visibility.FRIEND &&
-                        relationshipService.getRelationship(sourceUserId, targetUserID) == ERelationship.FRIEND)) {
+        boolean isOwnProfile = Objects.equals(sourceUserId, targetUserID);
+        boolean isPublicProfile = targetUser.getVisibility() == Visibility.PUBLIC;
+        boolean isFriendProfile = targetUser.getVisibility() == Visibility.FRIEND &&
+                relationshipService.getRelationship(sourceUserId, targetUserID) == ERelationship.FRIEND;
+
+        if (isOwnProfile || isPublicProfile || isFriendProfile) {
+            targetUser.setAvatar(targetUser.getAvatar() == null ?
+                    "User does not have avatar" :
+                    storageService.getUrl(targetUser.getAvatar()));
+
+            targetUser.setBackgroundImage(targetUser.getBackgroundImage() == null ?
+                    "User does not have background image" :
+                    storageService.getUrl(targetUser.getBackgroundImage()));
+
             return targetUser;
         }
 
