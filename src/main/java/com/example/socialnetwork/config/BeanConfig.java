@@ -105,8 +105,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public TagDatabasePort tagDatabasePort(TagRepository repository, TagMapper tagMapper) {
-        return new TagDatabaseAdapter(repository,tagMapper);
+    public TagDatabasePort tagDatabasePort(TagRepository repository, TagMapper tagMapper, PostRepository postRepository, RelationshipRepository relationshipRepository) {
+        return new TagDatabaseAdapter(repository,tagMapper, postRepository, relationshipRepository);
     }
 
     @Bean

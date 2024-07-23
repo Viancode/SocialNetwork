@@ -43,11 +43,13 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     public PostDomain updatePost(PostDomain postDomain, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         long userId = Long.parseLong(user.getUsername());
-        Post post ;
-        if(userId == postDomain.getUserId()){
-            post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
-        }else{
-            throw new NotFoundException("User can`t update post");
+        Post post  = postRepository.findById(postDomain.getId()).orElseThrow(() -> new NotFoundException("Post not found"));
+        if(post != null){
+            if(post.getIsDeleted()){
+                throw new ClientErrorException("Post is deleted");
+            }else{
+                post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+            }
         }
         return PostMapper.INSTANCE.postToPostDomain(post);
     }
