@@ -49,8 +49,8 @@ public class PostController extends BaseController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deletePost(@RequestParam Long postId){
-        postServicePort.deletePost(postId);
+    public ResponseEntity<?> deletePost(@RequestParam Long userId,@RequestParam Long postId){
+        postServicePort.deletePost(userId,postId);
         return buildResponse("Delete post successfully", HttpStatus.ACCEPTED);
     }
 

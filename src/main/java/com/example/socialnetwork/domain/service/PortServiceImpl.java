@@ -62,8 +62,8 @@ public class PortServiceImpl implements PostServicePort {
     }
 
     @Override
-    public void deletePost(Long postId) {
-        postDatabasePort.deletePost(postId);
+    public void deletePost(Long userId, Long postId) {
+        postDatabasePort.deletePost(userId,postId);
     }
 
 //    @Override

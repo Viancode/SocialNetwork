@@ -5,6 +5,7 @@ import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
+import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
@@ -57,11 +58,15 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     }
 
     @Override
-    public void deletePost(Long postId) {
+    public void deletePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElse(null);
         if (post != null && !post.getIsDeleted()) {
-            post.setIsDeleted(true);
-            postRepository.save(post);
+            if(Objects.equals(userId, post.getUser().getId())){
+                post.setIsDeleted(true);
+                postRepository.save(post);
+            }else{
+                throw new ClientErrorException("User can`t delete post");
+            }
         }else{
             throw new NotFoundException("Post with id " + postId + " not found");
         }

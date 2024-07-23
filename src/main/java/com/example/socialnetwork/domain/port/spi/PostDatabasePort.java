@@ -10,7 +10,7 @@ import java.util.List;
 public interface PostDatabasePort {
     PostDomain createPost(PostDomain postDomain, Authentication authentication);
     PostDomain updatePost(PostDomain postDomain, Authentication authentication);
-    void deletePost(Long postId);
+    void deletePost(Long userId, Long postId);
     List<PostDomain> getAllPosts(Long userId);
 
     PostDomain findById(Long id);
