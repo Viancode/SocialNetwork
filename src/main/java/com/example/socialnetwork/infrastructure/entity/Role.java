@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.example.socialnetwork.common.constant.ERole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -24,7 +25,7 @@ public class Role {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "role")
-    private Set<User> users = new LinkedHashSet<>();
+//    @OneToMany(mappedBy = "role")
+//    private Set<User> users = new LinkedHashSet<>();
 
 }

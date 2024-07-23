@@ -54,4 +54,16 @@ public class UserDatabaseAdapter implements UserDatabasePort {
     public UserDomain findById(long id) {
         return userMapper.toUserDomain(userRepository.findById(id).orElse(null));
     }
+
+    @Override
+    public void deleteById(long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public void save(UserDomain user) {
+        User userEntity = userMapper.toUser(user);
+        userEntity.setRole(Role.builder().id(1L).build());
+        userRepository.save(userEntity);
+    }
 }

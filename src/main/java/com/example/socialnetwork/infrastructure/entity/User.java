@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.example.socialnetwork.common.constant.ERole;
 import com.example.socialnetwork.common.constant.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -44,12 +45,10 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    @Lob
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")
     private Gender gender;
 
-    @Lob
     @Column(name = "visibility")
     private String visibility;
 
@@ -94,20 +93,21 @@ public class User {
     @Column(name = "is_email_verified")
     private Boolean isEmailVerified;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CommentReaction> commentReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PostReaction> postReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "taggedUser", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "taggedUser", cascade = CascadeType.ALL)
     private List<Tag> tags = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Relationship> relationships = new ArrayList<>();
 }

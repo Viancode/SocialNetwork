@@ -6,6 +6,7 @@ import com.example.socialnetwork.infrastructure.entity.User;
 
 public interface UserDatabasePort {
     User createUser(RegisterRequest registerRequest);
-
     UserDomain findById(long id);
+    void deleteById(long id);
+    void save(UserDomain user);
 }

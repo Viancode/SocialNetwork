@@ -48,15 +48,15 @@ public class Post {
     private String photoLists;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostReaction> postReactions = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
     private List<Tag> tags = new ArrayList<>();
 
 }

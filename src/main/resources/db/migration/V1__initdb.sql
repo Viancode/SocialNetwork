@@ -81,8 +81,8 @@ CREATE TABLE comment_reactions (
                                    comment_id BIGINT,
                                    reaction_type ENUM('LIKE', 'WOW', 'LOVE', 'SAD','ANGRY'),
                                    created_at DATETIME,
-                                   CONSTRAINT fk_comment_reaction_user FOREIGN KEY (user_id) REFERENCES users(user_id),
-                                   CONSTRAINT fk_comment_reaction_comment FOREIGN KEY (comment_id) REFERENCES comments(comment_id)
+                                   CONSTRAINT fk_comment_reaction_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+                                   CONSTRAINT fk_comment_reaction_comment FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
 );
 
 CREATE TABLE tags (

@@ -1,12 +1,13 @@
 package com.example.socialnetwork.domain.port.api;
 
-import com.example.socialnetwork.application.response.FriendSuggestionsResponse;
 import com.example.socialnetwork.application.response.ListFriendResponse;
+import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
 
 import java.util.List;
 
 public interface RelationshipServicePort {
+    ERelationship getRelationship(long sourceUserID, long targetUserID);
     void deleteRelationship(long userId, long friendId);
 
     void sendRequestMakeFriendship(long senderId, long receiverId);

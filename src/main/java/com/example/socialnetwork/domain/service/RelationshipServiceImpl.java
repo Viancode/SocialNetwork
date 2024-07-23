@@ -1,6 +1,5 @@
 package com.example.socialnetwork.domain.service;
 
-import com.example.socialnetwork.application.response.FriendSuggestionsResponse;
 import com.example.socialnetwork.application.response.ListFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.mapper.UserMapper;
@@ -24,6 +23,15 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     private final RelationshipDatabasePort relationshipDatabasePort;
     private final UserDatabasePort userDatabasePort;
     private final UserMapper userMapper;
+
+    @Override
+    public ERelationship getRelationship(long sourceUserID, long targetUserID) {
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(sourceUserID, targetUserID);
+        if(relationshipDomain == null) {
+            throw new NotFoundException("Not found relationship");
+        }
+        return relationshipDomain.getRelation();
+    }
 
     @Override
     public void deleteRelationship(long userId, long friendId) {

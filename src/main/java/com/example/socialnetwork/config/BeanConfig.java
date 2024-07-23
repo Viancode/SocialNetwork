@@ -69,8 +69,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public UserServicePort userServicePort(UserRepository userRepository, EmailServicePort emailService, TokenServicePort tokenService) {
-        return new UserServiceImpl(userRepository, emailService, tokenService);
+    public UserServicePort userServicePort(EmailServicePort emailService, UserDatabasePort userDatabase, RelationshipServicePort relationshipService, S3ServicePort s3Service, StorageServicePort storageService) {
+        return new UserServiceImpl(emailService, userDatabase, relationshipService, s3Service, storageService);
     }
 
     @Bean

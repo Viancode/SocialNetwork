@@ -3,6 +3,7 @@ package com.example.socialnetwork.domain.model;
 import com.example.socialnetwork.common.constant.ERole;
 import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.constant.Visibility;
+import com.example.socialnetwork.infrastructure.entity.Role;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class UserDomain {
     String bio;
     Gender gender;
     LocalDate dateOfBirth;
-    ERole ERole;
+    ERole Erole;
     String location;
     String work;
     String education;
@@ -36,6 +37,6 @@ public class UserDomain {
     Visibility visibility;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    boolean isEmailVerified;
+    Boolean isEmailVerified;
 
 }

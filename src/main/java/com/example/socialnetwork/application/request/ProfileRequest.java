@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -15,23 +16,19 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
-    @NotNull(message = "Email cannot be null")
-    @Email(message = "Email should be valid", regexp = ValidationRegex.EMAIL_REGEX)
-    @NotBlank(message = "Email cannot be blank")
-    private String email;
+public class ProfileRequest {
     @Size(min = 1, max = 100, message = "First name must be between 1 and 100 characters")
     private String firstName;
     @Size(min = 1, max = 100, message = "Last name must be between 1 and 100 characters")
     private String lastName;
+    private String gender;
+    private String visibility;
     private String bio;
     private String location;
-    private String gender;
     private String work;
     private String education;
     private LocalDate dateOfBirth;
-    @NotNull(message = "Password cannot be null")
-    @NotBlank(message = "Password cannot be blank")
-    private String password;
+    private MultipartFile avatar;
+    private MultipartFile background;
 
 }
