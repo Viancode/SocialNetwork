@@ -30,6 +30,7 @@ public class ProfileRequest {
     private LocalDate dateOfBirth;
     @Builder.Default
     private String avatar = "User does not have an avatar";
+    @Builder.Default
     private String background = "User does not have a background";
 
 }
