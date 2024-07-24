@@ -20,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -146,7 +145,7 @@ public class AuthServiceImpl implements AuthServicePort {
         }).orElseThrow(() -> new NotFoundException("User not found"));
 
         // Remove the refreshToken from Redis
-        tokenService.revokeRefreshToken(refreshToken, (User) user);
+        tokenService.revokeAllUserTokens(user.getUsername(), TokenType.REFRESH);
 
         // Generate new accessToken
         String newAccessToken = jwtService.generateAccessToken((User) user);
@@ -177,6 +176,5 @@ public class AuthServiceImpl implements AuthServicePort {
         String hashedPassword = encoder.encode(newPassword);
         userRepository.updatePassword(Integer.valueOf(userId), hashedPassword);
         tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.REFRESH);
-        tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
     }
 }

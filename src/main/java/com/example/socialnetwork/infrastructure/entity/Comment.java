@@ -5,9 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,10 +36,10 @@ public class Comment {
     private String content;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
@@ -48,9 +48,10 @@ public class Comment {
     private Boolean isHidden;
 
     @OneToMany(mappedBy = "comment")
-    private Set<CommentReaction> commentReactions = new LinkedHashSet<>();
+    private List<CommentReaction> commentReactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "parentComment")
-    private Set<Comment> comments = new LinkedHashSet<>();
+    private List<Comment> comments = new ArrayList<>();
+
 
 }

@@ -1,21 +1,23 @@
 package com.example.socialnetwork.infrastructure.entity;
 
+import com.example.socialnetwork.common.constant.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "users")
 @Getter
 @Setter
-@Entity
-@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +45,9 @@ public class User {
     private String lastName;
 
     @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
     @Lob
     @Column(name = "visibility")
@@ -91,22 +94,20 @@ public class User {
     @Column(name = "is_email_verified")
     private Boolean isEmailVerified;
 
-    @OneToMany(mappedBy = "user")
-    private Set<ChatMember> chatMembers = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<CommentReaction> commentReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<CommentReaction> commentReactions = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<Comment> comments = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<PostReaction> postReactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sender")
-    private Set<Message> messages = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<PostReaction> postReactions = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "taggedUser", cascade = CascadeType.REMOVE)
+    private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<Post> posts = new LinkedHashSet<>();
 
 }

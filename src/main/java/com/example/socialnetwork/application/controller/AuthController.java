@@ -104,4 +104,3 @@ public class AuthController extends BaseController {
         return buildResponse("Logout from all devices successfully");
     }
 }
-

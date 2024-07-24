@@ -109,6 +109,7 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
             ClientErrorException.class
+
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFileException(Exception e, HttpServletRequest request) {

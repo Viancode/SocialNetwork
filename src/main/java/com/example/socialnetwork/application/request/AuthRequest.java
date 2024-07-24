@@ -9,10 +9,10 @@ import lombok.Value;
 @Builder
 public class AuthRequest {
 
-    //    @NotNull(message = "Email cannot be null")
-//    @NotBlank(message = "Email cannot be blank")
+    @NotNull(message = "Email cannot be null")
+    @NotBlank(message = "Email cannot be blank")
     String email;
-    //    @NotNull(message = "Password cannot be null")
-//    @NotBlank(message = "Password cannot be blank")
+    @NotNull(message = "Password cannot be null")
+    @NotBlank(message = "Password cannot be blank")
     String password;
 }

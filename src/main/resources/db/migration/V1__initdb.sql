@@ -33,8 +33,7 @@ CREATE TABLE relationships (
                          user_id BIGINT,
                          friend_id BIGINT,
                          created_at DATETIME,
-                        status INT,
-                        relation ENUM('FRIEND', 'BLOCK','LOVER','RELATIVE'),
+                        relation ENUM('FRIEND', 'PENDING', 'BLOCK'),
                          CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id),
                          CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES users(user_id)
 );
@@ -47,7 +46,7 @@ CREATE TABLE posts (
                        created_at DATETIME,
                        updated_at DATETIME,
                        is_deleted BIT(1),
-                       photo_lists VARCHAR(255),
+                       photo_lists MEDIUMTEXT,
                        CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -139,9 +138,9 @@ INSERT INTO users (username, email, password, first_name, last_name, gender, vis
                                                                                                                                                                                                                           ('janedoe', 'janedoe@example.com', '$2a$12$vtu.Pclyb0vzclTjAJZgCOrbd6SVOia8PGOFcgODYd27ZfDeiJTNu', 'Jane', 'Doe', 'FEMALE', 'FRIEND', 2, 'I am Jane', 'Los Angeles', 'Doctor', 'Harvard', NOW(), NOW(), 'avatar2.jpg', 'background2.jpg', '1992-02-02', true);
 
 -- Thêm dữ liệu vào bảng relationships
-INSERT INTO relationships (user_id, friend_id, created_at, status, relation) VALUES
-                                                                                 (1, 2, NOW(), 1, 'FRIEND'),
-                                                                                 (2, 1, NOW(), 1, 'FRIEND');
+INSERT INTO relationships (user_id, friend_id, created_at, relation) VALUES
+                                                                                 (1, 2, NOW(), 'FRIEND');
+
 
 -- Thêm dữ liệu vào bảng posts
 INSERT INTO posts (user_id, content, visibility, created_at, updated_at, is_deleted, photo_lists) VALUES
@@ -167,7 +166,6 @@ INSERT INTO comment_reactions (user_id, comment_id, reaction_type, created_at) V
 INSERT INTO tags (tagged_user_id, post_id, tagged_by_user_id) VALUES
                                                                   (2, 1, 1),
                                                                   (1, 2, 2);
-
 
 
 
