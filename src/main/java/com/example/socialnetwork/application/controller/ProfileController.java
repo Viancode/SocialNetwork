@@ -18,16 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
 public class ProfileController extends BaseController {
-    private final StorageServicePort storageService;
     private final UserServicePort userService;
     private final UserMapper userMapper;
-
-    @PostMapping("/upload")
-    public ResponseEntity<ResultResponse> uploadProfileImage(@RequestParam MultipartFile file) {
-        String fileName = storageService.store(FileType.IMAGE, file);
-        String filePath = storageService.getUrl(fileName);
-        return buildResponse("Upload successfully", filePath);
-    }
 
     @GetMapping("/")
     public ResponseEntity<ResultResponse> getProfile(@RequestParam Long targetUserID, Authentication authentication) {
