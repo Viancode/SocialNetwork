@@ -1,6 +1,5 @@
 package com.example.socialnetwork.domain.service;
 
-import com.example.socialnetwork.config.aws.S3Properties;
 import com.example.socialnetwork.domain.port.api.S3ServicePort;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -31,11 +30,11 @@ public class S3ServiceImpl implements S3ServicePort {
     }
 
     @Override
-    public boolean deleteFile(String filePath) {
+    public void deleteFile(String filePath) {
         DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(filePath)
                 .build();
-        return s3Client.deleteObject(objectRequest).deleteMarker();
+        s3Client.deleteObject(objectRequest);
     }
 }

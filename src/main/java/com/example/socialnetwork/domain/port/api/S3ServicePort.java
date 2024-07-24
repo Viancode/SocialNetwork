@@ -5,5 +5,5 @@ public interface S3ServicePort {
 
     String getFileUrl(String filePath);
 
-    boolean deleteFile(String filePath);
+    void deleteFile(String filePath);
 }
