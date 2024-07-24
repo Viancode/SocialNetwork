@@ -127,18 +127,8 @@ public class UserServiceImpl implements UserServicePort {
         user.setEducation(profileRequest.getEducation());
         user.setUpdatedAt(LocalDateTime.now());
         user.setDateOfBirth(profileRequest.getDateOfBirth());
-
-        if (user.getAvatar() != null) {
-            s3Service.deleteFile(user.getAvatar());
-        }
-        String avatarFilePath = storageService.store(FileType.IMAGE, profileRequest.getAvatar());
-        user.setAvatar(avatarFilePath);
-
-        if (user.getBackgroundImage() != null) {
-            s3Service.deleteFile(user.getBackgroundImage());
-        }
-        String backgroundImageFilePath = storageService.store(FileType.IMAGE, profileRequest.getBackground());
-        user.setBackgroundImage(backgroundImageFilePath);
+        user.setAvatar(profileRequest.getAvatar());
+        user.setBackgroundImage(profileRequest.getBackground());
 
         userDatabase.save(user);
     }
