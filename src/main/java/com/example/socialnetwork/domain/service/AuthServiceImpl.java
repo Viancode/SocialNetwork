@@ -148,14 +148,12 @@ public class AuthServiceImpl implements AuthServicePort {
         // Remove the refreshToken from Redis
         tokenService.revokeRefreshToken(refreshToken, (User) user);
 
-        // Generate new accessToken and refreshToken
+        // Generate new accessToken
         String newAccessToken = jwtService.generateAccessToken((User) user);
-        String newRefreshToken = jwtService.generateRefreshToken();
-        tokenService.saveToken(newRefreshToken, user.getUsername(), TokenType.REFRESH, refreshExpiration);
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
