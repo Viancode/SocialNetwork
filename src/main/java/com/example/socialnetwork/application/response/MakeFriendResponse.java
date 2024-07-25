@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MakeFriendResponse {
+    Long id;
     String username;
     String email;
     String firstName;

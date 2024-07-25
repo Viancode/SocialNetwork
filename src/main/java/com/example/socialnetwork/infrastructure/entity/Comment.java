@@ -41,9 +41,6 @@ public class Comment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-
     @Column(name = "is_hidden")
     private Boolean isHidden;
 

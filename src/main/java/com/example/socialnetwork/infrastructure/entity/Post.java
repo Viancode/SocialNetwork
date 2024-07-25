@@ -42,19 +42,16 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-
     @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
-    private List<PostReaction> postReactions = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
+//    private List<Comment> comments = new ArrayList<>();
+//
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
+//    private List<PostReaction> postReactions = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)

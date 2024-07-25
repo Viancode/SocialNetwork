@@ -3,6 +3,7 @@ package com.example.socialnetwork.infrastructure.adapter;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
+import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
@@ -14,6 +15,7 @@ import com.example.socialnetwork.infrastructure.repository.RelationshipRepositor
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.example.socialnetwork.infrastructure.specification.PostSpecification.withUserId;
 import static com.example.socialnetwork.infrastructure.specification.PostSpecification.withUserIdAndVisibility;
 
 @RequiredArgsConstructor
@@ -30,47 +33,32 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     private final RelationshipRepository relationshipRepository;
 
     @Override
-    public PostDomain createPost(PostDomain postDomain, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        long userId = Long.parseLong(user.getUsername());
-        Post post;
-        if(userId == postDomain.getUserId()){
-            post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+    public PostDomain createPost(PostDomain postDomain) {
+        Post post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+        return PostMapper.INSTANCE.postToPostDomain(post);
+    }
+
+    @Override
+    public PostDomain updatePost(PostDomain postDomain) {
+        Post post  = postRepository.findById(postDomain.getId()).orElse(null);
+        if (post == null) {
+            throw new NotFoundException("Post not found");
         }else{
-            throw new NotFoundException("User can`t create post");
+            post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
+            return PostMapper.INSTANCE.postToPostDomain(post);
+
         }
-        return PostMapper.INSTANCE.postToPostDomain(post);
     }
 
     @Override
-    public PostDomain updatePost(PostDomain postDomain, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        long userId = Long.parseLong(user.getUsername());
-        Post post  = postRepository.findById(postDomain.getId()).orElseThrow(() -> new NotFoundException("Post not found"));
-        if(post != null){
-            if(post.getIsDeleted()){
-                throw new ClientErrorException("Post is deleted");
-            }else{
-                post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
-            }
-        }
-        return PostMapper.INSTANCE.postToPostDomain(post);
-    }
-    
-    public long getUserIdLogin(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return Long.parseLong(user.getUsername());
-    }
-
-    @Override
-    public void deletePost(Long userId, Long postId) {
+    public void deletePost(Long postId) {
+        Long userId = SecurityUtil.getCurrentUserId();
         Post post = postRepository.findById(postId).orElse(null);
-        if (post != null && !post.getIsDeleted()) {
-            if(Objects.equals(userId, post.getUser().getId())){
-                post.setIsDeleted(true);
-                postRepository.save(post);
+        if (post != null) {
+            if(userId.equals(post.getUser().getId())){
+                postRepository.delete(post);
             }else{
-                throw new ClientErrorException("User can`t delete post");
+                throw new ClientErrorException("User not authorized to delete this post");
             }
         }else{
             throw new NotFoundException("Post with id " + postId + " not found");
@@ -83,15 +71,22 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     }
 
     @Override
-    public Page<PostDomain> getAllPosts(Long otherUserId, Visibility visibility, int offset, int pageSize) {
-        var pageable = PageRequest.of(page - 1, pageSize, Sort.by(sortBy));
-        var spec = getSpec(otherUserId, Visibility.PUBLIC);
+    public Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, Visibility visibility) {
+        var pageable = PageRequest.of(page - 1, pageSize, sort);
+        var spec = getSpec(targetUserId, visibility);
+        return postRepository.findAll(spec, pageable).map(PostMapper.INSTANCE::postToPostDomain);
     }
 
     private Specification<Post> getSpec(Long targetUserId, Visibility visibility) {
         Specification<Post> spec = Specification.where(null);
-        if (targetUserId != null && visibility != null) {
+        if (visibility == null) {
+            spec = spec.and(withUserId(targetUserId));
+        }
+        if (targetUserId != null && visibility == Visibility.PUBLIC) {
             spec = spec.and(withUserIdAndVisibility(targetUserId, visibility));
+        }
+        if (targetUserId != null && visibility == Visibility.FRIEND) {
+            spec = spec.and(withUserIdAndVisibility(targetUserId, visibility, Visibility.PUBLIC));
         }
 
         return spec;

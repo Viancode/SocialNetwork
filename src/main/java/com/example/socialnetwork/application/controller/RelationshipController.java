@@ -18,32 +18,37 @@ public class RelationshipController  extends BaseController{
     private final RelationshipMapper relationshipMapper;
 
     @PostMapping("/send_request")
-    public ResponseEntity<?> createRequest(@RequestBody MakeFriendRequest makeFriendRequest){
-        relationshipService.sendRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+    public ResponseEntity<?> createRequest(@RequestParam long userId){
+        relationshipService.sendRequestMakeFriendship(userId);
         return buildResponse("Sent friend request successfully");
     }
 
     @DeleteMapping("/delete_request")
-    public ResponseEntity<?> deleteRequest(@RequestBody MakeFriendRequest makeFriendRequest){
-        relationshipService.deleteRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+    public ResponseEntity<?> deleteRequest(@RequestParam long userId){
+        relationshipService.deleteRequestMakeFriendship(userId);
         return buildResponse("Delete request successfully");
     }
 
     @PostMapping("/accept_request")
-    public ResponseEntity<?> acceptRequest(@RequestBody MakeFriendRequest makeFriendRequest){
-        relationshipService.acceptRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+    public ResponseEntity<?> acceptRequest(@RequestParam long userId){
+        relationshipService.acceptRequestMakeFriendship(userId);
         return buildResponse("Accept the friend request successfully");
     }
 
     @PostMapping("/refuse_request")
-    public ResponseEntity<?> refuseRequest(@RequestBody MakeFriendRequest makeFriendRequest){
-        relationshipService.refuseRequestMakeFriendship(makeFriendRequest.getSenderId(), makeFriendRequest.getReceiverId());
+    public ResponseEntity<?> refuseRequest(@RequestParam long userId){
+        relationshipService.refuseRequestMakeFriendship(userId);
         return buildResponse("Refuse the friend request successfully");
     }
 
-    @GetMapping("/get_list_requests")
-    public ResponseEntity<?> getListRequest(@RequestParam long userId){
-        return buildResponse("Get list requests successfully", relationshipMapper.toResponse(relationshipService.getListRequest(userId)));
+    @GetMapping("/get_list_receive_requests")
+    public ResponseEntity<?> getListReceiveRequest(){
+        return buildResponse("Get list receive requests successfully", relationshipMapper.toResponse(relationshipService.getListReceiveRequest()));
+    }
+
+    @GetMapping("/get_list_send_requests")
+    public ResponseEntity<?> getListSendRequest(){
+        return buildResponse("Get list receive requests successfully", relationshipMapper.toResponse(relationshipService.getListSendRequest()));
     }
 
     @GetMapping("/get_list_friends")
@@ -53,14 +58,14 @@ public class RelationshipController  extends BaseController{
 
 
     @DeleteMapping("/delete_friend")
-    public ResponseEntity<?> removeFriend(@RequestBody FriendRequest friendRequest){
-        relationshipService.deleteRelationship(friendRequest.getUserId(), friendRequest.getFriendId());
+    public ResponseEntity<?> removeFriend(@RequestParam long userId){
+        relationshipService.deleteRelationship(userId);
         return buildResponse("Delete friend successfully");
     }
 
     @PostMapping("/block")
-    public ResponseEntity<?> block(@RequestBody FriendRequest friendRequest){
-        relationshipService.block(friendRequest.getUserId(), friendRequest.getFriendId());
+    public ResponseEntity<?> block(@RequestParam long userId){
+        relationshipService.block(userId);
         return buildResponse("Block user successfully");
     }
 }

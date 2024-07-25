@@ -9,7 +9,9 @@ public interface RelationshipDatabasePort {
 
     RelationshipDomain find(long senderId, long receiverId);
 
-    List<RelationshipDomain> getListRequest(long userId);
+    List<RelationshipDomain> getListSendRequest(long userId);
+
+    List<RelationshipDomain> getListReceiveRequest(long userId);
 
     List<RelationshipDomain> getListFriend(long userId);
 

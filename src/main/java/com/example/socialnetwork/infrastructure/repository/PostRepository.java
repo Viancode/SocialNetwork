@@ -12,11 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSortingRepository<Post, Long> {
-    List<Post> findAllByUserId(Long userId);
-
-    Page<Post> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable);
-    Page<Post> findByUserIdAndVisibilityAndIsDeletedFalse(Long userId, Visibility visibility, Pageable pageable);
-
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
 
 }

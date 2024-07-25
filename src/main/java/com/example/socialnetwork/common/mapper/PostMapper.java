@@ -10,6 +10,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,20 +20,33 @@ public interface PostMapper {
 
 
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(target = "postReactionsIds", source = "postReactions", qualifiedByName = "postReactionsToIds")
-    @Mapping(target = "commentsIds", source = "comments", qualifiedByName = "commentsToIds")
+//    @Mapping(target = "postReactionsIds", source = "postReactions", qualifiedByName = "postReactionsToIds")
+//    @Mapping(target = "commentsIds", source = "comments", qualifiedByName = "commentsToIds")
     @Mapping(target = "tagsIds", source = "tags", qualifiedByName = "tagsToIds")
     PostDomain postToPostDomain(Post post);
 
     @Mapping(source = "userId", target = "user.id")
-    @Mapping(target = "postReactions", ignore = true)
-    @Mapping(target = "comments", ignore = true)
+//    @Mapping(target = "postReactions", ignore = true)
+//    @Mapping(target = "comments", ignore = true)
     @Mapping(target = "tags", ignore = true)
     Post postDomainToPost(PostDomain postDomain);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "userId", target = "userId")
+    @Mapping(target = "photoLists", source = "photoLists", qualifiedByName = "photoToList")
     PostResponse postDomainToPostResponse(PostDomain postDomain);
+
+    @org.mapstruct.Named("commentsIdsToNumber")
+    default Long commentsToNumber(List<Long> comments) {
+        return (long) comments.size();
+    }
+    @org.mapstruct.Named("postReactionsIdsToNumber")
+    default Long postReactionsIdsToNumber(List<Long>  reactions) {
+        return (long) reactions.size();
+    }
+    @org.mapstruct.Named("photoToList")
+    default List<String> photoToList(String photo) {
+        String[] split = photo.split(",");
+        return new ArrayList<>(List.of(split));
+    }
 
     @org.mapstruct.Named("postReactionsToIds")
     default List<Long> postReactionsToIds(List<PostReaction> reactions) {

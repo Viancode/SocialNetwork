@@ -3,7 +3,6 @@ package com.example.socialnetwork.config;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.common.mapper.TagMapper;
-import com.example.socialnetwork.config.aws.S3Properties;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
@@ -17,7 +16,6 @@ import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.repository.PostRepository;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.TagRepository;
-import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,10 +23,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.thymeleaf.TemplateEngine;
-import software.amazon.awssdk.services.docdbelastic.model.Auth;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
@@ -95,8 +91,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, StorageServicePort storageServicePort) {
-        return new PortServiceImpl(postDatabasePort,storageServicePort);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipServicePort relationshipService) {
+        return new PostServiceImpl(postDatabasePort,relationshipService);
     }
 
     @Bean

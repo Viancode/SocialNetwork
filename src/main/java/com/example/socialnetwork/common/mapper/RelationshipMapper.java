@@ -24,6 +24,7 @@ public interface RelationshipMapper {
 
             for (RelationshipDomain relationshipDomain : relationshipDomains) {
                 MakeFriendResponse makeFriendResponse = new MakeFriendResponse();
+                makeFriendResponse.setId(relationshipDomain.getId());
                 makeFriendResponse.setEmail(relationshipDomain.getUser().getEmail());
                 makeFriendResponse.setUsername(relationshipDomain.getUser().getUsername());
                 makeFriendResponse.setLastName(relationshipDomain.getUser().getLastName());
