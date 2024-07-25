@@ -19,7 +19,6 @@ public class CommentDomain {
     private String content;
     private LocalDate createdAt;
     private LocalDate updatedAt;
-    private Boolean isDeleted;
     private Boolean isHidden;
     private Long postId;
     private List<Long> reactionsId;

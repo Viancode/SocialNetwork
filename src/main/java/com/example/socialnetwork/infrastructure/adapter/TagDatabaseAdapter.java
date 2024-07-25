@@ -25,8 +25,10 @@ public class TagDatabaseAdapter implements TagDatabasePort {
     @Override
     public TagDomain createTag(TagDomain tagDomain) {
         Post post = postRepository.findById(tagDomain.getPostId()).orElseThrow(() -> new NotFoundException("Post not found"));
-        Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(tagDomain.getTaggedByUserId(), tagDomain.getTaggedUserId());
-//        if (!relationship.getRelation().equals("FRIEND")){
+        Relationship relationship1 = relationshipRepository.findByUser_IdAndFriend_Id(tagDomain.getTaggedByUserId(), tagDomain.getTaggedUserId());
+        Relationship relationship2 = relationshipRepository.findByUser_IdAndFriend_Id( tagDomain.getTaggedUserId(), tagDomain.getTaggedByUserId());
+
+//        if ( (relationship1 != null && !relationship1.getRelation().equals("FRIEND")) || (relationship2 != null && !relationship2.getRelation().equals("FRIEND"))){
 //            throw new ClientErrorException("User is not friend");
 //        }
 
