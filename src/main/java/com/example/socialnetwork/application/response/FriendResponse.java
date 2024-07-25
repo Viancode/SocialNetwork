@@ -10,11 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ListFriendResponse {
+public class FriendResponse {
     Long id;
     String username;
     String email;
-    String firstName;
-    String lastName;
-    String relationship;
 }

@@ -4,18 +4,15 @@ import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
-import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,8 +47,13 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     }
 
     @Override
-    public List<RelationshipDomain> getListFriend(long userId) {
-        return relationshipMapper.toRelationshipDomain(relationshipRepository.getListFriend(userId, ERelationship.FRIEND));
+    public List<UserDomain> getListFriend(long userId) {
+        return userMapper.toUserDomains(relationshipRepository.getListFriend(userId));
+    }
+
+    @Override
+    public List<UserDomain> findFriendByKeyWord(long userId, String keyWord) {
+        return userMapper.toUserDomains(relationshipRepository.getListFriendByKeyWord(userId, keyWord));
     }
 
     @Override

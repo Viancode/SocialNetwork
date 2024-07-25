@@ -1,6 +1,5 @@
 package com.example.socialnetwork.domain.service;
 
-import com.example.socialnetwork.application.response.ListFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
@@ -14,8 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class RelationshipServiceImpl implements RelationshipServicePort {
@@ -43,9 +42,9 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void sendRequestMakeFriendship(long userId) {
         long senderId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
-        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(userId, senderId);
-        if(relationshipDomain1 == null ){
+        RelationshipDomain reverseRelationshipDomain = relationshipDatabasePort.find(userId, senderId);
+        if(reverseRelationshipDomain == null ){
+            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
             if(relationshipDomain == null){
                 relationshipDatabasePort.createRelationship(senderId, userId, ERelationship.PENDING);
             } else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
@@ -65,9 +64,9 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void deleteRequestMakeFriendship(long userId) {
         long senderId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
-        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(userId, senderId);
-        if(relationshipDomain1 == null ) {
+        RelationshipDomain reverseRelationshipDomain = relationshipDatabasePort.find(userId, senderId);
+        if(reverseRelationshipDomain == null ) {
+            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
             if (relationshipDomain == null) {
                 throw new NotFoundException("Friend request not found");
             } else if (relationshipDomain.getRelation() == ERelationship.PENDING)
@@ -86,9 +85,9 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void acceptRequestMakeFriendship(long userId) {
         long receiverId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
-        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(receiverId, userId);
-        if(relationshipDomain1 == null ) {
+        RelationshipDomain reverseRelationshipDomain = relationshipDatabasePort.find(receiverId, userId);
+        if(reverseRelationshipDomain == null ) {
+            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
             if (relationshipDomain == null) {
                 throw new NotFoundException("Friend request not found");
             } else if (relationshipDomain.getRelation() == ERelationship.PENDING) {
@@ -105,9 +104,9 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void refuseRequestMakeFriendship(long userId) {
         long receiverId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
-        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(receiverId, userId);
-        if(relationshipDomain1 == null ) {
+        RelationshipDomain reverseRelationshipDomain = relationshipDatabasePort.find(receiverId, userId);
+        if(reverseRelationshipDomain == null ) {
+            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
             if(relationshipDomain == null) {
                 throw new NotFoundException("Friend request not found");
             }else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
@@ -135,6 +134,11 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
+    public List<UserDomain> findFriend(long userId, String keyWord) {
+        return relationshipDatabasePort.findFriendByKeyWord(userId, keyWord);
+    }
+
+    @Override
     public List<RelationshipDomain> getListReceiveRequest() {
         long userId = getCurrentUser();
         return relationshipDatabasePort.getListReceiveRequest(userId);
@@ -147,41 +151,45 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
-    public List<ListFriendResponse> getListFriend(long userId) {
+    public List<UserDomain> getListFriend(long userId) {
         long currentUserId = getCurrentUser();
         if(userDatabasePort.findById(userId) == null)
             throw new NotFoundException("Not found user");
         if(userId == currentUserId) {
-            List<RelationshipDomain> relationshipDomains = relationshipDatabasePort.getListFriend(userId);
-            return getListFriendResponses(userId, relationshipDomains);
+            return relationshipDatabasePort.getListFriend(userId);
         }else {
             RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, currentUserId);
             RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(currentUserId, userId);
             if((relationshipDomain != null && relationshipDomain.getRelation() == ERelationship.FRIEND) || (relationshipDomain1 != null && relationshipDomain1.getRelation() == ERelationship.FRIEND)){
-                List<RelationshipDomain> relationshipDomains = relationshipDatabasePort.getListFriend(userId);
-                return getListFriendResponses(userId, relationshipDomains);
+                return relationshipDatabasePort.getListFriend(userId);
             }else {
                 throw new RuntimeException("Cannot get list friend of this user");
             }
         }
     }
 
-    private List<ListFriendResponse> getListFriendResponses(long userId, List<RelationshipDomain> relationshipDomains) {
-        List<ListFriendResponse> listFriendResponses = new ArrayList<>();
-        for(RelationshipDomain relationshipDomain : relationshipDomains){
-            if(relationshipDomain.getUser().getId() == userId){
-                UserDomain userDomain = relationshipDomain.getFriend();
-                ListFriendResponse listFriendResponse = userMapper.toListFriendResponse(userDomain);
-                listFriendResponse.setRelationship(relationshipDomain.getRelation().toString());
-                listFriendResponses.add(listFriendResponse);
-            }else {
-                UserDomain userDomain = relationshipDomain.getUser();
-                ListFriendResponse listFriendResponse = userMapper.toListFriendResponse(userDomain);
-                listFriendResponse.setRelationship(relationshipDomain.getRelation().toString());
-                listFriendResponses.add(listFriendResponse);
-            }
-        }
-        return listFriendResponses;
+    @Override
+    public List<UserDomain> getFriendSuggestions(long userId) {
+        UserDomain userCurrent = userDatabasePort.findById(userId);
+        List<UserDomain> friends = relationshipDatabasePort.getListFriend(userId);
+        friends.add(userCurrent);
+        Set<Long> friendIds = friends.stream().map(UserDomain::getId).collect(Collectors.toSet());
+
+        return userDatabasePort.getAllUser().stream()
+                .filter(user -> !friendIds.contains(user.getId())) // Loại bỏ bạn bè khỏi danh sách người dùng
+                .map(user -> new AbstractMap.SimpleEntry<>(user, calculateScore(userCurrent, user, userId)))
+                .sorted(Map.Entry.<UserDomain, Integer>comparingByValue().reversed())
+                .limit(10)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private int calculateScore(UserDomain userCurrent, UserDomain user, long userId) {
+        int score = getNumberOfMutualFriends(userId, user.getId());
+        if (Objects.equals(userCurrent.getLocation(), user.getLocation())) score += 15;
+        if (Objects.equals(userCurrent.getEducation(), user.getEducation())) score += 10;
+        if (Objects.equals(userCurrent.getWork(), user.getWork())) score += 5;
+        return score;
     }
 
     private long getCurrentUser() {
@@ -193,5 +201,14 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     private void checkFriend(long friendId) {
         if(userDatabasePort.findById(friendId) == null)
             throw new NotFoundException("Not found friend");
+    }
+
+    private int getNumberOfMutualFriends(long userId1, long userId2){
+        List<UserDomain> friends1 = relationshipDatabasePort.getListFriend(userId1);
+        List<UserDomain> friends2 = relationshipDatabasePort.getListFriend(userId2);
+        HashSet<UserDomain> set1 = new HashSet<>(friends1);
+        HashSet<UserDomain> set2 = new HashSet<>(friends2);
+        set1.retainAll(set2);
+        return set1.size();
     }
 }

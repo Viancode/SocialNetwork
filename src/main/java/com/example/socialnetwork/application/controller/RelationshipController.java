@@ -1,12 +1,12 @@
 package com.example.socialnetwork.application.controller;
 
-import com.example.socialnetwork.application.request.FriendRequest;
-import com.example.socialnetwork.application.request.MakeFriendRequest;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
+import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class RelationshipController  extends BaseController{
     private final RelationshipServicePort relationshipService;
     private final RelationshipMapper relationshipMapper;
+    private final UserMapper userMapper;
 
     @PostMapping("/send_request")
     public ResponseEntity<?> createRequest(@RequestParam long userId){
@@ -53,7 +54,7 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/get_list_friends")
     public ResponseEntity<?> getListFriend(@RequestParam long userId){
-        return buildResponse("Get list friends successfully", relationshipService.getListFriend(userId));
+        return buildResponse("Get list friends successfully", userMapper.toFriendResponses(relationshipService.getListFriend(userId)));
     }
 
 
@@ -67,5 +68,21 @@ public class RelationshipController  extends BaseController{
     public ResponseEntity<?> block(@RequestParam long userId){
         relationshipService.block(userId);
         return buildResponse("Block user successfully");
+    }
+
+    @GetMapping("view_suggest")
+    public ResponseEntity<?> viewSuggest(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        long userId = Long.parseLong(user.getUsername());
+        return buildResponse("Get friend suggestions successfully", userMapper.toFriendResponses(relationshipService.getFriendSuggestions(userId)));
+    }
+
+    @GetMapping("find_friend")
+    public ResponseEntity<?> findFriend(@RequestParam String keyWord){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        long userId = Long.parseLong(user.getUsername());
+        return buildResponse("Find friend successfully", userMapper.toFriendResponses(relationshipService.findFriend(userId, keyWord)));
     }
 }

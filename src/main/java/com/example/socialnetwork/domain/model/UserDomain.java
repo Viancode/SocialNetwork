@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

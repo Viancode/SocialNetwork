@@ -14,6 +14,7 @@ import com.example.socialnetwork.infrastructure.entity.Role;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class UserDatabaseAdapter implements UserDatabasePort {
@@ -65,5 +66,10 @@ public class UserDatabaseAdapter implements UserDatabasePort {
         User userEntity = userMapper.toUser(user);
         userEntity.setRole(Role.builder().id(1L).build());
         userRepository.save(userEntity);
+    }
+
+    @Override
+    public List<UserDomain> getAllUser() {
+        return userMapper.toUserDomains(userRepository.findAll());
     }
 }
