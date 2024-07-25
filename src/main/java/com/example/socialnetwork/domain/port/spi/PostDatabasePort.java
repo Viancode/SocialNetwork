@@ -8,12 +8,12 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface PostDatabasePort {
-    PostDomain createPost(PostDomain postDomain, Authentication authentication);
-    PostDomain updatePost(PostDomain postDomain, Authentication authentication);
-    void deletePost(Long userId, Long postId);
-    List<PostDomain> getAllPosts(Long userId);
+    PostDomain createPost(PostDomain postDomain);
+    PostDomain updatePost(PostDomain postDomain);
+    void deletePost(Long postId);
+//    List<PostDomain> getAllPostByUserId();
 
     PostDomain findById(Long id);
 
-    Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize);
+//    Page<PostDomain> getAllPostsOfOtherUser(Long otherUserId, int offset, int pageSize);
 }

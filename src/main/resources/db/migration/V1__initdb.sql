@@ -45,7 +45,6 @@ CREATE TABLE posts (
                        visibility ENUM('PUBLIC', 'FRIEND', 'PRIVATE'),
                        created_at DATETIME,
                        updated_at DATETIME,
-                       is_deleted BIT(1),
                        photo_lists MEDIUMTEXT,
                        CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -143,9 +142,9 @@ INSERT INTO relationships (user_id, friend_id, created_at, relation) VALUES
 
 
 -- Thêm dữ liệu vào bảng posts
-INSERT INTO posts (user_id, content, visibility, created_at, updated_at, is_deleted, photo_lists) VALUES
-                                                                                                      (1, 'Hello, this is my first post!', 'PUBLIC', NOW(), NOW(), 0, 'photo1.jpg'),
-                                                                                                      (2, 'Enjoying a sunny day!', 'FRIEND', NOW(), NOW(), 0, 'photo2.jpg');
+INSERT INTO posts (user_id, content, visibility, created_at, updated_at, photo_lists) VALUES
+                                                                                                      (1, 'Hello, this is my first post!', 'PUBLIC', NOW(), NOW(), 'photo1.jpg'),
+                                                                                                      (2, 'Enjoying a sunny day!', 'FRIEND', NOW(), NOW(), 'photo2.jpg');
 
 -- Thêm dữ liệu vào bảng comments
 INSERT INTO comments (user_id, post_id, parent_comment_id, content, created_at, updated_at, is_deleted, is_hidden) VALUES

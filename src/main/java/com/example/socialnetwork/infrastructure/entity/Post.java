@@ -41,9 +41,6 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-
     @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;
 

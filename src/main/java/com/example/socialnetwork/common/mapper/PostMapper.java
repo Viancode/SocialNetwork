@@ -10,6 +10,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,24 @@ public interface PostMapper {
     @Mapping(target = "tags", ignore = true)
     Post postDomainToPost(PostDomain postDomain);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "userId", target = "userId")
+    @Mapping(target = "numberOfComments", source = "commentsIds", qualifiedByName = "commentsIdsToNumber")
+    @Mapping(target = "numberOfReacts", source = "postReactionsIds", qualifiedByName = "postReactionsIdsToNumber")
+    @Mapping(target = "photoLists", source = "photoLists", qualifiedByName = "photoToList")
     PostResponse postDomainToPostResponse(PostDomain postDomain);
+
+    @org.mapstruct.Named("commentsIdsToNumber")
+    default Long commentsToNumber(List<Long> comments) {
+        return (long) comments.size();
+    }
+    @org.mapstruct.Named("postReactionsIdsToNumber")
+    default Long postReactionsIdsToNumber(List<Long>  reactions) {
+        return (long) reactions.size();
+    }
+    @org.mapstruct.Named("photoToList")
+    default List<String> photoToList(String photo) {
+        String[] split = photo.split(",");
+        return new ArrayList<>(List.of(split));
+    }
 
     @org.mapstruct.Named("postReactionsToIds")
     default List<Long> postReactionsToIds(List<PostReaction> reactions) {
