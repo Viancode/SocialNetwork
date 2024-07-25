@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RelationshipDomain {
+    Long id;
+
     UserDomain user;
 
     UserDomain friend;

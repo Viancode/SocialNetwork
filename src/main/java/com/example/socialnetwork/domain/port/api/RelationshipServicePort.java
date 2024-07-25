@@ -8,19 +8,21 @@ import java.util.List;
 
 public interface RelationshipServicePort {
     ERelationship getRelationship(long sourceUserID, long targetUserID);
-    void deleteRelationship(long userId, long friendId);
+    void deleteRelationship(long friendId);
 
-    void sendRequestMakeFriendship(long senderId, long receiverId);
+    void sendRequestMakeFriendship(long userId);
 
-    void deleteRequestMakeFriendship(long senderId, long receiverId);
+    void deleteRequestMakeFriendship(long userId);
 
-    void acceptRequestMakeFriendship(long senderId, long receiverId);
+    void acceptRequestMakeFriendship(long userId);
 
-    void refuseRequestMakeFriendship(long senderId, long receiverId);
+    void refuseRequestMakeFriendship(long userId);
 
-    void block(long userId, long friendId);
+    void block(long friendId);
 
-    List<RelationshipDomain> getListRequest(long senderId);
+    List<RelationshipDomain> getListReceiveRequest();
 
-    List<ListFriendResponse> getListFriend(long senderId);
+    List<RelationshipDomain> getListSendRequest();
+
+    List<ListFriendResponse> getListFriend(long userId);
 }

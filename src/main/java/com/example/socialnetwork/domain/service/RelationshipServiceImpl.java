@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,79 +33,98 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
-    public void deleteRelationship(long userId, long friendId) {
-        checkCurrentUser(userId);
+    public void deleteRelationship(long friendId) {
+        long userId = getCurrentUser();
         checkFriend(friendId);
         relationshipDatabasePort.deleteFriend(userId, friendId);
     }
 
     @Override
-    public void sendRequestMakeFriendship(long senderId, long receiverId) {
-        checkCurrentUser(senderId);
-        checkFriend(receiverId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain == null){
-            relationshipDatabasePort.createRelationship(senderId, receiverId, ERelationship.PENDING);
-        } else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
-            throw new RuntimeException("You have sent a friend request to this person before");
-        }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
-            throw new RuntimeException("Cannot send friend request because you two are already friends");
-        else {
+    public void sendRequestMakeFriendship(long userId) {
+        long senderId = getCurrentUser();
+        checkFriend(userId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
+        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(userId, senderId);
+        if(relationshipDomain1 == null ){
+            if(relationshipDomain == null){
+                relationshipDatabasePort.createRelationship(senderId, userId, ERelationship.PENDING);
+            } else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
+                throw new RuntimeException("You have sent a friend request to this person before");
+            }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
+                throw new RuntimeException("Cannot send friend request because you two are already friends");
+            else {
+                throw new RuntimeException("Cannot send friend request");
+            }
+        }else {
             throw new RuntimeException("Cannot send friend request");
         }
+
     }
 
     @Override
-    public void deleteRequestMakeFriendship(long senderId, long receiverId) {
-        checkCurrentUser(senderId);
-        checkFriend(receiverId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain == null) {
-            throw new NotFoundException("Friend request not found");
-        }else if(relationshipDomain.getRelation() == ERelationship.PENDING)
-            relationshipDatabasePort.deleteRequest(senderId, receiverId);
-        else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
-            throw new RuntimeException("Cannot delete friend request because you two are already friends");
-        else {
+    public void deleteRequestMakeFriendship(long userId) {
+        long senderId = getCurrentUser();
+        checkFriend(userId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
+        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(userId, senderId);
+        if(relationshipDomain1 == null ) {
+            if (relationshipDomain == null) {
+                throw new NotFoundException("Friend request not found");
+            } else if (relationshipDomain.getRelation() == ERelationship.PENDING)
+                relationshipDatabasePort.deleteRequest(senderId, userId);
+            else if (relationshipDomain.getRelation() == ERelationship.FRIEND)
+                throw new RuntimeException("Cannot delete friend request because you two are already friends");
+            else {
+                throw new RuntimeException("Cannot delete friend request");
+            }
+        }else {
             throw new RuntimeException("Cannot delete friend request");
         }
     }
 
     @Override
-    public void acceptRequestMakeFriendship(long senderId, long receiverId) {
-        checkCurrentUser(receiverId);
-        checkFriend(senderId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain == null) {
-            throw new NotFoundException("Friend request not found");
-        }else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
-            relationshipDatabasePort.updateRelation(senderId, receiverId, ERelationship.FRIEND);
-        }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
-            throw new RuntimeException("Cannot accept friend request because you two are already friends");
-        else {
+    public void acceptRequestMakeFriendship(long userId) {
+        long receiverId = getCurrentUser();
+        checkFriend(userId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
+        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(receiverId, userId);
+        if(relationshipDomain1 == null ) {
+            if (relationshipDomain == null) {
+                throw new NotFoundException("Friend request not found");
+            } else if (relationshipDomain.getRelation() == ERelationship.PENDING) {
+                relationshipDatabasePort.updateRelation(userId, receiverId, ERelationship.FRIEND);
+            } else if (relationshipDomain.getRelation() == ERelationship.BLOCK) {
+                throw new RuntimeException("Cannot accept friend request");
+            }
+        }else {
             throw new RuntimeException("Cannot accept friend request");
         }
     }
 
     @Override
-    public void refuseRequestMakeFriendship(long senderId, long receiverId) {
-        checkCurrentUser(receiverId);
-        checkFriend(senderId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, receiverId);
-        if(relationshipDomain == null) {
-            throw new NotFoundException("Friend request not found");
-        }else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
-            relationshipDatabasePort.deleteRequest(senderId, receiverId);
-        }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
-            throw new RuntimeException("Cannot refuse friend request because you two are already friends");
-        else {
+    public void refuseRequestMakeFriendship(long userId) {
+        long receiverId = getCurrentUser();
+        checkFriend(userId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
+        RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(receiverId, userId);
+        if(relationshipDomain1 == null ) {
+            if(relationshipDomain == null) {
+                throw new NotFoundException("Friend request not found");
+            }else if(relationshipDomain.getRelation() == ERelationship.PENDING) {
+                relationshipDatabasePort.deleteRequest(userId, receiverId);
+            }else if(relationshipDomain.getRelation() == ERelationship.FRIEND)
+                throw new RuntimeException("Cannot refuse friend request because you two are already friends");
+            else {
+                throw new RuntimeException("Cannot refuse friend request");
+            }
+        }else {
             throw new RuntimeException("Cannot refuse friend request");
         }
     }
 
     @Override
-    public void block(long userId, long friendId) {
-        checkCurrentUser(userId);
+    public void block(long friendId) {
+        long userId = getCurrentUser();
         checkFriend(friendId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId);
         if(relationshipDomain == null) {
@@ -117,16 +135,35 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
-    public List<RelationshipDomain> getListRequest(long userId) {
-        checkCurrentUser(userId);
-        return relationshipDatabasePort.getListRequest(userId);
+    public List<RelationshipDomain> getListReceiveRequest() {
+        long userId = getCurrentUser();
+        return relationshipDatabasePort.getListReceiveRequest(userId);
+    }
+
+    @Override
+    public List<RelationshipDomain> getListSendRequest() {
+        long userId = getCurrentUser();
+        return relationshipDatabasePort.getListSendRequest(userId);
     }
 
     @Override
     public List<ListFriendResponse> getListFriend(long userId) {
-        checkCurrentUser(userId);
-        List<RelationshipDomain> relationshipDomains = relationshipDatabasePort.getListFriend(userId);
-        return getListFriendResponses(userId, relationshipDomains);
+        long currentUserId = getCurrentUser();
+        if(userDatabasePort.findById(userId) == null)
+            throw new NotFoundException("Not found user");
+        if(userId == currentUserId) {
+            List<RelationshipDomain> relationshipDomains = relationshipDatabasePort.getListFriend(userId);
+            return getListFriendResponses(userId, relationshipDomains);
+        }else {
+            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, currentUserId);
+            RelationshipDomain relationshipDomain1 = relationshipDatabasePort.find(currentUserId, userId);
+            if((relationshipDomain != null && relationshipDomain.getRelation() == ERelationship.FRIEND) || (relationshipDomain1 != null && relationshipDomain1.getRelation() == ERelationship.FRIEND)){
+                List<RelationshipDomain> relationshipDomains = relationshipDatabasePort.getListFriend(userId);
+                return getListFriendResponses(userId, relationshipDomains);
+            }else {
+                throw new RuntimeException("Cannot get list friend of this user");
+            }
+        }
     }
 
     private List<ListFriendResponse> getListFriendResponses(long userId, List<RelationshipDomain> relationshipDomains) {
@@ -147,13 +184,10 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         return listFriendResponses;
     }
 
-    private void checkCurrentUser(long userId) {
+    private long getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         org.springframework.security.core.userdetails.User user = (User) authentication.getPrincipal();
-        if(Long.parseLong(user.getUsername()) != userId) {
-            throw new InvalidParameterException("Id of user invalid");
-        }
-
+        return Long.parseLong(user.getUsername());
     }
 
     private void checkFriend(long friendId) {

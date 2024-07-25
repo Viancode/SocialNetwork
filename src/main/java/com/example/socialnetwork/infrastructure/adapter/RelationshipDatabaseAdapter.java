@@ -34,7 +34,12 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     }
 
     @Override
-    public List<RelationshipDomain> getListRequest(long userId) {
+    public List<RelationshipDomain> getListSendRequest(long userId) {
+        return relationshipMapper.toRelationshipDomain(relationshipRepository.findByUser_IdAndRelation(userId, ERelationship.PENDING));
+    }
+
+    @Override
+    public List<RelationshipDomain> getListReceiveRequest(long userId) {
         return relationshipMapper.toRelationshipDomain(relationshipRepository.findByFriend_IdAndRelation(userId, ERelationship.PENDING));
     }
 

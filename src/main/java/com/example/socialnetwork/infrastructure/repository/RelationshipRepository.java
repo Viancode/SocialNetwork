@@ -19,16 +19,11 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
 
     List<Relationship> findByFriend_IdAndRelation(long userId, ERelationship relation);
 
+    List<Relationship> findByUser_IdAndRelation(long userId, ERelationship relation);
+
     @Query("SELECT r FROM Relationship r " +
             "INNER JOIN User u1 ON u1.id = r.user.id OR u1.id = r.friend.id " +
             "WHERE r.relation = :relation " +
             "AND (r.friend.id = :userId OR r.user.id = :userId) ")
     List<Relationship> getListFriend(@Param("userId") long userId, ERelationship relation);
-
-//    @Query("SELECT r FROM Relationship r " +
-//            "INNER JOIN User u1 ON u1.id = r.user.id OR u1.id = r.friend.id " +
-//            "WHERE r.relation = 'FRIEND' " +
-//            "AND (r.friend.id = :userId OR r.user.id = :userId) " +
-//            "AND (u1.username LIKE %:friendName% OR u1.lastName LIKE %:friendName% OR u1.firstName LIKE %:friendName%)")
-//    List<Relationship> search(@Param("userId") long userId, @Param("friendName") String friendName);
 }
