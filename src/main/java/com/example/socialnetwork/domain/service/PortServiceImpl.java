@@ -16,7 +16,9 @@ import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.example.socialnetwork.infrastructure.specification.PostSpecification.withUserIdAndVisibility;
 
 @RequiredArgsConstructor
 public class PortServiceImpl implements PostServicePort {
@@ -71,9 +75,16 @@ public class PortServiceImpl implements PostServicePort {
 //        return postDatabasePort.getAllPosts(userId).stream().map(PostMapper.INSTANCE::postDomainToPostResponse).collect(Collectors.toList());
 //    }
 
+//    @Override
+//    public Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize) {
+//        return postDatabasePort.getAllPosts(userId,otherUserId, offset, pageSize);
+//    }
+
     @Override
-    public Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize) {
-        return postDatabasePort.getAllPosts(userId,otherUserId, offset, pageSize);
+    public Page<PostDomain> getAllPosts(int page, int pageSize, String sortBy, Long userId, Long targetUserId) {
+
+        return postDatabasePort.getAllPosts(page, pageSize, sortBy, userId, visibility);
+
     }
 
     public String loadFileImage(PostRequest postRequest){

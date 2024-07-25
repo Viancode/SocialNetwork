@@ -5,13 +5,14 @@ import com.example.socialnetwork.common.constant.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@FieldNameConstants
 @Entity
 @Builder
 @NoArgsConstructor

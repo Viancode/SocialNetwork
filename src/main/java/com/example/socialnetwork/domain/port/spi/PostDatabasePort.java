@@ -1,5 +1,6 @@
 package com.example.socialnetwork.domain.port.spi;
 
+import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import org.springframework.data.domain.Page;
@@ -11,9 +12,6 @@ public interface PostDatabasePort {
     PostDomain createPost(PostDomain postDomain, Authentication authentication);
     PostDomain updatePost(PostDomain postDomain, Authentication authentication);
     void deletePost(Long userId, Long postId);
-    List<PostDomain> getAllPosts(Long userId);
-
     PostDomain findById(Long id);
-
-    Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize);
+    Page<PostDomain> getAllPosts(Long otherUserId, Visibility visibility, int offset, int pageSize);
 }

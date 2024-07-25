@@ -4,6 +4,7 @@ import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -15,5 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSort
 
     Page<Post> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable);
     Page<Post> findByUserIdAndVisibilityAndIsDeletedFalse(Long userId, Visibility visibility, Pageable pageable);
+
+    Page<Post> findAll(Specification<Post> spec, Pageable pageable);
 
 }

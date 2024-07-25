@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,12 +21,24 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostController extends BaseController {
     private final PostServicePort postServicePort;
 
-    @GetMapping("/getAll")
-    public ResponseEntity<ResultResponse> getPosts(@RequestParam Long userId,
-                                                   @RequestParam Long otherUserId,
-                                                   @RequestParam(defaultValue = "0") int offset,
-                                                   @RequestParam(defaultValue = "10") int pageSize) {
-        Page<PostDomain> posts = postServicePort.getAllPosts(userId,otherUserId, offset-1, pageSize);
+//    @GetMapping("/")
+//    public ResponseEntity<ResultResponse> getPosts(@RequestParam Long userId,
+//                                                   @RequestParam Long otherUserId,
+//                                                   @RequestParam(defaultValue = "0") int offset,
+//                                                   @RequestParam(defaultValue = "10") int pageSize) {
+//        Page<PostDomain> posts = postServicePort.getAllPosts(userId,otherUserId, offset-1, pageSize);
+//        return buildResponse("Successfully get all post from userId", posts);
+//    }
+
+    @GetMapping("/")
+    public ResponseEntity<ResultResponse> getPosts(@RequestParam(defaultValue = "1") int page,
+                                                   @RequestParam(defaultValue = "10") int pageSize,
+                                                   @RequestParam(defaultValue = "created_at") String sortBy,
+                                                   @RequestParam Long targetUserId,
+                                                   Authentication authentication) {
+
+        User user = (User) authentication.getPrincipal();
+        Page<PostDomain> posts = postServicePort.getAllPosts(page, pageSize, sortBy, Long.valueOf(user.getUsername()), targetUserId);
         return buildResponse("Successfully get all post from userId", posts);
     }
 

@@ -13,6 +13,7 @@ import com.example.socialnetwork.infrastructure.repository.PostRepository;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.example.socialnetwork.infrastructure.specification.PostSpecification.withUserIdAndVisibility;
 
 @RequiredArgsConstructor
 public class PostDatabaseAdapter implements PostDatabasePort {
@@ -75,38 +78,23 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     }
 
     @Override
-    public List<PostDomain> getAllPosts(Long userId) {
-        List<Post> posts = postRepository.findAllByUserId(userId);
-        return posts.stream().filter(x -> !x.getIsDeleted()).map(PostMapper.INSTANCE::postToPostDomain).collect(Collectors.toList());
-    }
-
-    @Override
     public PostDomain findById(Long id) {
         return PostMapper.INSTANCE.postToPostDomain(postRepository.findById(id).isPresent()? postRepository.findById(id).get():null);
     }
 
     @Override
-    public Page<PostDomain> getAllPosts(Long userId, Long otherUserId, int offset, int pageSize) {
-        Pageable pageable = PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Post> posts= null;
-        if(Objects.equals(userId, otherUserId) || otherUserId == null){
-            posts = postRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
-            return posts.map(PostMapper.INSTANCE::postToPostDomain);
-        }else {
-            Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, otherUserId);
-            if(relationship != null){
-                if(relationship.getRelation().equals(ERelationship.FRIEND)){
-                    List<Post> postsList = new ArrayList<>();
-                    postsList.addAll(postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId,Visibility.FRIEND,pageable).getContent());
-                    postsList.addAll(postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId,Visibility.PRIVATE,pageable).getContent());
-                    return new PageImpl<>(postsList.stream().map(PostMapper.INSTANCE::postToPostDomain).collect(Collectors.toList()), pageable, postsList.size());
-                }
-            }else{
-                posts = postRepository.findByUserIdAndVisibilityAndIsDeletedFalse(otherUserId, Visibility.PUBLIC,pageable);
-                return posts.map(PostMapper.INSTANCE::postToPostDomain);
-            }
+    public Page<PostDomain> getAllPosts(Long otherUserId, Visibility visibility, int offset, int pageSize) {
+        var pageable = PageRequest.of(page - 1, pageSize, Sort.by(sortBy));
+        var spec = getSpec(otherUserId, Visibility.PUBLIC);
+    }
+
+    private Specification<Post> getSpec(Long targetUserId, Visibility visibility) {
+        Specification<Post> spec = Specification.where(null);
+        if (targetUserId != null && visibility != null) {
+            spec = spec.and(withUserIdAndVisibility(targetUserId, visibility));
         }
-        return (posts != null) ? posts.map(PostMapper.INSTANCE::postToPostDomain) :null;
+
+        return spec;
     }
 
 

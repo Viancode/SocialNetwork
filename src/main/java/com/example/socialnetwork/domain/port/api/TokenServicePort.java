@@ -10,4 +10,5 @@ public interface TokenServicePort {
     void revokeRefreshToken(String refreshToken, User user);
     String getTokenInfo(String token, TokenType tokenType);
     void saveToken(String token, String userId, TokenType tokenType, long expiration);
+    String getTokenByUserId(String userId, TokenType tokenType);
 }
