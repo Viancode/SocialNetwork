@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -39,9 +40,8 @@ public class PostController extends BaseController {
                                                    Authentication authentication) {
 
         User user = (User) authentication.getPrincipal();
-        Page<PostDomain> posts = postServicePort.getAllPosts(page, pageSize, sortBy, sortDirection, Long.valueOf(user.getUsername()), targetUserId);
-        Page<PostResponse> postResponses = posts.map(PostMapper.INSTANCE::postDomainToPostResponse);
-        return buildResponse("Get post successfully", postResponses);
+        Page<PostResponse> posts = postServicePort.getAllPosts(page, pageSize, sortBy, sortDirection, Long.valueOf(user.getUsername()), targetUserId);
+        return buildResponse("Get post successfully", posts);
     }
 
     @PostMapping("/create")
@@ -57,7 +57,7 @@ public class PostController extends BaseController {
         postRequest.setPhotoLists(photoLists);
 
         PostDomain postDomain = postServicePort.createPost(postRequest);
-        return buildResponse("Create post successfully", postDomain);
+        return buildResponse("Create post successfully", PostMapper.INSTANCE.postDomainToPostResponse(postDomain));
     }
 
     @DeleteMapping("/delete")
@@ -80,6 +80,6 @@ public class PostController extends BaseController {
         postRequest.setVisibility(visibility);
         postRequest.setPhotoLists(photoLists);
         PostDomain postDomain = postServicePort.updatePost(postRequest);
-        return buildResponse("Update post successfully", postDomain);
+        return buildResponse("Update post successfully", PostMapper.INSTANCE.postDomainToPostResponse(postDomain));
     }
 }

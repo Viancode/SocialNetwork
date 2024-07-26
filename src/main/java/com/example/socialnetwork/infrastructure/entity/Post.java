@@ -3,6 +3,7 @@ package com.example.socialnetwork.infrastructure.entity;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,13 +46,13 @@ public class Post {
     @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;
 
-//    @JsonIgnore
-//    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
-//    private List<Comment> comments = new ArrayList<>();
-//
-//    @JsonIgnore
-//    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
-//    private List<PostReaction> postReactions = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostReaction> postReactions = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "post", cascade = CascadeType.ALL)

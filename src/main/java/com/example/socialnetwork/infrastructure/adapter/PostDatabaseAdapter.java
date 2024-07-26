@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.example.socialnetwork.infrastructure.specification.PostSpecification.withUserId;
-import static com.example.socialnetwork.infrastructure.specification.PostSpecification.withUserIdAndVisibility;
+import static com.example.socialnetwork.infrastructure.specification.PostSpecification.*;
 
 @RequiredArgsConstructor
 public class PostDatabaseAdapter implements PostDatabasePort {

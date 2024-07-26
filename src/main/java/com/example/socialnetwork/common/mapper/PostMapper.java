@@ -20,17 +20,19 @@ public interface PostMapper {
 
 
     @Mapping(source = "user.id", target = "userId")
-//    @Mapping(target = "postReactionsIds", source = "postReactions", qualifiedByName = "postReactionsToIds")
-//    @Mapping(target = "commentsIds", source = "comments", qualifiedByName = "commentsToIds")
+    @Mapping(target = "postReactionsIds", source = "postReactions", qualifiedByName = "postReactionsToIds")
+    @Mapping(target = "commentsIds", source = "comments", qualifiedByName = "commentsToIds")
     @Mapping(target = "tagsIds", source = "tags", qualifiedByName = "tagsToIds")
     PostDomain postToPostDomain(Post post);
 
     @Mapping(source = "userId", target = "user.id")
-//    @Mapping(target = "postReactions", ignore = true)
-//    @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "postReactions", ignore = true)
+    @Mapping(target = "comments", ignore = true)
     @Mapping(target = "tags", ignore = true)
     Post postDomainToPost(PostDomain postDomain);
 
+    @Mapping(target = "numberOfComments", source = "commentsIds", qualifiedByName = "commentsIdsToNumber")
+    @Mapping(target = "numberOfReacts", source = "postReactionsIds", qualifiedByName = "postReactionsIdsToNumber")
     @Mapping(target = "photoLists", source = "photoLists", qualifiedByName = "photoToList")
     PostResponse postDomainToPostResponse(PostDomain postDomain);
 

@@ -27,5 +27,9 @@ public class PostResponse {
 
     private List<String> photoLists;
 
+    private  Long numberOfComments;
+
+    private Long numberOfReacts;
+
     private List<Long> tagsIds = new ArrayList<>();
 }

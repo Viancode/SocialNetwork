@@ -27,9 +27,8 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_comment_id")
-    private Comment parentComment;
+    @Column(name = "parent_comment_id")
+    private Long parentComment;
 
     @Size(max = 255)
     @Column(name = "content")
@@ -46,9 +45,4 @@ public class Comment {
 
     @OneToMany(mappedBy = "comment")
     private List<CommentReaction> commentReactions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "parentComment")
-    private List<Comment> comments = new ArrayList<>();
-
-
 }
