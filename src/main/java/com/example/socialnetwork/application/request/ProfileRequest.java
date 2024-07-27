@@ -28,7 +28,9 @@ public class ProfileRequest {
     private String work;
     private String education;
     private LocalDate dateOfBirth;
-    private MultipartFile avatar;
-    private MultipartFile background;
+    @Builder.Default
+    private String avatar = "User does not have an avatar";
+    @Builder.Default
+    private String background = "User does not have a background";
 
 }

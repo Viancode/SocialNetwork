@@ -41,9 +41,10 @@ public class AuthServiceImpl implements AuthServicePort {
         if (user == null) {
             user = userDatabase.createUser(registerRequest);
         } else {
-            if (!user.getIsEmailVerified()) {
-                tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
-
+            boolean isEmailVerified = user.getIsEmailVerified();
+            boolean isExitVerifyToken = tokenService.getTokenByUserId(String.valueOf(user.getId()), TokenType.VERIFIED) != null; // true = exist
+            // user is not verified and there is no token in the database => create new user
+            if (!isEmailVerified && !isExitVerifyToken) {
                 userRepository.delete(user);
                 user = userDatabase.createUser(registerRequest);
             } else {

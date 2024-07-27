@@ -3,15 +3,17 @@ package com.example.socialnetwork.infrastructure.entity;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@FieldNameConstants
 @Getter
 @Setter
 @Entity
@@ -40,9 +42,6 @@ public class Post {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
 
     @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;

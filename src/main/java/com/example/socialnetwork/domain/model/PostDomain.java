@@ -26,8 +26,6 @@ public class PostDomain {
 
     private LocalDateTime updatedAt;
 
-    private Boolean isDeleted = false;
-
     private String photoLists;
 
     private List<Long> commentsIds = new ArrayList<>();

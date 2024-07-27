@@ -2,10 +2,7 @@ package com.example.socialnetwork.application.request;
 
 import com.example.socialnetwork.common.ValidationRegex;
 import com.example.socialnetwork.common.constant.Gender;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -32,6 +29,7 @@ public class RegisterRequest {
     private LocalDate dateOfBirth;
     @NotNull(message = "Password cannot be null")
     @NotBlank(message = "Password cannot be blank")
+    @Pattern(message = "Password should be valid", regexp = ValidationRegex.PASSWORD_REGEX)
     private String password;
 
 }

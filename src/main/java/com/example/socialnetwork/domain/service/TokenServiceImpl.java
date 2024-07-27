@@ -57,4 +57,14 @@ public class TokenServiceImpl implements TokenServicePort {
                 expiration, TimeUnit.MILLISECONDS
         );
     }
+
+    @Override
+    public String getTokenByUserId(String userId, TokenType tokenType) {
+        String keyPattern = String.format(KEY_PATTERN, tokenType.name(), userId, "*");
+        Set<String> keys = redisTemplate.keys(keyPattern);
+        if (keys == null || keys.isEmpty()) {
+            return null;
+        }
+        return keys.iterator().next().split("::")[2];
+    }
 }

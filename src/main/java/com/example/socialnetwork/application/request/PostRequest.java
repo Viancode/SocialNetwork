@@ -4,7 +4,6 @@ package com.example.socialnetwork.application.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +17,6 @@ public class PostRequest {
 
     private String visibility;
 
-    private MultipartFile[] photoLists;
+    private String photoLists;
 
 }

@@ -13,6 +13,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,9 +26,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -59,33 +59,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public FormErrorResponse handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ErrorResponse handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
-        Map<String, List<String>> groupedErrors = new HashMap<>();
-        Object targetObject = e.getBindingResult().getTarget();
+        List<String> errors = new ArrayList<>();
+        for (FieldError error : e.getBindingResult().getFieldErrors()) {
+            errors.add(error.getDefaultMessage());
+        }
+        for (ObjectError error : e.getBindingResult().getGlobalErrors()) {
+            errors.add(error.getDefaultMessage());
+        }
 
-        e.getBindingResult().getFieldErrors().forEach(
-                error -> {
-                    String fieldName = resolveFieldName(error.getField(), targetObject);
-                    groupedErrors.computeIfAbsent(fieldName, key -> new ArrayList<>()).add(error.getDefaultMessage());
-                }
-        );
+        String errorString = String.join(", ", errors);
 
-        List<FormErrorResponse.ValidationError> errors = new ArrayList<>();
-        groupedErrors.forEach((key, value) ->
-                errors.add(FormErrorResponse.ValidationError.builder()
-                        .field(key)
-                        .messages(value)
-                        .build())
-        );
-
-        return FormErrorResponse.builder()
-                .message("Invalid form data")
-                .path(request.getRequestURI())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .errors(errors)
-                .timestamp(Instant.now())
-                .build();
+        return buildErrorResponse(errorString, request, HttpStatus.BAD_REQUEST);
     }
 
     private String resolveFieldName(String fieldName, Object targetObject) {
@@ -151,6 +137,7 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnauthorizedException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.UNAUTHORIZED);
     }
 }
