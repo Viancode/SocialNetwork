@@ -12,6 +12,7 @@ import com.example.socialnetwork.infrastructure.repository.RelationshipRepositor
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,38 +26,45 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public RelationshipDomain find(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
         return relationshipMapper.toRelationshipDomain(relationship);
     }
 
     @Override
+    @Transactional
     public List<RelationshipDomain> getListSendRequest(long userId) {
         return relationshipMapper.toRelationshipDomain(relationshipRepository.findByUser_IdAndRelation(userId, ERelationship.PENDING));
     }
 
     @Override
+    @Transactional
     public List<RelationshipDomain> getListReceiveRequest(long userId) {
         return relationshipMapper.toRelationshipDomain(relationshipRepository.findByFriend_IdAndRelation(userId, ERelationship.PENDING));
     }
 
     @Override
+    @Transactional
     public void deleteRequest(long senderId, long receiverId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(senderId, receiverId);
         relationshipRepository.delete(relationship);
     }
 
     @Override
+    @Transactional
     public List<UserDomain> getListFriend(long userId) {
         return userMapper.toUserDomains(relationshipRepository.getListFriend(userId));
     }
 
     @Override
+    @Transactional
     public List<UserDomain> findFriendByKeyWord(long userId, String keyWord) {
         return userMapper.toUserDomains(relationshipRepository.getListFriendByKeyWord(userId, keyWord));
     }
 
     @Override
+    @Transactional
     public void deleteFriend(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
         relationship = (relationship == null) ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
@@ -70,6 +78,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     }
 
     @Override
+    @Transactional
     public void updateRelation(long userId, long friendId, ERelationship eRelationship) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
         relationship = (relationship == null) ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
@@ -81,6 +90,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     }
 
     @Override
+    @Transactional
     public void createRelationship(long userId, long friendId, ERelationship relation) {
         Relationship relationship = new Relationship();
         relationship.setUser(userRepository.findUserById(userId).get());

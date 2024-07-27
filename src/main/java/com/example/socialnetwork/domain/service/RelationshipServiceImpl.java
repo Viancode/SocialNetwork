@@ -171,21 +171,27 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     @Override
     public List<UserDomain> getFriendSuggestions(long userId) {
         UserDomain userCurrent = userDatabasePort.findById(userId);
+        List<UserDomain> userlist = userDatabasePort.getAllUser();
         List<UserDomain> friends = relationshipDatabasePort.getListFriend(userId);
         friends.add(userCurrent);
-        Set<Long> friendIds = friends.stream().map(UserDomain::getId).collect(Collectors.toSet());
-
-        return userDatabasePort.getAllUser().stream()
-                .filter(user -> !friendIds.contains(user.getId())) // Loại bỏ bạn bè khỏi danh sách người dùng
-                .map(user -> new AbstractMap.SimpleEntry<>(user, calculateScore(userCurrent, user, userId)))
+        userlist.removeAll(friends);
+        Map<UserDomain, Integer> map = new HashMap<>();
+        int commonScore = 0;
+        for(UserDomain user : userlist){
+            commonScore += calculateScore(userCurrent, user);
+            if(map.size() == 10) break;
+            map.put(user, commonScore);
+            commonScore = 0;
+        }
+        return map.entrySet()
+                .stream()
                 .sorted(Map.Entry.<UserDomain, Integer>comparingByValue().reversed())
-                .limit(10)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
-    private int calculateScore(UserDomain userCurrent, UserDomain user, long userId) {
-        int score = getNumberOfMutualFriends(userId, user.getId());
+    private int calculateScore(UserDomain userCurrent, UserDomain user) {
+        int score = getNumberOfMutualFriends(userCurrent.getId(), user.getId());
         if (Objects.equals(userCurrent.getLocation(), user.getLocation())) score += 15;
         if (Objects.equals(userCurrent.getEducation(), user.getEducation())) score += 10;
         if (Objects.equals(userCurrent.getWork(), user.getWork())) score += 5;
