@@ -25,10 +25,12 @@ BEGIN
     DECLARE j INT DEFAULT 0;
     DECLARE post_id_var BIGINT;
     DECLARE comment_id_var BIGINT;
+    DECLARE parent_comment_id BIGINT;
     DECLARE post_created_at DATETIME;
     DECLARE post_user_id INT;
     DECLARE can_tag BOOLEAN;
     DECLARE tag_user_id INT;
+    DECLARE comment_image VARCHAR(255);
 
     WHILE i < 60 DO
         SET post_user_id = (i DIV 20) + 1;
@@ -38,7 +40,7 @@ BEGIN
         SET post_created_at = DATE_SUB(post_created_at, INTERVAL FLOOR(RAND() * 60) MINUTE);
         SET post_created_at = DATE_SUB(post_created_at, INTERVAL FLOOR(RAND() * 60) SECOND);
 
-        -- Tạo bài đăng
+        -- Tạo bài đăng (giữ nguyên phần này)
 INSERT INTO posts (user_id, content, visibility, created_at, updated_at, photo_lists)
 VALUES (
            post_user_id,
@@ -51,19 +53,40 @@ VALUES (
 
 SET post_id_var = LAST_INSERT_ID();
 
-        -- Tạo 5 bình luận cho mỗi bài đăng
+        -- Tạo 10 bình luận cho mỗi bài đăng
         SET j = 0;
-        WHILE j < 5 DO
-            INSERT INTO comments (user_id, post_id, content, created_at, updated_at)
-            VALUES (
-                FLOOR(1 + RAND() * 3),
-                post_id_var,
-                CONCAT('Comment ', j, ' on post ', i),
-                DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
-                DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE)
-            );
+        SET parent_comment_id = NULL;
+        WHILE j < 10 DO
+            -- Quyết định xem comment này có phải là reply hay không
+            IF j > 0 AND RAND() < 0.4 THEN  -- 40% cơ hội là reply
+                SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
+ELSE
+                SET parent_comment_id = NULL;
+END IF;
 
-            SET comment_id_var = LAST_INSERT_ID();
+            -- Quyết định xem comment có ảnh hay không
+            IF RAND() < 0.3 THEN  -- 30% cơ hội có ảnh
+                SET comment_image = 'https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png';
+ELSE
+                SET comment_image = NULL;
+END IF;
+
+INSERT INTO comments (user_id, post_id, parent_comment_id, content, created_at, updated_at, is_hidden, image)
+VALUES (
+           FLOOR(1 + RAND() * 3),
+           post_id_var,
+           parent_comment_id,
+           CASE
+               WHEN parent_comment_id IS NULL THEN CONCAT('Comment ', j, ' on post ', i)
+               ELSE CONCAT('Reply to comment ', parent_comment_id, ' on post ', i)
+               END,
+           DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
+           DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
+           0,  -- Giả sử mặc định không ẩn
+           comment_image
+       );
+
+SET comment_id_var = LAST_INSERT_ID();
 
             -- Thêm phản ứng cho bình luận (50% cơ hội)
             IF RAND() < 0.5 THEN

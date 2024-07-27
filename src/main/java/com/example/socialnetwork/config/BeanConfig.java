@@ -4,19 +4,10 @@ import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.common.mapper.TagMapper;
 import com.example.socialnetwork.domain.port.api.*;
-import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
-import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
-import com.example.socialnetwork.domain.port.spi.TagDatabasePort;
-import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
+import com.example.socialnetwork.domain.port.spi.*;
 import com.example.socialnetwork.domain.service.*;
-import com.example.socialnetwork.infrastructure.adapter.PostDatabaseAdapter;
-import com.example.socialnetwork.infrastructure.adapter.TagDatabaseAdapter;
-import com.example.socialnetwork.infrastructure.adapter.RelationshipDatabaseAdapter;
-import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
-import com.example.socialnetwork.infrastructure.repository.PostRepository;
-import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
-import com.example.socialnetwork.infrastructure.repository.TagRepository;
-import com.example.socialnetwork.infrastructure.repository.UserRepository;
+import com.example.socialnetwork.infrastructure.adapter.*;
+import com.example.socialnetwork.infrastructure.repository.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -86,8 +77,8 @@ public class BeanConfig {
 
 
     @Bean
-    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository) {
-        return new PostDatabaseAdapter(repository,relationshipRepository);
+    public PostDatabasePort postDatabasePort(PostRepository repository) {
+        return new PostDatabaseAdapter(repository);
     }
 
     @Bean
@@ -108,5 +99,15 @@ public class BeanConfig {
     @Bean
     public TagServicePort tagServicePort(TagDatabasePort tagDatabasePort) {
         return new  TagServiceImpl(tagDatabasePort);
+    }
+
+    @Bean
+    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase) {
+        return new CommentServiceImpl(commentDatabasePort, userDatabase);
+    }
+
+    @Bean
+    public CommentDatabasePort commentDatabasePort(CommentRepository commentRepository) {
+        return new CommentDatabaseAdapter(commentRepository);
     }
 }

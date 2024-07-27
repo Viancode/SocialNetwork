@@ -43,6 +43,9 @@ public class Comment {
     @Column(name = "is_hidden")
     private Boolean isHidden;
 
+    @Column(name = "image")
+    private String image;
+
     @OneToMany(mappedBy = "comment")
     private List<CommentReaction> commentReactions = new ArrayList<>();
 }

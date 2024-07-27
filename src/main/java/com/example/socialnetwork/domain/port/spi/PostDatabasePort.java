@@ -14,5 +14,5 @@ public interface PostDatabasePort {
     PostDomain updatePost(PostDomain postDomain);
     void deletePost(Long postId);
     PostDomain findById(Long id);
-    Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, Visibility visibility);
+    Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, List<Visibility> visibility);
 }
