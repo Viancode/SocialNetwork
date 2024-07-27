@@ -16,7 +16,10 @@ import java.util.List;
 @Repository
 @EnableJpaRepositories
 public interface RelationshipRepository extends JpaRepository<Relationship, Long> {
-    Relationship findByUser_IdAndFriend_Id(long userId, long friend_id);
+    @Query("SELECT r FROM Relationship r " +
+            "WHERE (r.user.id = :userId AND r.friend.id = :friendId) " +
+            "OR (r.user.id = :friendId AND r.friend.id = :userId)")
+    Relationship findByUser_IdAndFriend_Id(@Param("userId") long userId,@Param("friendId") long friend_id);
 
     List<Relationship> findByFriend_IdAndRelation(long userId, ERelationship relation);
 
@@ -25,10 +28,10 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
     @EntityGraph(attributePaths = {"user"})
     @Query("SELECT u FROM User u " +
             "INNER JOIN Relationship r ON r.user.id = u.id OR r.friend.id = u.id " +
-            "WHERE r.relation = 'FRIEND' " +
+            "WHERE r.relation = :relation " +
             "AND (r.friend.id = :userId OR r.user.id = :userId) " +
             "AND u.id <> :userId")
-    List<User> getListFriend(@Param("userId") long userId);
+    List<User> getListUserWithRelation(@Param("userId") long userId, @Param("relation") ERelationship relation);
 
     @EntityGraph(attributePaths = {"user"})
     @Query("SELECT u FROM User u " +

@@ -54,7 +54,13 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     @Override
     @Transactional
     public List<UserDomain> getListFriend(long userId) {
-        return userMapper.toUserDomains(relationshipRepository.getListFriend(userId));
+        return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.FRIEND));
+    }
+
+    @Override
+    @Transactional
+    public List<UserDomain> getListBlock(long userId) {
+        return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.BLOCK));
     }
 
     @Override
@@ -67,7 +73,6 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     @Transactional
     public void deleteFriend(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
-        relationship = (relationship == null) ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
         if(relationship == null || relationship.getRelation() == ERelationship.PENDING) {
             throw new NotFoundException("you two are not friends");
         }else if(relationship.getRelation() == ERelationship.BLOCK) {
@@ -81,7 +86,6 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     @Transactional
     public void updateRelation(long userId, long friendId, ERelationship eRelationship) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
-        relationship = (relationship == null) ? relationshipRepository.findByUser_IdAndFriend_Id(friendId, userId) : relationship;
         if(relationship == null) {
             throw new NotFoundException("Not found relationship");
         }

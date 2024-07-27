@@ -23,11 +23,13 @@ public interface RelationshipServicePort {
 
     List<UserDomain> findFriend(long userId, String keyWord);
 
-    List<RelationshipDomain> getListReceiveRequest();
+    List<UserDomain> getListReceiveRequest();
 
-    List<RelationshipDomain> getListSendRequest();
+    List<UserDomain> getListSendRequest();
 
     List<UserDomain> getListFriend(long userId);
+
+    List<UserDomain> getListBlock();
 
     List<UserDomain> getFriendSuggestions(long userId);
 }

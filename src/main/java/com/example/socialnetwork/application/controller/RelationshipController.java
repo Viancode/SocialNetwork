@@ -44,12 +44,12 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/get_list_receive_requests")
     public ResponseEntity<?> getListReceiveRequest(){
-        return buildResponse("Get list receive requests successfully", relationshipMapper.toResponse(relationshipService.getListReceiveRequest()));
+        return buildResponse("Get list receive requests successfully", userMapper.toFriendResponses(relationshipService.getListReceiveRequest()));
     }
 
     @GetMapping("/get_list_send_requests")
     public ResponseEntity<?> getListSendRequest(){
-        return buildResponse("Get list receive requests successfully", relationshipMapper.toResponse(relationshipService.getListSendRequest()));
+        return buildResponse("Get list receive requests successfully", userMapper.toFriendResponses(relationshipService.getListSendRequest()));
     }
 
     @GetMapping("/get_list_friends")
@@ -57,6 +57,10 @@ public class RelationshipController  extends BaseController{
         return buildResponse("Get list friends successfully", userMapper.toFriendResponses(relationshipService.getListFriend(userId)));
     }
 
+    @GetMapping("/get_list_block")
+    public ResponseEntity<?> getListBlock(){
+        return buildResponse("Get list users blocked successfully", userMapper.toFriendResponses(relationshipService.getListBlock()));
+    }
 
     @DeleteMapping("/delete_friend")
     public ResponseEntity<?> removeFriend(@RequestParam long userId){
