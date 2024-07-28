@@ -122,5 +122,3 @@ CREATE TABLE messages (
 );
 
 ALTER TABLE comments ADD COLUMN image VARCHAR(255);
-
-
