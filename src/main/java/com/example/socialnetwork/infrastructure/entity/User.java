@@ -1,6 +1,5 @@
 package com.example.socialnetwork.infrastructure.entity;
 
-import com.example.socialnetwork.common.constant.ERole;
 import com.example.socialnetwork.common.constant.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
