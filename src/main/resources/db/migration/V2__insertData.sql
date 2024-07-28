@@ -12,11 +12,8 @@ VALUES
 INSERT INTO relationships (user_id, friend_id, created_at, relation)
 VALUES
     (1, 2, NOW(), 'FRIEND'),
-    (2, 1, NOW(), 'FRIEND'),
     (1, 3, NOW(), 'BLOCK'),
-    (3, 1, NOW(), 'BLOCK'),
-    (2, 3, NOW(), 'PENDING'),
-    (3, 2, NOW(), 'PENDING');
+    (2, 3, NOW(), 'PENDING');
 
 DELIMITER //
 CREATE PROCEDURE create_posts_comments_reactions()
