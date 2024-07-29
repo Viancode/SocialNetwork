@@ -17,8 +17,11 @@ import java.util.List;
 public class CommentDomain {
     private Long commentId;
     private Long userId;
+    private String username;
+    private String avatar;
     private Long postId;
     private Long parentComment;
+    private Long numberOfChild;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

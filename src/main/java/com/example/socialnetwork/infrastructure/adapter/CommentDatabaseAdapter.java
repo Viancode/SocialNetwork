@@ -37,7 +37,7 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     }
 
     @Override
-    public Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long targetUserId, Visibility visibility) {
+    public Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long targetUserId, Long postId) {
         return null;
     }
 }

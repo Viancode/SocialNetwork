@@ -12,5 +12,5 @@ public interface CommentDatabasePort {
     CommentDomain updateComment(Comment comment);
     void deleteComment(Long commentId);
     Comment findById(Long id);
-    Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long targetUserId, Visibility visibility);
+    Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long targetUserId, Long postId);
 }

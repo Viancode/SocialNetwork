@@ -12,6 +12,7 @@ import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -79,7 +80,15 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public Page<CommentResponse> getAllComments(Long postId, int page, int pageSize, String sortBy, String sortDirection) {
-        return null;
+    public Page<CommentResponse> getAllComments(Long userId, Long postId, int page, int pageSize, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+
+        Page<CommentDomain> comments = null;
+        comments = commentDatabasePort.getAllComments(page, pageSize, sort, userId, postId);
+
+        if (comments != null) {
+            return comments.map()
+        }
     }
 }

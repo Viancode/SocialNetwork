@@ -22,15 +22,18 @@ import java.time.LocalDate;
 public class CommentController extends BaseController {
     private final CommentServicePort commentServicePort;
 
-//    @GetMapping("/{postId}")
-//    public ResponseEntity<ResultResponse> getComments(@PathVariable Long postId,
-//                                                      @RequestParam(defaultValue = "1") int page,
-//                                                      @RequestParam(defaultValue = "5") int pageSize,
-//                                                      @RequestParam(defaultValue = "createdAt") String sortBy,
-//                                                      @RequestParam(defaultValue = "desc") String sortDirection) {
-//        Page<CommentResponse> comments = commentServicePort.getAllComments(postId, page, pageSize, sortBy, sortDirection);
-//        return buildResponse("Get comments successfully", comments);
-//    }
+    @GetMapping("/")
+    public ResponseEntity<ResultResponse> getComments(@RequestParam Long postId,
+                                                      @RequestParam(defaultValue = "1") int page,
+                                                      @RequestParam(defaultValue = "5") int pageSize,
+                                                      @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                      @RequestParam(defaultValue = "desc") String sortDirection,
+                                                      Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = Long.valueOf(user.getUsername());
+        Page<CommentResponse> comments = commentServicePort.getAllComments(userId, postId, page, pageSize, sortBy, sortDirection);
+        return buildResponse("Get comments successfully", comments);
+    }
 
     @PostMapping("/")
     public ResponseEntity<?> createComment(@ModelAttribute CommentRequest commentRequest, Authentication authentication) {

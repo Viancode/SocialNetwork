@@ -59,7 +59,6 @@ public class PostServiceImpl implements PostServicePort {
     public Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId) {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(page, pageSize, sort);
 
         Page<PostDomain> posts = null;
         if (userId.equals(targetUserId)) {
@@ -79,7 +78,7 @@ public class PostServiceImpl implements PostServicePort {
         if (posts != null) {
             return posts.map(PostMapper.INSTANCE::postDomainToPostResponse);
         } else {
-            throw new NotAllowException("You don't have permission to view this user's posts");
+            throw new NotAllowException("You don't have permission to view this user's posts or user doesn't have any posts");
         }
     }
 }

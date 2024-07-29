@@ -9,5 +9,5 @@ public interface CommentServicePort {
     CommentDomain createComment(Long userid, CommentRequest commentRequest);
     CommentDomain updateComment(Long userid, CommentRequest commentRequest);
     void deleteComment(Long userId, Long commentId);
-    Page<CommentResponse> getAllComments(Long postId, int page, int pageSize, String sortBy, String sortDirection);
+    Page<CommentResponse> getAllComments(Long userId, Long postId, int page, int pageSize, String sortBy, String sortDirection);
 }

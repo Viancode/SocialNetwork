@@ -17,6 +17,10 @@ public class PostResponse {
 
     private Long userId;
 
+    private String username;
+
+    private String avatar;
+
     private String content;
 
     private String visibility;
