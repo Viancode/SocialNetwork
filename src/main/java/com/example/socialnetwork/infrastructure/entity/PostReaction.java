@@ -3,9 +3,10 @@ package com.example.socialnetwork.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDateTime;
-
+@FieldNameConstants
 @Getter
 @Setter
 @Entity
