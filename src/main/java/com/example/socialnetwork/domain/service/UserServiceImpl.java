@@ -132,4 +132,9 @@ public class UserServiceImpl implements UserServicePort {
 
         userDatabase.save(user);
     }
+
+    @Override
+    public UserDomain findUserById(Long userId) {
+        return userDatabase.findById(userId);
+    }
 }

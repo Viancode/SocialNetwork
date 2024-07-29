@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class PostServiceImpl implements PostServicePort {
 
     private final PostDatabasePort postDatabasePort;
     private final RelationshipServicePort relationshipService;
+    private final PostMapper postMapper;
 
     @Override
     public PostDomain createPost(PostRequest postRequest) {
@@ -57,27 +59,22 @@ public class PostServiceImpl implements PostServicePort {
     public Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId) {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(page, pageSize, sort);
-
-
+        Page<PostDomain> posts = null;
         if (userId.equals(targetUserId)) {
-            Page<PostDomain> posts = postDatabasePort.getAllPosts(page, pageSize, sort, userId, null);
-            return new PageImpl<>(posts.stream().map(PostMapper.INSTANCE::postDomainToPostResponse).collect(Collectors.toList()), pageable, posts.getContent().size());
+            posts = postDatabasePort.getAllPosts(page, pageSize, sort, userId, List.of(Visibility.PUBLIC, Visibility.FRIEND, Visibility.PRIVATE));
+        } else {
+            ERelationship relationship = relationshipService.getRelationship(userId, targetUserId);
+            if (relationship == null || relationship == ERelationship.PENDING) {
+                posts = postDatabasePort.getAllPosts(page, pageSize, sort, targetUserId, List.of(Visibility.PUBLIC));
+            }
+            if (relationship == ERelationship.FRIEND) {
+                posts = postDatabasePort.getAllPosts(page, pageSize, sort, targetUserId, List.of(Visibility.PUBLIC, Visibility.FRIEND));
+            }
         }
-
-        ERelationship relationship = relationshipService.getRelationship(userId, targetUserId);
-        System.out.println(relationship);
-
-        if (relationship == null || relationship == ERelationship.PENDING) {
-            Page<PostDomain> posts = postDatabasePort.getAllPosts(page, pageSize, sort, targetUserId, Visibility.PUBLIC);
-            return new PageImpl<>(posts.stream().map(PostMapper.INSTANCE::postDomainToPostResponse).collect(Collectors.toList()), pageable, posts.getContent().size());
+        if (posts != null) {
+            return posts.map(postMapper::postDomainToPostResponse);
+        } else {
+            throw new NotAllowException("You don't have permission to view this user's posts or user doesn't have any posts");
         }
-
-        if (relationship == ERelationship.FRIEND) {
-            Page<PostDomain> posts = postDatabasePort.getAllPosts(page, pageSize, sort, targetUserId, Visibility.FRIEND);
-            return new PageImpl<>(posts.stream().map(PostMapper.INSTANCE::postDomainToPostResponse).collect(Collectors.toList()), pageable, posts.getContent().size());
-        }
-
-        throw new NotAllowException("You don't have permission to view this user's posts");
     }
 }

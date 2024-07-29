@@ -16,7 +16,10 @@ import java.util.List;
 @Repository
 @EnableJpaRepositories
 public interface RelationshipRepository extends JpaRepository<Relationship, Long> {
-    Relationship findByUser_IdAndFriend_Id(long userId, long friend_id);
+    @Query("SELECT r FROM Relationship r " +
+            "WHERE (r.user.id = :userId AND r.friend.id = :friendId)" +
+            "OR (r.user.id = :friendId AND r.friend.id = :userId)")
+    Relationship findByUser_IdAndFriend_Id(long userId, long friendId);
 
     List<Relationship> findByFriend_IdAndRelation(long userId, ERelationship relation);
 

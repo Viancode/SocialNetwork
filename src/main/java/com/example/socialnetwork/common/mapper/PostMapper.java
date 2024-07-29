@@ -1,67 +1,141 @@
 package com.example.socialnetwork.common.mapper;
-
 import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.domain.model.PostDomain;
-import com.example.socialnetwork.infrastructure.entity.Comment;
-import com.example.socialnetwork.infrastructure.entity.Post;
-import com.example.socialnetwork.infrastructure.entity.PostReaction;
-import com.example.socialnetwork.infrastructure.entity.Tag;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import com.example.socialnetwork.domain.port.api.UserServicePort;
+import com.example.socialnetwork.infrastructure.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper
-public interface PostMapper {
-    PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class PostMapper {
+
+    private final UserServicePort userServicePort;
+
+    public PostDomain postToPostDomain(Post post) {
+        if (post == null) {
+            return null;
+        } else {
+            PostDomain postDomain = new PostDomain();
+            postDomain.setUserId(this.postUserId(post));
+            postDomain.setPostReactionsIds(this.postReactionsToIds(post.getPostReactions()));
+            postDomain.setCommentsIds(this.commentsToIds(post.getComments()));
+            postDomain.setTagsIds(this.tagsToIds(post.getTags()));
+            postDomain.setId(post.getId());
+            postDomain.setContent(post.getContent());
+            postDomain.setVisibility(post.getVisibility());
+            postDomain.setCreatedAt(post.getCreatedAt());
+            postDomain.setUpdatedAt(post.getUpdatedAt());
+            postDomain.setPhotoLists(post.getPhotoLists());
+            return postDomain;
+        }
+    }
+
+    public Post postDomainToPost(PostDomain postDomain) {
+        if (postDomain == null) {
+            return null;
+        } else {
+            Post post = new Post();
+            post.setUser(this.postDomainToUser(postDomain));
+            post.setId(postDomain.getId());
+            post.setContent(postDomain.getContent());
+            post.setVisibility(postDomain.getVisibility());
+            post.setCreatedAt(postDomain.getCreatedAt());
+            post.setUpdatedAt(postDomain.getUpdatedAt());
+            post.setPhotoLists(postDomain.getPhotoLists());
+            return post;
+        }
+    }
+
+    public PostResponse postDomainToPostResponse(PostDomain postDomain) {
+        if (postDomain == null) {
+            return null;
+        } else {
+            PostResponse postResponse = new PostResponse();
+            postResponse.setNumberOfComments(this.commentsToNumber(postDomain.getCommentsIds()));
+            postResponse.setNumberOfReacts(this.postReactionsIdsToNumber(postDomain.getPostReactionsIds()));
+            postResponse.setPhotoLists(this.photoToList(postDomain.getPhotoLists()));
+            postResponse.setId(postDomain.getId());
+            postResponse.setUserId(postDomain.getUserId());
+            postResponse.setContent(postDomain.getContent());
+            if (postDomain.getVisibility() != null) {
+                postResponse.setVisibility(postDomain.getVisibility().name());
+            }
+
+            postResponse.setUsername(getUsername(postDomain.getUserId()));
+            postResponse.setAvatar(getAvatar(postDomain.getUserId()));
+
+            postResponse.setCreatedAt(postDomain.getCreatedAt());
+            postResponse.setUpdatedAt(postDomain.getUpdatedAt());
+            List<Long> list1 = postDomain.getTagsIds();
+            if (list1 != null) {
+                postResponse.setTagsIds(new ArrayList(list1));
+            }
+
+            return postResponse;
+        }
+    }
+
+    public String getUsername(Long userId) {
+        return userServicePort.findUserById(userId).getUsername();
+    }
+    public String getAvatar(Long userId) {
+        return userServicePort.findUserById(userId).getAvatar();
+    }
 
 
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(target = "postReactionsIds", source = "postReactions", qualifiedByName = "postReactionsToIds")
-    @Mapping(target = "commentsIds", source = "comments", qualifiedByName = "commentsToIds")
-    @Mapping(target = "tagsIds", source = "tags", qualifiedByName = "tagsToIds")
-    PostDomain postToPostDomain(Post post);
 
-    @Mapping(source = "userId", target = "user.id")
-    @Mapping(target = "postReactions", ignore = true)
-    @Mapping(target = "comments", ignore = true)
-    @Mapping(target = "tags", ignore = true)
-    Post postDomainToPost(PostDomain postDomain);
+    private Long postUserId(Post post) {
+        if (post == null) {
+            return null;
+        } else {
+            User user = post.getUser();
+            if (user == null) {
+                return null;
+            } else {
+                Long id = user.getId();
+                return id == null ? null : id;
+            }
+        }
+    }
 
-    @Mapping(target = "numberOfComments", source = "commentsIds", qualifiedByName = "commentsIdsToNumber")
-    @Mapping(target = "numberOfReacts", source = "postReactionsIds", qualifiedByName = "postReactionsIdsToNumber")
-    @Mapping(target = "photoLists", source = "photoLists", qualifiedByName = "photoToList")
-    PostResponse postDomainToPostResponse(PostDomain postDomain);
+    protected User postDomainToUser(PostDomain postDomain) {
+        if (postDomain == null) {
+            return null;
+        } else {
+            User.UserBuilder user = User.builder();
+            user.id(postDomain.getUserId());
+            return user.build();
+        }
+    }
 
-    @org.mapstruct.Named("commentsIdsToNumber")
-    default Long commentsToNumber(List<Long> comments) {
+    public Long commentsToNumber(List<Long> comments) {
         return (long) comments.size();
     }
-    @org.mapstruct.Named("postReactionsIdsToNumber")
-    default Long postReactionsIdsToNumber(List<Long>  reactions) {
+
+    public Long postReactionsIdsToNumber(List<Long> reactions) {
         return (long) reactions.size();
     }
-    @org.mapstruct.Named("photoToList")
-    default List<String> photoToList(String photo) {
+
+    public List<String> photoToList(String photo) {
         String[] split = photo.split(",");
         return new ArrayList<>(List.of(split));
     }
 
-    @org.mapstruct.Named("postReactionsToIds")
-    default List<Long> postReactionsToIds(List<PostReaction> reactions) {
+    public List<Long> postReactionsToIds(List<PostReaction> reactions) {
         return reactions != null ? reactions.stream().map(PostReaction::getId).collect(Collectors.toList()) : null;
     }
 
-    @org.mapstruct.Named("commentsToIds")
-    default List<Long> commentsToIds(List<Comment> comments) {
+    public List<Long> commentsToIds(List<Comment> comments) {
         return comments != null ? comments.stream().map(Comment::getId).collect(Collectors.toList()) : null;
     }
 
-    @org.mapstruct.Named("tagsToIds")
-    default List<Long> tagsToIds(List<Tag> tags) {
+    public List<Long> tagsToIds(List<Tag> tags) {
         return tags != null ? tags.stream().map(Tag::getId).collect(Collectors.toList()) : null;
     }
 }
