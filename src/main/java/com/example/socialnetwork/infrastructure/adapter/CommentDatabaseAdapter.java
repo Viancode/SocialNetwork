@@ -11,19 +11,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 public class CommentDatabaseAdapter implements CommentDatabasePort {
     private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
     @Override
-    public CommentDomain createComment(CommentDomain commentDomain) {
-        Comment comment = commentRepository.save(CommentMapper.INSTANCE.commentDomainToComment(commentDomain));
-        return CommentMapper.INSTANCE.commentToCommentDomain(comment);
+    public CommentDomain createComment(CommentDomain comment) {
+        Comment commentEntity = commentMapper.commentDomainToCommentEntity(comment);
+        return  commentMapper.commentEntityToCommentDomain(commentRepository.save(commentEntity));
     }
 
     @Override
-    public CommentDomain updateComment(Comment comment) {
-        Comment updateComment = commentRepository.save(comment);
-        return CommentMapper.INSTANCE.commentToCommentDomain(updateComment);
+    public Comment updateComment(Comment comment) {
+        return commentRepository.save(comment);
     }
 
     @Override
@@ -34,6 +37,14 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     @Override
     public Comment findById(Long id) {
         return commentRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<CommentDomain> findAllByParentComment(CommentDomain parentComment) {
+        return commentRepository.findAllByParentComment(commentMapper.commentDomainToCommentEntity(parentComment))
+                .stream()
+                .map(commentMapper::commentEntityToCommentDomain)
+                .collect(Collectors.toList());
     }
 
     @Override

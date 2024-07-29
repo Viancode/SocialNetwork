@@ -23,6 +23,7 @@ public class PostServiceImpl implements PostServicePort {
 
     private final PostDatabasePort postDatabasePort;
     private final RelationshipServicePort relationshipService;
+    private final PostMapper postMapper;
 
     @Override
     public PostDomain createPost(PostRequest postRequest) {
@@ -32,7 +33,6 @@ public class PostServiceImpl implements PostServicePort {
         postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
         postDomain.setPhotoLists(postRequest.getPhotoLists());
         postDomain.setCreatedAt(LocalDateTime.now());
-        postDomain.setUpdatedAt(LocalDateTime.now());
         return postDatabasePort.createPost(postDomain);
     }
 
@@ -59,24 +59,20 @@ public class PostServiceImpl implements PostServicePort {
     public Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId) {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
-
         Page<PostDomain> posts = null;
         if (userId.equals(targetUserId)) {
             posts = postDatabasePort.getAllPosts(page, pageSize, sort, userId, List.of(Visibility.PUBLIC, Visibility.FRIEND, Visibility.PRIVATE));
         } else {
             ERelationship relationship = relationshipService.getRelationship(userId, targetUserId);
-
             if (relationship == null || relationship == ERelationship.PENDING) {
                 posts = postDatabasePort.getAllPosts(page, pageSize, sort, targetUserId, List.of(Visibility.PUBLIC));
             }
-
             if (relationship == ERelationship.FRIEND) {
                 posts = postDatabasePort.getAllPosts(page, pageSize, sort, targetUserId, List.of(Visibility.PUBLIC, Visibility.FRIEND));
             }
         }
-
         if (posts != null) {
-            return posts.map(PostMapper.INSTANCE::postDomainToPostResponse);
+            return posts.map(postMapper::postDomainToPostResponse);
         } else {
             throw new NotAllowException("You don't have permission to view this user's posts or user doesn't have any posts");
         }

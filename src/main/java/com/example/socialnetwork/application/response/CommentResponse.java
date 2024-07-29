@@ -1,24 +1,25 @@
 package com.example.socialnetwork.application.response;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CommentResponse {
-    Long commentId;
-    Long userId;
-    String username;
-    String avatar;
-    Long postId;
-    Long parentComment;
-    Long numberOfChild;
-    String content;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    Boolean isHidden;
-    String image;
-    Long reactCount;
+    private Long commentId;
+    private Long userId;
+    private String username;
+    private String avatar;
+    private Long postId;
+    private Long parentComment;
+    private Long numberOfChild;
+    private String content;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean isHidden;
+    private String image;
+    private Long reactCount;
 }

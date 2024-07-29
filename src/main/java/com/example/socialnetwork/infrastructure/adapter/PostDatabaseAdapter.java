@@ -9,12 +9,11 @@ import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import com.example.socialnetwork.infrastructure.repository.PostRepository;
+import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.example.socialnetwork.infrastructure.specification.PostSpecification.*;
@@ -22,11 +21,13 @@ import static com.example.socialnetwork.infrastructure.specification.PostSpecifi
 @RequiredArgsConstructor
 public class PostDatabaseAdapter implements PostDatabasePort {
     private final PostRepository postRepository;
+    private final RelationshipRepository relationshipRepository;
+    private final PostMapper postMapper;
 
     @Override
     public PostDomain createPost(PostDomain postDomain) {
-        Post post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
-        return PostMapper.INSTANCE.postToPostDomain(post);
+        Post post = postRepository.save(postMapper.postDomainToPost(postDomain));
+        return postMapper.postToPostDomain(post);
     }
 
     @Override
@@ -35,8 +36,8 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         if (post == null) {
             throw new NotFoundException("Post not found");
         }else{
-            post = postRepository.save(PostMapper.INSTANCE.postDomainToPost(postDomain));
-            return PostMapper.INSTANCE.postToPostDomain(post);
+            post = postRepository.save(postMapper.postDomainToPost(postDomain));
+            return postMapper.postToPostDomain(post);
 
         }
     }
@@ -58,16 +59,15 @@ public class PostDatabaseAdapter implements PostDatabasePort {
 
     @Override
     public PostDomain findById(Long id) {
-        return PostMapper.INSTANCE.postToPostDomain(postRepository.findById(id).isPresent()? postRepository.findById(id).get():null);
+        return postMapper.postToPostDomain(postRepository.findById(id).isPresent()? postRepository.findById(id).get():null);
     }
 
     @Override
     public Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, List<Visibility> visibilities) {
         var pageable = PageRequest.of(page - 1, pageSize, sort);
         var spec = getSpec(targetUserId, visibilities);
-        return postRepository.findAll(spec, pageable).map(PostMapper.INSTANCE::postToPostDomain);
+        return postRepository.findAll(spec, pageable).map(postMapper::postToPostDomain);
     }
-
     private Specification<Post> getSpec(Long targetUserId, List<Visibility> visibilities) {
         Specification<Post> spec = Specification.where(null);
         if (visibilities != null && !visibilities.isEmpty()) {
@@ -75,4 +75,6 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         }
         return spec;
     }
+
+
 }

@@ -1,16 +1,16 @@
-package com.example.socialnetwork.domain.model;
-
+package com.example.socialnetwork.application.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class PostReactionDomain {
-    private Long id = null;
+@NoArgsConstructor
+public class PostReactionResponse {
+    private Long id;
     private Long userId;
     private Long postId;
     private String reactionType;

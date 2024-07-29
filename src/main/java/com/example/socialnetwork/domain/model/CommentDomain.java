@@ -1,10 +1,9 @@
 package com.example.socialnetwork.domain.model;
 
+import com.example.socialnetwork.infrastructure.entity.CommentReaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -14,18 +13,19 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class CommentDomain {
     private Long commentId;
-    private Long userId;
-    private String username;
-    private String avatar;
-    private Long postId;
-    private Long parentComment;
+    private UserDomain user;
+    private PostDomain post;
+    private CommentDomain parentComment;
     private Long numberOfChild;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean isHidden;
     private String image;
-    private List<Long> reactionsId;
+    private List<CommentReaction> reactionsId;
 }

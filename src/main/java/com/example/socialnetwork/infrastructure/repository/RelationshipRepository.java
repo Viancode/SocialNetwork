@@ -2,6 +2,7 @@ package com.example.socialnetwork.infrastructure.repository;
 
 
 import com.example.socialnetwork.common.constant.ERelationship;
+import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
 import com.example.socialnetwork.infrastructure.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;

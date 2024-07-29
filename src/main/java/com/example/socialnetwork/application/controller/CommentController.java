@@ -21,6 +21,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class CommentController extends BaseController {
     private final CommentServicePort commentServicePort;
+    private final CommentMapper commentMapper;
 
     @GetMapping("/")
     public ResponseEntity<ResultResponse> getComments(@RequestParam Long postId,
@@ -39,14 +40,21 @@ public class CommentController extends BaseController {
     public ResponseEntity<?> createComment(@ModelAttribute CommentRequest commentRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         CommentDomain newComment = commentServicePort.createComment(Long.valueOf(user.getUsername()),commentRequest);
-        return buildResponse("Create comment successfully", CommentMapper.INSTANCE.commentDomainToCommentResponse(newComment));
+        return buildResponse("Create comment successfully", commentMapper.commentDomainToCommentResponse(newComment));
     }
 
     @PutMapping("/")
-    public ResponseEntity<?> updateComment(@ModelAttribute CommentRequest commentRequest, Authentication authentication) {
+    public ResponseEntity<?> updateComment(
+            @RequestParam("commentId") Long commentId,
+            @RequestParam("content") String content,
+            @RequestParam("image") String image,
+            @RequestParam("postId") Long postId,
+//            @RequestParam(value = "parentComment", required = false) Long parentComment,
+            Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        CommentDomain commentDomain = commentServicePort.updateComment(Long.valueOf(user.getUsername()), commentRequest);
-        return buildResponse("Update comment successfully", CommentMapper.INSTANCE.commentDomainToCommentResponse(commentDomain));
+        Long userId = Long.valueOf(user.getUsername());
+        CommentDomain commentDomain = commentServicePort.updateComment(userId, commentId, content, image, postId);
+        return buildResponse("Update comment successfully", commentMapper.commentDomainToCommentResponse(commentDomain));
     }
 
     @DeleteMapping("/")

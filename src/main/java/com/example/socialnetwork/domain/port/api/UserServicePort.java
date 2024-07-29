@@ -10,4 +10,5 @@ public interface UserServicePort {
     void sendVerificationEmail(User user, String confirmToken);
     void sendEmailResetPassword(User user, String resetToken);
     void updateProfile(Long userId, ProfileRequest profileRequest);
+    UserDomain findUserById(Long userId);
 }

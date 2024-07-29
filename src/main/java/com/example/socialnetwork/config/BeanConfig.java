@@ -1,8 +1,6 @@
 package com.example.socialnetwork.config;
 
-import com.example.socialnetwork.common.mapper.RelationshipMapper;
-import com.example.socialnetwork.common.mapper.UserMapper;
-import com.example.socialnetwork.common.mapper.TagMapper;
+import com.example.socialnetwork.common.mapper.*;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.*;
 import com.example.socialnetwork.domain.service.*;
@@ -77,13 +75,13 @@ public class BeanConfig {
 
 
     @Bean
-    public PostDatabasePort postDatabasePort(PostRepository repository) {
-        return new PostDatabaseAdapter(repository);
+    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository, PostMapper postMapper) {
+        return new PostDatabaseAdapter(repository,relationshipRepository,postMapper);
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipServicePort relationshipService) {
-        return new PostServiceImpl(postDatabasePort,relationshipService);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipServicePort relationshipService, PostMapper postMapper) {
+        return new PostServiceImpl(postDatabasePort,relationshipService, postMapper);
     }
 
     @Bean
@@ -102,12 +100,22 @@ public class BeanConfig {
     }
 
     @Bean
-    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase) {
-        return new CommentServiceImpl(commentDatabasePort, userDatabase);
+    PostReactionDatabasePort postReactionDatabasePort(PostReactionRepository postReactionRepository) {
+        return new PostReactionDatabaseAdapter(postReactionRepository);
     }
 
     @Bean
-    public CommentDatabasePort commentDatabasePort(CommentRepository commentRepository) {
-        return new CommentDatabaseAdapter(commentRepository);
+    PostReactionServicePort postReactionServicePort(PostReactionDatabasePort postReactionDatabasePort, PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort){
+        return new PostReactionServiceImpl(postReactionDatabasePort, postDatabasePort, relationshipDatabasePort);
+    }
+
+    @Bean
+    public CommentDatabasePort commentDatabasePort(CommentRepository commentRepository, CommentMapper commentMapper) {
+        return new CommentDatabaseAdapter(commentRepository, commentMapper);
+    }
+
+    @Bean
+    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, CommentMapper commentMapper) {
+        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, commentMapper);
     }
 }

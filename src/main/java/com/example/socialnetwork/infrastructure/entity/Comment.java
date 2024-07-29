@@ -2,8 +2,7 @@ package com.example.socialnetwork.infrastructure.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,6 +11,9 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "comments")
 public class Comment {
     @Id
@@ -27,15 +29,9 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-//    @Column(name = "parent_comment_id")
-//    private Long parentComment;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
-
-    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
-    private List<Comment> childComments = new ArrayList<>();
 
     @Size(max = 255)
     @Column(name = "content")
@@ -53,6 +49,6 @@ public class Comment {
     @Column(name = "image")
     private String image;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<CommentReaction> commentReactions = new ArrayList<>();
 }

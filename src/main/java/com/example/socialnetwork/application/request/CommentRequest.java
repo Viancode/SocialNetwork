@@ -8,16 +8,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentRequest {
-    @Builder.Default
-    private Long id = null;
-
+    private Long userId;
     private Long postId;
-
     @Builder.Default
     private Long parentComment = null;
-
     private String content;
-
     @Builder.Default
     private String image = null;
 }

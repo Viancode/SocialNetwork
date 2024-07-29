@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface CommentServicePort {
     CommentDomain createComment(Long userid, CommentRequest commentRequest);
-    CommentDomain updateComment(Long userid, CommentRequest commentRequest);
+    CommentDomain updateComment(Long userid, Long commentId, String content, String image, Long postId);
     void deleteComment(Long userId, Long commentId);
     Page<CommentResponse> getAllComments(Long userId, Long postId, int page, int pageSize, String sortBy, String sortDirection);
 }

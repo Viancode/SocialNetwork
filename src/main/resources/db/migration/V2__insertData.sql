@@ -14,7 +14,6 @@ VALUES
     (1, 2, NOW(), 'FRIEND'),
     (1, 3, NOW(), 'BLOCK'),
     (2, 3, NOW(), 'PENDING');
-
 DELIMITER //
 CREATE PROCEDURE create_posts_comments_reactions()
 BEGIN

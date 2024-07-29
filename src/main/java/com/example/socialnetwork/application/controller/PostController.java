@@ -9,20 +9,11 @@ import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -30,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostController extends BaseController {
     private final PostServicePort postServicePort;
+    private final PostMapper postMapper;
 
     @GetMapping("")
     public ResponseEntity<ResultResponse> getPosts(@RequestParam(defaultValue = "1") int page,
@@ -57,7 +49,7 @@ public class PostController extends BaseController {
         postRequest.setPhotoLists(photoLists);
 
         PostDomain postDomain = postServicePort.createPost(postRequest);
-        return buildResponse("Create post successfully", PostMapper.INSTANCE.postDomainToPostResponse(postDomain));
+        return buildResponse("Create post successfully", postMapper.postDomainToPostResponse(postDomain));
     }
 
     @DeleteMapping("/delete")
@@ -80,6 +72,6 @@ public class PostController extends BaseController {
         postRequest.setVisibility(visibility);
         postRequest.setPhotoLists(photoLists);
         PostDomain postDomain = postServicePort.updatePost(postRequest);
-        return buildResponse("Update post successfully", PostMapper.INSTANCE.postDomainToPostResponse(postDomain));
+        return buildResponse("Update post successfully", postMapper.postDomainToPostResponse(postDomain));
     }
 }

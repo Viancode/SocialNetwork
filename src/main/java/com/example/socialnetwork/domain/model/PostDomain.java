@@ -3,6 +3,7 @@ package com.example.socialnetwork.domain.model;
 
 import com.example.socialnetwork.common.constant.Visibility;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PostDomain {
     private Long id;
 
