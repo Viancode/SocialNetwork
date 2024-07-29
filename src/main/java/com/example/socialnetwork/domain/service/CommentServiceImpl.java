@@ -86,15 +86,16 @@ public class CommentServiceImpl implements CommentServicePort {
 
     @Override
     public Page<CommentResponse> getAllComments(Long userId, Long postId, int page, int pageSize, String sortBy, String sortDirection) {
-//        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-//        Sort sort = Sort.by(direction, sortBy);
-//
-//        Page<CommentDomain> comments = null;
-//        comments = commentDatabasePort.getAllComments(page, pageSize, sort, userId, postId);
-//
-//        if (comments != null) {
-//            return comments.map()
-//        }
-        return null;
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+
+        Page<CommentDomain> comments = null;
+        comments = commentDatabasePort.getAllComments(page, pageSize, sort, userId, postId);
+
+        if (comments != null) {
+            return comments.map(commentMapper::commentDomainToCommentResponse);
+        } else {
+            throw new NotFoundException("This post has no comment");
+        }
     }
 }

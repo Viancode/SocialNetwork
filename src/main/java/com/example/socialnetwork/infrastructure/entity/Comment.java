@@ -3,11 +3,13 @@ package com.example.socialnetwork.infrastructure.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@FieldNameConstants
 @Getter
 @Setter
 @Entity
