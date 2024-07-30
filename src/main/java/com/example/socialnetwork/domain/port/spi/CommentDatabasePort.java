@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface CommentDatabasePort {
     CommentDomain createComment(CommentDomain comment);
-    Comment updateComment(Comment comment);
+    CommentDomain updateComment(CommentDomain comment);
     void deleteComment(Long commentId);
-    Comment findById(Long id);
+    CommentDomain findById(Long id);
     List<CommentDomain> findAllByParentComment(CommentDomain parentComment);
     Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long userId, Long postId);
     Page<CommentDomain> getChildComments(int page, int pageSize, Sort sort, Long userId, Long commentId);

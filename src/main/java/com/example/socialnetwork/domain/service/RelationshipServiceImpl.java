@@ -26,7 +26,8 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public ERelationship getRelationship(long sourceUserID, long targetUserID) {
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(sourceUserID, targetUserID);
         if (relationshipDomain == null) {
-            throw new NotFoundException("Not found relationship");
+//            throw new NotFoundException("Not found relationship");
+            return null;
         }
         return relationshipDomain.getRelation();
     }

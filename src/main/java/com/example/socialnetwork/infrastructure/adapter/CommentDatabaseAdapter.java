@@ -32,8 +32,9 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     }
 
     @Override
-    public Comment updateComment(Comment comment) {
-        return commentRepository.save(comment);
+    public CommentDomain updateComment(CommentDomain comment) {
+        Comment newComment = commentRepository.save(commentMapper.commentDomainToCommentEntity(comment));
+        return commentMapper.commentEntityToCommentDomain(newComment);
     }
 
     @Override
@@ -42,8 +43,13 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     }
 
     @Override
-    public Comment findById(Long id) {
-        return commentRepository.findById(id).orElse(null);
+    public CommentDomain findById(Long id) {
+        Comment comment = commentRepository.findById(id).orElse(null);
+        if (comment != null) {
+            return commentMapper.commentEntityToCommentDomain(comment);
+        } else {
+            return null;
+        }
     }
 
     @Override
