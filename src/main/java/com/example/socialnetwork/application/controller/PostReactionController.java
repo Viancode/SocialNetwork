@@ -39,8 +39,8 @@ public class PostReactionController extends BaseController {
                                                    @RequestParam(defaultValue = "5") int pageSize,
                                                    @RequestParam(defaultValue = "createdAt") String sortBy,
                                                    @RequestParam(defaultValue = "desc") String sortDirection,
-                                                   @RequestParam Long postId,
-                                                   @RequestParam String postReactionType
+                                                   @RequestParam(required = false) Long postId,
+                                                   @RequestParam(required = false) String postReactionType
                                                     ) {
 
         Page<PostReactionDomain> postReactionDomainPage = postReactionService.getAllPostReactions(page,pageSize,sortBy,sortDirection,postId,postReactionType);

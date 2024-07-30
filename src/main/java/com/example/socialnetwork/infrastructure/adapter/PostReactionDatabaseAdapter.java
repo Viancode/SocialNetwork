@@ -11,7 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import static com.example.socialnetwork.infrastructure.specification.PostReactionSpecification.withUserIdAndVisibility;
+import static com.example.socialnetwork.infrastructure.specification.PostReactionSpecification.*;
 
 
 @RequiredArgsConstructor
@@ -51,8 +51,12 @@ public class PostReactionDatabaseAdapter implements PostReactionDatabasePort {
     private Specification<PostReaction> getSpec(Long postId, String postReactionType) {
         Specification<PostReaction> spec = Specification.where(null);
         if (postId != null) {
-            spec = spec.and(withUserIdAndVisibility(postId, postReactionType));
+            spec = spec.and(withPostId(postId));
+        }
+        if (postReactionType != null && !postReactionType.isEmpty()) {
+            spec = spec.and(withPostReactionType(postReactionType));
         }
         return spec;
     }
+
 }
