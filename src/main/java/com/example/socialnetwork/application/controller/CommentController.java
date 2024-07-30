@@ -62,7 +62,7 @@ public class CommentController extends BaseController {
             @RequestParam("content") String content,
             @RequestParam("image") String image,
             @RequestParam("postId") Long postId,
-//            @RequestParam(value = "parentComment", required = false) Long parentComment,
+//            @RequestParam(value = "parentCommentId", required = false) Long parentComment,
             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Long userId = Long.valueOf(user.getUsername());

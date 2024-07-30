@@ -21,7 +21,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServicePort {
@@ -71,6 +74,9 @@ public class CommentServiceImpl implements CommentServicePort {
 
     // Checks if a user is blocked by the comment owner.
     private void checkUserBlockedByCommentOwner(Long userId, Long commentOwnerId) {
+        if (userId.equals(commentOwnerId)) {
+            return;
+        }
         ERelationship relationship = relationshipServicePort.getRelationship(userId, commentOwnerId);
         if (relationship == ERelationship.BLOCK) {
             throw new NotAllowException("You are not allowed to interact with this comment");
@@ -78,7 +84,9 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     // Validates a comment operation
-    private void validateCommentOperation(Long userId, Long postId, Long commentId) {
+    // userId The ID of the user performing the operation.
+    // postId The ID of the post associated with the comment.
+    private void validateUserCommentAndUserPost(Long userId, Long postId) {
         checkPostExists(postId);
         PostDomain post = postDatabasePort.findById(postId);
 
@@ -88,20 +96,22 @@ public class CommentServiceImpl implements CommentServicePort {
             ERelationship relationship = relationshipServicePort.getRelationship(userId, post.getUserId());
             checkPostVisibility(post, userId, relationship);
         }
+    }
 
-        if (commentId != null) {
-            CommentDomain comment = commentDatabasePort.findById(commentId);
-            if (comment == null || !Objects.equals(comment.getPost().getId(), postId)) {
-                throw new NotFoundException("Comment not found");
+    private void checkParentComment(Long userId, Long parentCommentId) {
+        if (parentCommentId != null) {
+            CommentDomain parentComment = commentDatabasePort.findById(parentCommentId);
+            if (parentComment == null) {
+                throw new NotFoundException("Parent comment not found");
             }
-            checkUserBlockedByCommentOwner(userId, comment.getUser().getId());
+            checkUserBlockedByCommentOwner(userId, parentComment.getUser().getId());
         }
     }
 
     @Override
     public CommentDomain createComment(Long userId, CommentRequest commentRequest) {
-        validateCommentOperation(userId, commentRequest.getPostId(), null);
-        checkParentCommentExists(commentRequest.getParentComment());
+        validateUserCommentAndUserPost(userId, commentRequest.getPostId());
+        checkParentComment(userId, commentRequest.getParentComment());
 
         return commentDatabasePort.createComment(commentMapper.commentRequestToCommentDomain(commentRequest));
     }
@@ -109,12 +119,14 @@ public class CommentServiceImpl implements CommentServicePort {
     @Override
     @Transactional
     public CommentDomain updateComment(Long userId, Long commentId, String content, String image, Long postId) {
-        validateCommentOperation(userId, postId, commentId);
+        validateUserCommentAndUserPost(userId, postId);
 
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
         if (currentComment.getUser().getId() != userId) {
             throw new NotAllowException("You are not allowed to update this comment");
         }
+
+        checkParentComment(userId, currentComment.getParentComment() != null ? currentComment.getParentComment().getCommentId() : null);
 
         currentComment.setContent(content);
         currentComment.setUpdatedAt(LocalDateTime.now());
@@ -129,8 +141,6 @@ public class CommentServiceImpl implements CommentServicePort {
             throw new NotFoundException("Comment not found");
         }
 
-        validateCommentOperation(userId, comment.getPost().getId(), commentId);
-
         if (comment.getUser().getId() != userId) {
             throw new NotAllowException("You are not allowed to delete this comment");
         }
@@ -140,15 +150,22 @@ public class CommentServiceImpl implements CommentServicePort {
 
     @Override
     public Page<CommentResponse> getAllComments(Long userId, Long postId, int page, int pageSize, String sortBy, String sortDirection) {
-        validateCommentOperation(userId, postId, null);
+        validateUserCommentAndUserPost(userId, postId);
 
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
 
-        Page<CommentDomain> comments = commentDatabasePort.getAllComments(page, pageSize, sort, userId, postId);
+        List<UserDomain> listBlockFriend = relationshipServicePort.getListBlock();
+        List<Long> blockedUserIds = listBlockFriend.stream()
+                .map(UserDomain::getId)
+                .toList();
+
+        Page<CommentDomain> comments = commentDatabasePort.getAllComments(page, pageSize, sort, userId, postId, blockedUserIds);
         if (comments == null || comments.isEmpty()) {
             throw new NotFoundException("This post has no comment");
         }
+
+
         return comments.map(commentMapper::commentDomainToCommentResponse);
     }
 
@@ -159,12 +176,15 @@ public class CommentServiceImpl implements CommentServicePort {
             throw new NotFoundException("Parent comment not found");
         }
 
-        validateCommentOperation(userId, parentComment.getPost().getId(), commentId);
+        List<UserDomain> listBlockFriend = relationshipServicePort.getListBlock();
+        List<Long> blockedUserIds = listBlockFriend.stream()
+                .map(UserDomain::getId)
+                .toList();
 
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
 
-        Page<CommentDomain> childComments = commentDatabasePort.getChildComments(page, pageSize, sort, userId, commentId);
+        Page<CommentDomain> childComments = commentDatabasePort.getChildComments(page, pageSize, sort, userId, commentId, blockedUserIds);
         if (childComments == null || childComments.isEmpty()) {
             throw new NotFoundException("This comment has no child comment");
         }
