@@ -98,4 +98,19 @@ public class CommentServiceImpl implements CommentServicePort {
             throw new NotFoundException("This post has no comment");
         }
     }
+
+    @Override
+    public Page<CommentResponse> getChildComments(Long userId, Long commentId, int page, int pageSize, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+
+        Page<CommentDomain> childComments = null;
+        childComments = commentDatabasePort.getChildComments(page, pageSize, sort, userId, commentId);
+
+        if (childComments != null) {
+            return childComments.map(commentMapper::commentDomainToCommentResponse);
+        } else {
+            throw new NotFoundException("This comment has no child comment");
+        }
+    }
 }

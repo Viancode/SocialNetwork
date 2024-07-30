@@ -36,6 +36,19 @@ public class CommentController extends BaseController {
         return buildResponse("Get comments successfully", comments);
     }
 
+    @GetMapping("/{commentId}")
+    public ResponseEntity<ResultResponse> getChildComment(@PathVariable Long commentId,
+                                                          @RequestParam(defaultValue = "1") int page,
+                                                          @RequestParam(defaultValue = "5") int pageSize,
+                                                          @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                          @RequestParam(defaultValue = "desc") String sortDirection,
+                                                          Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = Long.valueOf(user.getUsername());
+        Page<CommentResponse> childComments = commentServicePort.getChildComments(userId, commentId, page, pageSize, sortBy, sortDirection);
+        return buildResponse("Get comment successfully", childComments);
+    }
+
     @PostMapping("/")
     public ResponseEntity<?> createComment(@ModelAttribute CommentRequest commentRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -64,7 +77,7 @@ public class CommentController extends BaseController {
     ) {
         User user = (User) authentication.getPrincipal();
         Long userId = Long.valueOf(user.getUsername());
-        commentServicePort.deleteComment(userId,commentId);
+        commentServicePort.deleteComment(userId, commentId);
         return buildResponse("Delete comment successfully");
     }
 }

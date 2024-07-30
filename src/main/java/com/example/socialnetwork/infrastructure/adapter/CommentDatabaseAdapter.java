@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.socialnetwork.infrastructure.specification.CommentSpecification.withParentCommentId;
 import static com.example.socialnetwork.infrastructure.specification.CommentSpecification.withPostIdAndParentCommentIsNull;
 import static com.example.socialnetwork.infrastructure.specification.PostSpecification.withUserIdAndVisibility;
 
@@ -56,14 +57,28 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     @Override
     public Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long userId, Long postId) {
         var pageable = PageRequest.of(page - 1, pageSize, sort);
-        var spec = getSpec(userId, postId);
+        var spec = getSpecTopLevelComment(userId, postId);
         return commentRepository.findAll(spec, pageable)
                 .map(commentMapper::commentEntityToCommentDomain);
     }
 
-    private Specification<Comment> getSpec(Long userId, Long postId) {
+    @Override
+    public Page<CommentDomain> getChildComments(int page, int pageSize, Sort sort, Long userid, Long commentId) {
+        var pageable = PageRequest.of(page - 1, pageSize, sort);
+        var spec = getSpecChildLevelComment(userid, commentId);
+        return commentRepository.findAll(spec, pageable)
+                .map(commentMapper::commentEntityToCommentDomain);
+    }
+
+    private Specification<Comment> getSpecTopLevelComment(Long userId, Long postId) {
         Specification<Comment> spec = Specification.where(null);
         spec = spec.and(withPostIdAndParentCommentIsNull(postId));
+        return spec;
+    }
+
+    private Specification<Comment> getSpecChildLevelComment(Long userId, Long commentId) {
+        Specification<Comment> spec = Specification.where(null);
+        spec = spec.and(withParentCommentId(commentId));
         return spec;
     }
 }

@@ -13,5 +13,6 @@ public interface CommentDatabasePort {
     void deleteComment(Long commentId);
     Comment findById(Long id);
     List<CommentDomain> findAllByParentComment(CommentDomain parentComment);
-    Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long targetUserId, Long postId);
+    Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long userId, Long postId);
+    Page<CommentDomain> getChildComments(int page, int pageSize, Sort sort, Long userId, Long commentId);
 }
