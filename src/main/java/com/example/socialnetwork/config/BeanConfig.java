@@ -75,8 +75,8 @@ public class BeanConfig {
     }
 
     @Bean
-    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, UserMapper userMapper) {
-        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, userMapper);
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort);
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.adapter;
 
+import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.mapper.TagMapper;
 import com.example.socialnetwork.domain.model.TagDomain;
 import com.example.socialnetwork.domain.port.spi.TagDatabasePort;
@@ -25,12 +26,9 @@ public class TagDatabaseAdapter implements TagDatabasePort {
     @Override
     public TagDomain createTag(TagDomain tagDomain) {
         Post post = postRepository.findById(tagDomain.getPostId()).orElseThrow(() -> new NotFoundException("Post not found"));
-        Relationship relationship1 = relationshipRepository.findByUser_IdAndFriend_Id(tagDomain.getTaggedByUserId(), tagDomain.getTaggedUserId());
-        Relationship relationship2 = relationshipRepository.findByUser_IdAndFriend_Id( tagDomain.getTaggedUserId(), tagDomain.getTaggedByUserId());
-
-//        if ( (relationship1 != null && !relationship1.getRelation().equals("FRIEND")) || (relationship2 != null && !relationship2.getRelation().equals("FRIEND"))){
-//            throw new ClientErrorException("User is not friend");
-//        }
+        if (relationshipRepository.findByUser_IdAndFriend_Id(tagDomain.getTaggedByUserId(), tagDomain.getTaggedUserId()).getRelation() != ERelationship.FRIEND){
+            throw new ClientErrorException("User is not friend");
+        }
 
         if(Objects.equals(post.getUser().getId(), tagDomain.getTaggedByUserId())){
             Tag tag = tagRepository

@@ -10,4 +10,6 @@ public interface PostServicePort {
     PostDomain updatePost(PostRequest postRequest);
     void deletePost(Long postId);
     Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId);
+
+    Page<PostResponse> getNewsFeed(int page, int pageSize, String sortBy);
 }

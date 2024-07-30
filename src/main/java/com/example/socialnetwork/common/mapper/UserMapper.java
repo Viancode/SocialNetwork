@@ -7,11 +7,14 @@ import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.infrastructure.entity.Role;
 import com.example.socialnetwork.infrastructure.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+
     default User toUser(UserDomain userDomain) {
         return User.builder()
                 .id(userDomain.getId())

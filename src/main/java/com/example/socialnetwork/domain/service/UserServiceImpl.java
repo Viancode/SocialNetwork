@@ -2,7 +2,6 @@ package com.example.socialnetwork.domain.service;
 
 import com.example.socialnetwork.application.request.ProfileRequest;
 import com.example.socialnetwork.common.constant.ERelationship;
-import com.example.socialnetwork.common.constant.FileType;
 import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.domain.model.UserDomain;
@@ -11,13 +10,15 @@ import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.User;
-import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
-import java.io.NotActiveException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 

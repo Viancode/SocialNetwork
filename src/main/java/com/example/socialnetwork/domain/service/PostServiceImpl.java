@@ -80,4 +80,9 @@ public class PostServiceImpl implements PostServicePort {
 
         throw new NotAllowException("You don't have permission to view this user's posts");
     }
+
+    @Override
+    public Page<PostResponse> getNewsFeed(int page, int pageSize, String sortBy) {
+        return null;
+    }
 }

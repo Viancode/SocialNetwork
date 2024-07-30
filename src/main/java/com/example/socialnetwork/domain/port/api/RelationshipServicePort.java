@@ -1,10 +1,8 @@
 package com.example.socialnetwork.domain.port.api;
 
 import com.example.socialnetwork.common.constant.ERelationship;
-import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface RelationshipServicePort {
     ERelationship getRelationship(long sourceUserID, long targetUserID);
@@ -21,15 +19,17 @@ public interface RelationshipServicePort {
 
     void block(long friendId);
 
-    List<UserDomain> findFriend(long userId, String keyWord);
+    Page<UserDomain> findFriend(int page, int pageSize, String keyWord);
 
-    List<UserDomain> getListReceiveRequest();
+    Page<UserDomain> getListReceiveRequest(int page, int pageSize);
 
-    List<UserDomain> getListSendRequest();
+    Page<UserDomain> getListSendRequest(int page, int pageSize);
 
-    List<UserDomain> getListFriend(long userId);
+    Page<UserDomain> getListFriend(int page, int pageSize, long userId, String sortDirection, String sortBy);
 
-    List<UserDomain> getListBlock();
+    Page<UserDomain> getListBlock(int page, int pageSize, String sortDirection, String sortBy);
 
-    List<UserDomain> getFriendSuggestions(long userId);
+    Page<UserDomain> getFriendSuggestions(int page, int pageSize);
+
+    Page<UserDomain> searchUser(int page, int pageSize, String keyWord);
 }
