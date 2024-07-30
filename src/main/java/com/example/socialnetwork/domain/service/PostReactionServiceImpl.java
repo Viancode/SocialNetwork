@@ -24,6 +24,7 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
     private final PostDatabasePort postDatabasePort;
     private final RelationshipDatabasePort relationshipDatabasePort;
 
+
     @Override
     public PostReactionDomain createPostReaction(PostReactionDomain postReactionDomain) {
         Long currentUserId = SecurityUtil.getCurrentUserId();
@@ -74,7 +75,6 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
                 Sort sort = createSort(sortDirection, sortBy);
                 return postReactionDatabasePort.getAllPostReactions(page, pageSize, sort, postId, postReactionType);
             }
-
             throw new NotAllowException("User does not have permission to view this post's reactions");
         } catch (Exception e) {
             throw new ClientErrorException(e.getMessage());
