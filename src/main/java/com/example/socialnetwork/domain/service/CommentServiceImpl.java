@@ -161,6 +161,7 @@ public class CommentServiceImpl implements CommentServicePort {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
 
+        // Get the list of blocked friends
         List<UserDomain> listBlockFriend = relationshipServicePort.getListBlock();
         List<Long> blockedUserIds = listBlockFriend.stream()
                 .map(UserDomain::getId)
@@ -183,6 +184,7 @@ public class CommentServiceImpl implements CommentServicePort {
             throw new NotFoundException("Parent comment not found");
         }
 
+        // Get the list of blocked friends
         List<UserDomain> listBlockFriend = relationshipServicePort.getListBlock();
         List<Long> blockedUserIds = listBlockFriend.stream()
                 .map(UserDomain::getId)
