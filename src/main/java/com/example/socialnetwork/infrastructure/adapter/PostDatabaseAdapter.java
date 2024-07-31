@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.example.socialnetwork.infrastructure.specification.PostSpecification.*;
 
 @RequiredArgsConstructor
@@ -65,6 +68,23 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         var spec = getSpec(targetUserId, visibility);
         return postRepository.findAll(spec, pageable).map(PostMapper.INSTANCE::postToPostDomain);
     }
+
+    @Override
+    public List<PostDomain> getAllPosts(long targetUserId, boolean checkCurrentUser) {
+        if(checkCurrentUser)
+            return PostMapper.INSTANCE.postToPostDomainList(postRepository.findByUser_Id(targetUserId));
+        else {
+            List<Post> posts = new ArrayList<>();
+            List<Post> post1 = postRepository.findByUser_Id(targetUserId);
+            for (Post post : post1) {
+                if(post.getVisibility() == Visibility.PUBLIC || post.getVisibility() == Visibility.FRIEND){
+                    posts.add(post);
+                }
+            }
+            return PostMapper.INSTANCE.postToPostDomainList(posts);
+        }
+    }
+
 
     private Specification<Post> getSpec(Long targetUserId, Visibility visibility) {
         Specification<Post> spec = Specification.where(null);

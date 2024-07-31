@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PostMapper {
     PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
 
@@ -24,6 +24,8 @@ public interface PostMapper {
     @Mapping(target = "commentsIds", source = "comments", qualifiedByName = "commentsToIds")
     @Mapping(target = "tagsIds", source = "tags", qualifiedByName = "tagsToIds")
     PostDomain postToPostDomain(Post post);
+
+    List<PostDomain> postToPostDomainList(List<Post> posts);
 
     @Mapping(source = "userId", target = "user.id")
     @Mapping(target = "postReactions", ignore = true)
@@ -35,6 +37,9 @@ public interface PostMapper {
     @Mapping(target = "numberOfReacts", source = "postReactionsIds", qualifiedByName = "postReactionsIdsToNumber")
     @Mapping(target = "photoLists", source = "photoLists", qualifiedByName = "photoToList")
     PostResponse postDomainToPostResponse(PostDomain postDomain);
+
+    List<PostResponse> postDomainToPostResponseList(List<PostDomain> postDomains);
+
 
     @org.mapstruct.Named("commentsIdsToNumber")
     default Long commentsToNumber(List<Long> comments) {

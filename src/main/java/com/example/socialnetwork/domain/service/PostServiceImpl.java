@@ -6,22 +6,24 @@ import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
 import com.example.socialnetwork.domain.model.PostDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
-import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
+import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostServicePort {
 
     private final PostDatabasePort postDatabasePort;
-    private final RelationshipServicePort relationshipService;
+    private final RelationshipDatabasePort relationshipDatabasePort;
 
     @Override
     public PostDomain createPost(PostRequest postRequest) {
@@ -65,7 +67,7 @@ public class PostServiceImpl implements PostServicePort {
             return new PageImpl<>(posts.stream().map(PostMapper.INSTANCE::postDomainToPostResponse).collect(Collectors.toList()), pageable, posts.getContent().size());
         }
 
-        ERelationship relationship = relationshipService.getRelationship(userId, targetUserId);
+        ERelationship relationship = relationshipDatabasePort.find(userId, targetUserId).getRelation();
         System.out.println(relationship);
 
         if (relationship == null || relationship == ERelationship.PENDING) {
@@ -82,7 +84,17 @@ public class PostServiceImpl implements PostServicePort {
     }
 
     @Override
-    public Page<PostResponse> getNewsFeed(int page, int pageSize, String sortBy) {
-        return null;
+    public Page<PostDomain> getNewsFeed(int page, int pageSize, String sortBy, long userId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        var pageable = PageRequest.of(page - 1, pageSize, sort);
+        List<UserDomain>  friends = relationshipDatabasePort.getListFriend(userId);
+        List<PostDomain> posts = postDatabasePort.getAllPosts(userId, true);
+        for (UserDomain friend : friends) {
+            posts.addAll(postDatabasePort.getAllPosts(friend.getId(), false));
+        }
+        int start = Math.min((int) pageable.getOffset(), posts.size());
+        int end = Math.min((start + pageable.getPageSize()), posts.size());
+        List<PostDomain> pagedUsers = posts.subList(start, end);
+        return new PageImpl<>(pagedUsers, pageable, posts.size()) ;
     }
 }

@@ -91,8 +91,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipServicePort relationshipService) {
-        return new PostServiceImpl(postDatabasePort,relationshipService);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort) {
+        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort);
     }
 
     @Bean
