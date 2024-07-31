@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 public class PostReactionResponse {
     private Long id;
     private Long userId;
+    private String username;
+    private String avatar;
     private Long postId;
     private String reactionType;
     private LocalDateTime createdAt;

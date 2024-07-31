@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class PostReactionSpecification {
 
     public static Specification<PostReaction> withPostId(Long postId) {
-        return (root, query, cb) -> cb.equal(root.get(PostReaction.Fields.id), postId);
+        return (root, query, cb) -> cb.equal(root.get(PostReaction.Fields.post).get("id"), postId);
     }
 
     public static Specification<PostReaction> withPostReactionType(String reactionType) {
