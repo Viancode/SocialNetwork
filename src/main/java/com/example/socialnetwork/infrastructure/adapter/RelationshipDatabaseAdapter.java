@@ -65,6 +65,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     }
 
     @Override
+    @Transactional
     public List<UserDomain> getListFriend(long userId) {
         return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.FRIEND));
     }

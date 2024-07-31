@@ -45,7 +45,7 @@ VALUES (
            ELT(FLOOR(1 + RAND() * 3), 'PUBLIC', 'FRIEND', 'PRIVATE'),
            post_created_at,
            post_created_at,
-           'https:/ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png'
+           'https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png'
        );
 
 SET post_id_var = LAST_INSERT_ID();
@@ -155,7 +155,7 @@ BEGIN
             VALUES (
                        (SELECT CONCAT_WS(' ', SUBSTRING_INDEX(SUBSTRING_INDEX(first_name_list, ',', FLOOR(1 + (RAND() * 11))), ',', -1), SUBSTRING_INDEX(SUBSTRING_INDEX(last_name_list, ',', FLOOR(1 + (RAND() * 4))), ',', -1))),
                        CONCAT(LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(first_name_list, ',', FLOOR(1 + (RAND() * 11))), ',', -1)), '.', LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(last_name_list, ',', FLOOR(1 + (RAND() * 4))), ',', -1)), '@example.com'),
-                       '$10$pyYIFD/OPRy4EDPrpvLb0.XsYrRnGdbcmXiETe2JDpHSgZibOHGqy',
+                       '$2a$12$rPhLzKBcnY/CwnEAINZ4L.09YaLvRQjphN2QT8nIEWX/BrA37xIzC',
                        SUBSTRING_INDEX(SUBSTRING_INDEX(first_name_list, ',', FLOOR(1 + (RAND() * 11))), ',', -1),
                        SUBSTRING_INDEX(SUBSTRING_INDEX(last_name_list, ',', FLOOR(1 + (RAND() * 4))), ',', -1),
                        CASE

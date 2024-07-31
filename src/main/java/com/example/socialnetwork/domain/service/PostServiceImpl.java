@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,8 +87,7 @@ public class PostServiceImpl implements PostServicePort {
 
     @Override
     public Page<PostDomain> getNewsFeed(int page, int pageSize, String sortBy, long userId) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        var pageable = PageRequest.of(page - 1, pageSize, sort);
+        var pageable = PageRequest.of(page - 1, pageSize);
         List<UserDomain>  friends = relationshipDatabasePort.getListFriend(userId);
         List<PostDomain> posts = postDatabasePort.getAllPosts(userId, true);
         for (UserDomain friend : friends) {
@@ -95,6 +96,7 @@ public class PostServiceImpl implements PostServicePort {
         int start = Math.min((int) pageable.getOffset(), posts.size());
         int end = Math.min((start + pageable.getPageSize()), posts.size());
         List<PostDomain> pagedUsers = posts.subList(start, end);
+        pagedUsers.sort(Comparator.comparing(PostDomain::getCreatedAt).reversed());
         return new PageImpl<>(pagedUsers, pageable, posts.size()) ;
     }
 }
