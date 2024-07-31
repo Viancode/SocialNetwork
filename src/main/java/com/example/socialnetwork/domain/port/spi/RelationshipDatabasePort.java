@@ -2,6 +2,7 @@ package com.example.socialnetwork.domain.port.spi;
 
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 
 import java.util.List;
 
@@ -13,7 +14,11 @@ public interface RelationshipDatabasePort {
 
     List<RelationshipDomain> getListReceiveRequest(long userId);
 
-    List<RelationshipDomain> getListFriend(long userId);
+    List<UserDomain> getListFriend(long userId);
+
+    List<UserDomain> getListBlock(long userId);
+
+    List<UserDomain> findFriendByKeyWord(long userId, String keyWord);
 
     void deleteFriend(long userId, long friendId);
 

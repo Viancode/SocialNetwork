@@ -1,6 +1,8 @@
 package com.example.socialnetwork.exception.custom;
 
-public class NotAllowException extends RuntimeException{
+import org.springframework.security.access.AccessDeniedException;
+
+public class NotAllowException extends AccessDeniedException {
     public NotAllowException(String message) {
         super(message);
     }

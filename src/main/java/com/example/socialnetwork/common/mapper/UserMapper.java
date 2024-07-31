@@ -1,23 +1,20 @@
 package com.example.socialnetwork.common.mapper;
 
-import com.example.socialnetwork.application.response.ListFriendResponse;
-import com.example.socialnetwork.application.response.MakeFriendResponse;
+import com.example.socialnetwork.application.response.FriendResponse;
 import com.example.socialnetwork.application.response.ProfileResponse;
 import com.example.socialnetwork.common.constant.ERole;
-import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.infrastructure.entity.Role;
 import com.example.socialnetwork.infrastructure.entity.User;
-import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+
     default User toUser(UserDomain userDomain) {
         return User.builder()
                 .id(userDomain.getId())
@@ -47,7 +44,9 @@ public interface UserMapper {
 
     List<UserDomain> toUserDomains(List<User> users);
 
-    ListFriendResponse toListFriendResponse(UserDomain userDomain);
+    FriendResponse toFriendResponse(UserDomain userDomain);
+
+    List<FriendResponse> toFriendResponses(List<UserDomain> userDomains);
 
     default Role toRole(ERole ERole){
         Role role = new Role();

@@ -4,6 +4,7 @@ package com.example.socialnetwork.infrastructure.repository;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
+import com.example.socialnetwork.infrastructure.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,17 +18,28 @@ import java.util.List;
 @EnableJpaRepositories
 public interface RelationshipRepository extends JpaRepository<Relationship, Long> {
     @Query("SELECT r FROM Relationship r " +
-            "WHERE (r.user.id = :userId AND r.friend.id = :friendId)" +
+            "WHERE (r.user.id = :userId AND r.friend.id = :friendId) " +
             "OR (r.user.id = :friendId AND r.friend.id = :userId)")
-    Relationship findByUser_IdAndFriend_Id(long userId, long friendId);
+    Relationship findByUser_IdAndFriend_Id(@Param("userId") long userId,@Param("friendId") long friend_id);
 
     List<Relationship> findByFriend_IdAndRelation(long userId, ERelationship relation);
 
     List<Relationship> findByUser_IdAndRelation(long userId, ERelationship relation);
 
-    @Query("SELECT r FROM Relationship r " +
-            "INNER JOIN User u1 ON u1.id = r.user.id OR u1.id = r.friend.id " +
+    @EntityGraph(attributePaths = {"user"})
+    @Query("SELECT u FROM User u " +
+            "INNER JOIN Relationship r ON r.user.id = u.id OR r.friend.id = u.id " +
             "WHERE r.relation = :relation " +
-            "AND (r.friend.id = :userId OR r.user.id = :userId) ")
-    List<Relationship> getListFriend(@Param("userId") long userId, ERelationship relation);
+            "AND (r.friend.id = :userId OR r.user.id = :userId) " +
+            "AND u.id <> :userId")
+    List<User> getListUserWithRelation(@Param("userId") long userId, @Param("relation") ERelationship relation);
+
+    @EntityGraph(attributePaths = {"user"})
+    @Query("SELECT u FROM User u " +
+            "INNER JOIN Relationship r ON r.user.id = u.id OR r.friend.id = u.id " +
+            "WHERE r.relation = 'FRIEND' " +
+            "AND (r.friend.id = :userId OR r.user.id = :userId) " +
+            "AND u.id <> :userId " +
+            "AND (u.email LIKE %:keyWord% OR u.username LIKE %:keyWord%)")
+    List<User> getListFriendByKeyWord(@Param("userId") long userId,@Param("keyWord") String keyWord);
 }

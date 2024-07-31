@@ -108,4 +108,14 @@ public class BeanConfig {
     PostReactionServicePort postReactionServicePort(PostReactionDatabasePort postReactionDatabasePort, PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort){
         return new PostReactionServiceImpl(postReactionDatabasePort, postDatabasePort, relationshipDatabasePort);
     }
+
+    @Bean
+    public CommentDatabasePort commentDatabasePort(CommentRepository commentRepository, CommentMapper commentMapper) {
+        return new CommentDatabaseAdapter(commentRepository, commentMapper);
+    }
+
+    @Bean
+    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, RelationshipServicePort relationshipServicePort, CommentMapper commentMapper) {
+        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, relationshipServicePort, commentMapper);
+    }
 }
