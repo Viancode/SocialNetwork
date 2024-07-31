@@ -5,6 +5,7 @@ import com.example.socialnetwork.application.response.CommentResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.CommentMapper;
+import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CommentDomain;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
@@ -109,7 +110,8 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public CommentDomain createComment(Long userId, CommentRequest commentRequest) {
+    public CommentDomain createComment(CommentRequest commentRequest) {
+        Long userId = SecurityUtil.getCurrentUserId();
         validateUserCommentAndUserPost(userId, commentRequest.getPostId());
         checkParentComment(userId, commentRequest.getParentComment());
 
@@ -118,7 +120,9 @@ public class CommentServiceImpl implements CommentServicePort {
 
     @Override
     @Transactional
-    public CommentDomain updateComment(Long userId, Long commentId, String content, String image, Long postId) {
+    public CommentDomain updateComment(Long commentId, String content, String image, Long postId) {
+        Long userId = SecurityUtil.getCurrentUserId();
+
         validateUserCommentAndUserPost(userId, postId);
 
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
@@ -135,7 +139,8 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public void deleteComment(Long userId, Long commentId) {
+    public void deleteComment(Long commentId) {
+        Long userId = SecurityUtil.getCurrentUserId();
         CommentDomain comment = commentDatabasePort.findById(commentId);
         if (comment == null) {
             throw new NotFoundException("Comment not found");
@@ -149,7 +154,8 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public Page<CommentResponse> getAllComments(Long userId, Long postId, int page, int pageSize, String sortBy, String sortDirection) {
+    public Page<CommentResponse> getAllComments(Long postId, int page, int pageSize, String sortBy, String sortDirection) {
+        Long userId = SecurityUtil.getCurrentUserId();
         validateUserCommentAndUserPost(userId, postId);
 
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -170,7 +176,8 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public Page<CommentResponse> getChildComments(Long userId, Long commentId, int page, int pageSize, String sortBy, String sortDirection) {
+    public Page<CommentResponse> getChildComments(Long commentId, int page, int pageSize, String sortBy, String sortDirection) {
+        Long userId = SecurityUtil.getCurrentUserId();
         CommentDomain parentComment = commentDatabasePort.findById(commentId);
         if (parentComment == null) {
             throw new NotFoundException("Parent comment not found");
@@ -185,9 +192,9 @@ public class CommentServiceImpl implements CommentServicePort {
         Sort sort = Sort.by(direction, sortBy);
 
         Page<CommentDomain> childComments = commentDatabasePort.getChildComments(page, pageSize, sort, userId, commentId, blockedUserIds);
-        if (childComments == null || childComments.isEmpty()) {
-            throw new NotFoundException("This comment has no child comment");
-        }
+//        if (childComments == null || childComments.isEmpty()) {
+//            throw new NotFoundException("This comment has no child comment");
+//        }
         return childComments.map(commentMapper::commentDomainToCommentResponse);
     }
 }

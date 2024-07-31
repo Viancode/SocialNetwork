@@ -28,11 +28,8 @@ public class CommentController extends BaseController {
                                                       @RequestParam(defaultValue = "1") int page,
                                                       @RequestParam(defaultValue = "5") int pageSize,
                                                       @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                      @RequestParam(defaultValue = "desc") String sortDirection,
-                                                      Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        Long userId = Long.valueOf(user.getUsername());
-        Page<CommentResponse> comments = commentServicePort.getAllComments(userId, postId, page, pageSize, sortBy, sortDirection);
+                                                      @RequestParam(defaultValue = "desc") String sortDirection) {
+        Page<CommentResponse> comments = commentServicePort.getAllComments(postId, page, pageSize, sortBy, sortDirection);
         return buildResponse("Get comments successfully", comments);
     }
 
@@ -41,18 +38,14 @@ public class CommentController extends BaseController {
                                                           @RequestParam(defaultValue = "1") int page,
                                                           @RequestParam(defaultValue = "5") int pageSize,
                                                           @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                          @RequestParam(defaultValue = "desc") String sortDirection,
-                                                          Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        Long userId = Long.valueOf(user.getUsername());
-        Page<CommentResponse> childComments = commentServicePort.getChildComments(userId, commentId, page, pageSize, sortBy, sortDirection);
+                                                          @RequestParam(defaultValue = "desc") String sortDirection) {
+        Page<CommentResponse> childComments = commentServicePort.getChildComments(commentId, page, pageSize, sortBy, sortDirection);
         return buildResponse("Get comment successfully", childComments);
     }
 
     @PostMapping("/")
     public ResponseEntity<?> createComment(@ModelAttribute CommentRequest commentRequest, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        CommentDomain newComment = commentServicePort.createComment(Long.valueOf(user.getUsername()),commentRequest);
+        CommentDomain newComment = commentServicePort.createComment(commentRequest);
         return buildResponse("Create comment successfully", commentMapper.commentDomainToCommentResponse(newComment));
     }
 
@@ -61,23 +54,16 @@ public class CommentController extends BaseController {
             @RequestParam("commentId") Long commentId,
             @RequestParam("content") String content,
             @RequestParam("image") String image,
-            @RequestParam("postId") Long postId,
+            @RequestParam("postId") Long postId
 //            @RequestParam(value = "parentCommentId", required = false) Long parentComment,
-            Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        Long userId = Long.valueOf(user.getUsername());
-        CommentDomain commentDomain = commentServicePort.updateComment(userId, commentId, content, image, postId);
+            ) {
+        CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image, postId);
         return buildResponse("Update comment successfully", commentMapper.commentDomainToCommentResponse(commentDomain));
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<?> deleteComment(
-            @RequestParam("commentId") Long commentId,
-            Authentication authentication
-    ) {
-        User user = (User) authentication.getPrincipal();
-        Long userId = Long.valueOf(user.getUsername());
-        commentServicePort.deleteComment(userId, commentId);
+    public ResponseEntity<?> deleteComment(@RequestParam("commentId") Long commentId) {
+        commentServicePort.deleteComment(commentId);
         return buildResponse("Delete comment successfully");
     }
 }

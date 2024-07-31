@@ -2,6 +2,7 @@ package com.example.socialnetwork.common.mapper;
 
 import com.example.socialnetwork.application.request.CommentRequest;
 import com.example.socialnetwork.application.response.CommentResponse;
+import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CommentDomain;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
@@ -21,7 +22,7 @@ public class CommentMapper {
     private final CommentRepository commentRepository;
     public CommentDomain commentRequestToCommentDomain(CommentRequest request) {
         return CommentDomain.builder()
-                .user(UserDomain.builder().id(request.getUserId()).build())
+                .user(UserDomain.builder().id(SecurityUtil.getCurrentUserId()).build())
                 .post(PostDomain.builder().id(request.getPostId()).build())
                 .parentComment(request.getParentComment() != null ? CommentDomain.builder().commentId(request.getParentComment()).build() : null)
                 .content(request.getContent())
@@ -49,7 +50,11 @@ public class CommentMapper {
     public CommentDomain commentEntityToCommentDomain(Comment entity) {
         return CommentDomain.builder()
                 .commentId(entity.getId())
-                .user(UserDomain.builder().id(entity.getUser().getId()).build())
+                .user(UserDomain.builder()
+                        .id(entity.getUser().getId())
+                        .username(entity.getUser().getUsername())
+                        .avatar(entity.getUser().getAvatar())
+                        .build())
                 .post(PostDomain.builder().id(entity.getPost().getId()).build())
                 .parentComment(entity.getParentComment() != null ? CommentDomain.builder().commentId(entity.getParentComment().getId()).build() : null)
                 .content(entity.getContent())
@@ -69,7 +74,7 @@ public class CommentMapper {
                 .avatar(domain.getUser().getAvatar())
                 .postId(domain.getPost().getId())
                 .parentComment(domain.getParentComment() != null ? domain.getParentComment().getCommentId() : null)
-                .numberOfChild((long) commentRepository.findAllByParentComment(this.commentDomainToCommentEntity(domain)).size())  // This needs to be calculated separately
+                .numberOfChild((long) commentRepository.findAllByParentComment(this.commentDomainToCommentEntity(domain)).size())
                 .content(domain.getContent())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())

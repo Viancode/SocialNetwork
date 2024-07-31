@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentRequest {
-    private Long userId;
     private Long postId;
     @Builder.Default
     private Long parentComment = null;
