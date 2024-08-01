@@ -2,6 +2,7 @@ package com.example.socialnetwork.infrastructure.adapter;
 
 import com.example.socialnetwork.common.mapper.CommentReactionMapper;
 import com.example.socialnetwork.domain.model.CommentReactionDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.CommentReactionDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.CommentReaction;
 import com.example.socialnetwork.infrastructure.repository.CommentReactionRepository;
@@ -11,8 +12,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 import static com.example.socialnetwork.infrastructure.specification.CommentReactionSpecification.withCommentId;
 import static com.example.socialnetwork.infrastructure.specification.CommentReactionSpecification.withCommentReactionType;
+import static com.example.socialnetwork.infrastructure.specification.CommentSpecification.withoutUserId;
+
 @RequiredArgsConstructor
 public class CommentReactionDatabaseAdapter implements CommentReactionDatabasePort {
 
