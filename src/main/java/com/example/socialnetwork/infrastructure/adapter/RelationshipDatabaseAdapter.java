@@ -11,11 +11,15 @@ import com.example.socialnetwork.infrastructure.entity.Relationship;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,14 +38,16 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public List<RelationshipDomain> getListSendRequest(long userId) {
-        return relationshipMapper.toRelationshipDomain(relationshipRepository.findByUser_IdAndRelation(userId, ERelationship.PENDING));
+    public Page<UserDomain> getListSendRequest(int page, int pageSize, long userId) {
+        var pageable = PageRequest.of(page - 1, pageSize, Sort.by("friend.createdAt"));
+        return relationshipRepository.findByUser_IdAndRelation(userId, ERelationship.PENDING, pageable).map(userMapper::toUserDomain);
     }
 
     @Override
     @Transactional
-    public List<RelationshipDomain> getListReceiveRequest(long userId) {
-        return relationshipMapper.toRelationshipDomain(relationshipRepository.findByFriend_IdAndRelation(userId, ERelationship.PENDING));
+    public Page<UserDomain> getListReceiveRequest(int page, int pageSize, long userId) {
+        var pageable = PageRequest.of(page - 1, pageSize, Sort.by("friend.createdAt"));
+        return relationshipRepository.findByFriend_IdAndRelation(userId, ERelationship.PENDING, pageable).map(userMapper::toUserDomain);
     }
 
     @Override
@@ -53,14 +59,29 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
+    public Page<UserDomain> getListFriend(int page, int pageSize, long userId, Sort sort) {
+        var pageable = PageRequest.of(page - 1, pageSize, sort);
+        return relationshipRepository.getListUserWithRelation(userId, ERelationship.FRIEND, pageable).map(userMapper::toUserDomain);
+    }
+
+    @Override
+    @Transactional
     public List<UserDomain> getListFriend(long userId) {
         return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.FRIEND));
     }
 
     @Override
     @Transactional
-    public List<UserDomain> getListBlock(long userId) {
-        return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.BLOCK));
+    public Page<UserDomain> getListBlock(int page, int pageSize, long userId, Sort sort) {
+        var pageable = PageRequest.of(page - 1, pageSize, sort);
+        return relationshipRepository.getListUserWithRelation(userId, ERelationship.BLOCK, pageable).map(userMapper::toUserDomain);
+    }
+
+    @Override
+    @Transactional
+    public Page<UserDomain> findFriendByKeyWord(int page, int pageSize, long userId, String keyWord) {
+        var pageable = PageRequest.of(page - 1, pageSize, Sort.by("username"));
+        return relationshipRepository.getListFriendByKeyWord(userId, keyWord, pageable).map(userMapper::toUserDomain);
     }
 
     @Override
