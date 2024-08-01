@@ -64,8 +64,8 @@ public class BeanConfig {
     }
 
     @Bean
-    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, UserMapper userMapper) {
-        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, userMapper);
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort);
     }
 
     @Bean
@@ -115,7 +115,7 @@ public class BeanConfig {
     }
 
     @Bean
-    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, RelationshipServicePort relationshipServicePort, CommentMapper commentMapper) {
-        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, relationshipServicePort, commentMapper);
+    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CommentMapper commentMapper) {
+        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, relationshipDatabasePort, commentMapper);
     }
 }

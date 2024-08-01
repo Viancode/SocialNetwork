@@ -22,6 +22,8 @@ public interface RelationshipDatabasePort {
 
     Page<UserDomain> getListBlock(int page, int pageSize, long userId, Sort sort);
 
+    List<UserDomain> getListBlock(long userId);
+
     Page<UserDomain> findFriendByKeyWord(int page, int pageSize, long userId, String keyWord);
 
     List<UserDomain> findFriendByKeyWord(long userId, String keyWord);

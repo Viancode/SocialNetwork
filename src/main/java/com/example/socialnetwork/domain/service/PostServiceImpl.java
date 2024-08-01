@@ -77,4 +77,9 @@ public class PostServiceImpl implements PostServicePort {
             throw new NotAllowException("You don't have permission to view this user's posts or user doesn't have any posts");
         }
     }
+
+    @Override
+    public Page<PostDomain> getNewsFeed(int page, int pageSize, String sortBy, long userId) {
+        return null;
+    }
 }

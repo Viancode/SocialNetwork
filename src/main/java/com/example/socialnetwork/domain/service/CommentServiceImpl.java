@@ -10,9 +10,9 @@ import com.example.socialnetwork.domain.model.CommentDomain;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.CommentServicePort;
-import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
+import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
@@ -24,15 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServicePort {
     private final CommentDatabasePort commentDatabasePort;
     private final UserDatabasePort userDatabase;
     private final PostDatabasePort postDatabasePort;
-    private final RelationshipServicePort relationshipServicePort;
+    private final RelationshipDatabasePort relationshipDatabasePort;
     private final CommentMapper commentMapper;
 
     // Checks if a post exists.
@@ -45,7 +43,7 @@ public class CommentServiceImpl implements CommentServicePort {
 
     // Checks if a user is blocked by the post owner.
     private void checkUserBlocked(Long userId, Long postOwnerId) {
-        ERelationship relationship = relationshipServicePort.getRelationship(userId, postOwnerId);
+        ERelationship relationship = relationshipDatabasePort.find(userId, postOwnerId).getRelation();
         if (relationship == ERelationship.BLOCK) {
             throw new NotAllowException("You are not allowed to interact with this post");
         }
@@ -78,7 +76,7 @@ public class CommentServiceImpl implements CommentServicePort {
         if (userId.equals(commentOwnerId)) {
             return;
         }
-        ERelationship relationship = relationshipServicePort.getRelationship(userId, commentOwnerId);
+        ERelationship relationship = relationshipDatabasePort.find(userId, commentOwnerId).getRelation();
         if (relationship == ERelationship.BLOCK) {
             throw new NotAllowException("You are not allowed to interact with this comment");
         }
@@ -94,7 +92,7 @@ public class CommentServiceImpl implements CommentServicePort {
         // Check if the user is the post owner
         if (!Objects.equals(post.getUserId(), userId)) {
             checkUserBlocked(userId, post.getUserId());
-            ERelationship relationship = relationshipServicePort.getRelationship(userId, post.getUserId());
+            ERelationship relationship = relationshipDatabasePort.find(userId, post.getUserId()).getRelation();
             checkPostVisibility(post, userId, relationship);
         }
     }
@@ -162,7 +160,7 @@ public class CommentServiceImpl implements CommentServicePort {
         Sort sort = Sort.by(direction, sortBy);
 
         // Get the list of blocked friends
-        List<UserDomain> listBlockFriend = relationshipServicePort.getListBlock();
+        List<UserDomain> listBlockFriend = relationshipDatabasePort.getListBlock(userId);
         List<Long> blockedUserIds = listBlockFriend.stream()
                 .map(UserDomain::getId)
                 .toList();
@@ -185,7 +183,7 @@ public class CommentServiceImpl implements CommentServicePort {
         }
 
         // Get the list of blocked friends
-        List<UserDomain> listBlockFriend = relationshipServicePort.getListBlock();
+        List<UserDomain> listBlockFriend = relationshipDatabasePort.getListBlock(userId);
         List<Long> blockedUserIds = listBlockFriend.stream()
                 .map(UserDomain::getId)
                 .toList();

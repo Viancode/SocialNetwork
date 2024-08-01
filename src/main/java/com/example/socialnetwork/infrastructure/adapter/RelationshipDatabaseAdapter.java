@@ -78,6 +78,11 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     }
 
     @Override
+    public List<UserDomain> getListBlock(long userId) {
+        return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.BLOCK));
+    }
+
+    @Override
     @Transactional
     public Page<UserDomain> findFriendByKeyWord(int page, int pageSize, long userId, String keyWord) {
         var pageable = PageRequest.of(page - 1, pageSize, Sort.by("username"));
