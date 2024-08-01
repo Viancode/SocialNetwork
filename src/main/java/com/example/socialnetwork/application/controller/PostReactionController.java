@@ -25,7 +25,8 @@ public class PostReactionController extends BaseController {
             @RequestBody PostReactionRequest postReactionRequest
     ) {
         PostReactionDomain postReactionDomain = postReactionService.createPostReaction(PostReactionMapper.INSTANCE.requestToDomain(postReactionRequest));
-        return buildResponse("Create post reaction successfully", PostReactionMapper.INSTANCE.domainToResponse(postReactionDomain));
+        UserDomain userDomain = userServicePort.findUserById(postReactionDomain.getUserId());
+        return buildResponse("Create post reaction successfully", PostReactionMapper.INSTANCE.domainToResponseWithUser(postReactionDomain, userDomain));
     }
 
     @DeleteMapping("")
