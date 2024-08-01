@@ -107,6 +107,10 @@ public class CommentServiceImpl implements CommentServicePort {
             if (parentComment == null) {
                 throw new NotFoundException("Parent comment not found");
             }
+
+            if (parentComment.getParentComment() != null) {
+                throw new NotAllowException("You are not allowed to reply to this comment");
+            }
             checkUserBlockedByCommentOwner(userId, parentComment.getUser().getId());
         }
     }
