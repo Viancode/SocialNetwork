@@ -154,12 +154,9 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public Page<CommentResponse> getChildComments(Long commentId, int page, int pageSize, String sortBy, String sortDirection) {
+    public Page<CommentResponse> getChildComments(Long postId, Long commentId, int page, int pageSize, String sortBy, String sortDirection) {
         Long userId = SecurityUtil.getCurrentUserId();
-        CommentDomain parentComment = commentDatabasePort.findById(commentId);
-        if (parentComment == null) {
-            throw new NotFoundException("Parent comment not found");
-        }
+        checkParentComment(userId, commentId, postId);
 
         // Get the list of blocked friends
         List<UserDomain> listBlockFriend = relationshipDatabasePort.getListBlock(userId);

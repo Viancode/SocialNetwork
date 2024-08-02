@@ -35,16 +35,17 @@ public class CommentController extends BaseController {
 
     @GetMapping("/{commentId}")
     public ResponseEntity<ResultResponse> getChildComment(@PathVariable Long commentId,
+                                                          @RequestParam Long postId,
                                                           @RequestParam(defaultValue = "1") int page,
                                                           @RequestParam(defaultValue = "5") int pageSize,
                                                           @RequestParam(defaultValue = "createdAt") String sortBy,
                                                           @RequestParam(defaultValue = "desc") String sortDirection) {
-        Page<CommentResponse> childComments = commentServicePort.getChildComments(commentId, page, pageSize, sortBy, sortDirection);
+        Page<CommentResponse> childComments = commentServicePort.getChildComments(postId, commentId, page, pageSize, sortBy, sortDirection);
         return buildResponse("Get comment successfully", childComments);
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> createComment(@ModelAttribute CommentRequest commentRequest, Authentication authentication) {
+    public ResponseEntity<?> createComment(@ModelAttribute CommentRequest commentRequest) {
         CommentDomain newComment = commentServicePort.createComment(commentRequest);
         return buildResponse("Create comment successfully", commentMapper.commentDomainToCommentResponse(newComment));
     }

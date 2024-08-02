@@ -10,5 +10,5 @@ public interface CommentServicePort {
     CommentDomain updateComment(Long commentId, String content, String image, Long postId);
     void deleteComment(Long commentId);
     Page<CommentResponse> getAllComments(Long postId, int page, int pageSize, String sortBy, String sortDirection);
-    Page<CommentResponse> getChildComments(Long commentId, int page, int pageSize, String sortBy, String sortDirection);
+    Page<CommentResponse> getChildComments(Long postId, Long commentId, int page, int pageSize, String sortBy, String sortDirection);
 }
