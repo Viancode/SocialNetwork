@@ -34,52 +34,12 @@ public class CommentServiceImpl implements CommentServicePort {
     private final RelationshipDatabasePort relationshipDatabasePort;
     private final CommentMapper commentMapper;
 
-    // Checks if a post exists.
-    private PostDomain checkPostExists(Long postId) {
+    private void checkUserCommentAndUserPost(Long userId, Long postId) {
+        // check post exists
         PostDomain post = postDatabasePort.findById(postId);
         if (post == null) {
             throw new NotFoundException("Post not found");
         }
-        else return post;
-    }
-
-    // Checks if a user is blocked by the post owner.
-    private void checkUserBlocked(Long userId, Long postOwnerId) {
-        RelationshipDomain relationship = relationshipDatabasePort.find(userId, postOwnerId).orElse(null);
-        if (relationship == null) return;
-        if (relationship.getRelation() == ERelationship.BLOCK) {
-            throw new NotAllowException("You are not allowed to interact with this post");
-        }
-    }
-
-    // Checks if a user has permission to interact with a post based on its visibility.
-    private void checkPostVisibility(PostDomain post, Long userId, ERelationship relationship) {
-        if (post.getVisibility() == Visibility.FRIEND) {
-            if (relationship == null || relationship != ERelationship.FRIEND) {
-                throw new NotAllowException("You are not allowed to interact with this post");
-            }
-        }
-        if (post.getVisibility() == Visibility.PRIVATE && !Objects.equals(post.getUserId(), userId)) {
-            throw new NotAllowException("You are not allowed to interact with this post");
-        }
-    }
-
-    // Checks if a user is blocked by the comment owner.
-    private void checkUserBlockedByCommentOwner(Long userId, Long commentOwnerId) {
-        if (userId.equals(commentOwnerId)) {
-            return;
-        }
-        ERelationship relationship = Objects.requireNonNull(relationshipDatabasePort.find(userId, commentOwnerId).orElse(null)).getRelation();
-        if (relationship == ERelationship.BLOCK) {
-            throw new NotAllowException("You are not allowed to interact with this comment");
-        }
-    }
-
-    // Validates a comment operation
-    // userId The ID of the user performing the operation.
-    // postId The ID of the post associated with the comment.
-    private void validateUserCommentAndUserPost(Long userId, Long postId) {
-       PostDomain post = checkPostExists(postId);
 
         // Check if the user is the post owner
         if (!Objects.equals(post.getUserId(), userId)) {
@@ -95,25 +55,42 @@ public class CommentServiceImpl implements CommentServicePort {
         }
     }
 
-    private void checkParentComment(Long userId, Long parentCommentId) {
+    private void checkParentComment(Long userId, Long parentCommentId, Long postId) {
         if (parentCommentId != null) {
+            // check parent comment exists
             CommentDomain parentComment = commentDatabasePort.findById(parentCommentId);
             if (parentComment == null) {
                 throw new NotFoundException("Parent comment not found");
             }
 
+            // check current comment is not top level comment
             if (parentComment.getParentCommentId() != null) {
                 throw new NotAllowException("You are not allowed to reply to this comment");
             }
-            checkUserBlockedByCommentOwner(userId, parentComment.getUser().getId());
+
+            // Check user is blocked by comment owner
+            if (userId != parentComment.getUser().getId()) {
+                ERelationship relationship = relationshipDatabasePort.find(userId, parentComment.getUser().getId())
+                        .map(RelationshipDomain::getRelation)
+                        .orElse(null);
+
+                if (relationship == ERelationship.BLOCK) {
+                    throw new NotAllowException("You are not allowed to interact with this comment");
+                }
+            }
+
+            // check parent comment is belonged to the post
+            if (!Objects.equals(parentComment.getPost().getId(), postId)) {
+                throw new NotAllowException("You are not allowed to reply to this comment");
+            }
         }
     }
 
     @Override
     public CommentDomain createComment(CommentRequest commentRequest) {
         Long userId = SecurityUtil.getCurrentUserId();
-        validateUserCommentAndUserPost(userId, commentRequest.getPostId());
-        checkParentComment(userId, commentRequest.getParentCommentId());
+        checkUserCommentAndUserPost(userId, commentRequest.getPostId());
+        checkParentComment(userId, commentRequest.getParentCommentId(), commentRequest.getPostId());
         return commentDatabasePort.createComment(commentMapper.commentRequestToCommentDomain(commentRequest));
     }
 
@@ -122,14 +99,14 @@ public class CommentServiceImpl implements CommentServicePort {
     public CommentDomain updateComment(Long commentId, String content, String image, Long postId) {
         Long userId = SecurityUtil.getCurrentUserId();
 
-        validateUserCommentAndUserPost(userId, postId);
+        checkUserCommentAndUserPost(userId, postId);
 
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
         if (currentComment.getUser().getId() != userId) {
             throw new NotAllowException("You are not allowed to update this comment");
         }
 
-        checkParentComment(userId, currentComment.getParentCommentId());
+        checkParentComment(userId, currentComment.getParentCommentId(), postId);
 
         currentComment.setContent(content);
         currentComment.setUpdatedAt(LocalDateTime.now());
@@ -156,7 +133,7 @@ public class CommentServiceImpl implements CommentServicePort {
     @Override
     public Page<CommentResponse> getAllComments(Long postId, int page, int pageSize, String sortBy, String sortDirection) {
         Long userId = SecurityUtil.getCurrentUserId();
-        validateUserCommentAndUserPost(userId, postId);
+        checkUserCommentAndUserPost(userId, postId);
 
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
