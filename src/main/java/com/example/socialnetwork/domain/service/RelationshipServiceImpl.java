@@ -25,7 +25,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public ERelationship getRelationship(long sourceUserID, long targetUserID) {
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(sourceUserID, targetUserID);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(sourceUserID, targetUserID).orElse(null);
         if (relationshipDomain == null) {
 //            throw new NotFoundException("Not found relationship");
             return null;
@@ -44,7 +44,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void sendRequestMakeFriendship(long userId) {
         long senderId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId).orElse(null);
         if (relationshipDomain == null) {
             relationshipDatabasePort.createRelationship(senderId, userId, ERelationship.PENDING);
         } else if (relationshipDomain.getRelation() == ERelationship.FRIEND)
@@ -58,7 +58,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void deleteRequestMakeFriendship(long userId) {
         long senderId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId).orElse(null);
         if (relationshipDomain == null) {
             throw new NotFoundException("Friend request not found");
         } else if (relationshipDomain.getRelation() == ERelationship.PENDING && relationshipDomain.getUser().getId() == senderId)
@@ -74,7 +74,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void acceptRequestMakeFriendship(long userId) {
         long receiverId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId).orElse(null);
         if (relationshipDomain == null) {
             throw new NotFoundException("Friend request not found");
         } else if (relationshipDomain.getRelation() == ERelationship.PENDING && relationshipDomain.getUser().getId() == userId) {
@@ -88,7 +88,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void refuseRequestMakeFriendship(long userId) {
         long receiverId = getCurrentUser();
         checkFriend(userId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId).orElse(null);
         if (relationshipDomain == null) {
             throw new NotFoundException("Friend request not found");
         } else if (relationshipDomain.getRelation() == ERelationship.PENDING && relationshipDomain.getUser().getId() == userId) {
@@ -104,7 +104,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public void block(long friendId) {
         long userId = getCurrentUser();
         checkFriend(friendId);
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId).orElse(null);
         if (relationshipDomain == null) {
             relationshipDatabasePort.createRelationship(userId, friendId, ERelationship.BLOCK);
         } else {
@@ -143,7 +143,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
             return relationshipDatabasePort.getListFriend(page, pageSize, userId, sort);
         } else {
             Visibility visibility = friend.getVisibility();
-            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, currentUserId);
+            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, currentUserId).orElse(null);
             if (visibility == Visibility.PRIVATE || (relationshipDomain != null && relationshipDomain.getRelation() != ERelationship.FRIEND && visibility == Visibility.FRIEND)) {
                 List<UserDomain> mutualFriends =  getListMutualFriends(userId, currentUserId);
                 int start = Math.min((int) pageable.getOffset(), mutualFriends.size());

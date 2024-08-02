@@ -5,6 +5,7 @@ import com.example.socialnetwork.domain.model.UserDomain;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RelationshipServicePort {
     ERelationship getRelationship(long sourceUserID, long targetUserID);

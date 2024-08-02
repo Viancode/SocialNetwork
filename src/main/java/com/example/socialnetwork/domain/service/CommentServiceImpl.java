@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServicePort {
@@ -36,17 +35,19 @@ public class CommentServiceImpl implements CommentServicePort {
     private final CommentMapper commentMapper;
 
     // Checks if a post exists.
-    private void checkPostExists(Long postId) {
+    private PostDomain checkPostExists(Long postId) {
         PostDomain post = postDatabasePort.findById(postId);
         if (post == null) {
             throw new NotFoundException("Post not found");
         }
+        else return post;
     }
 
     // Checks if a user is blocked by the post owner.
     private void checkUserBlocked(Long userId, Long postOwnerId) {
-        ERelationship relationship = relationshipDatabasePort.find(userId, postOwnerId).getRelation();
-        if (relationship == ERelationship.BLOCK) {
+        RelationshipDomain relationship = relationshipDatabasePort.find(userId, postOwnerId).orElse(null);
+        if (relationship == null) return;
+        if (relationship.getRelation() == ERelationship.BLOCK) {
             throw new NotAllowException("You are not allowed to interact with this post");
         }
     }
@@ -63,22 +64,12 @@ public class CommentServiceImpl implements CommentServicePort {
         }
     }
 
-    // Checks if a parent comment exists when replying to a comment.
-    private void checkParentCommentExists(Long parentCommentId) {
-        if (parentCommentId != null) {
-            CommentDomain parentComment = commentDatabasePort.findById(parentCommentId);
-            if (parentComment == null) {
-                throw new NotFoundException("Parent comment not found");
-            }
-        }
-    }
-
     // Checks if a user is blocked by the comment owner.
     private void checkUserBlockedByCommentOwner(Long userId, Long commentOwnerId) {
         if (userId.equals(commentOwnerId)) {
             return;
         }
-        ERelationship relationship = relationshipDatabasePort.find(userId, commentOwnerId).getRelation();
+        ERelationship relationship = Objects.requireNonNull(relationshipDatabasePort.find(userId, commentOwnerId).orElse(null)).getRelation();
         if (relationship == ERelationship.BLOCK) {
             throw new NotAllowException("You are not allowed to interact with this comment");
         }
@@ -88,16 +79,19 @@ public class CommentServiceImpl implements CommentServicePort {
     // userId The ID of the user performing the operation.
     // postId The ID of the post associated with the comment.
     private void validateUserCommentAndUserPost(Long userId, Long postId) {
-        checkPostExists(postId);
-        PostDomain post = postDatabasePort.findById(postId);
+       PostDomain post = checkPostExists(postId);
 
         // Check if the user is the post owner
         if (!Objects.equals(post.getUserId(), userId)) {
-            checkUserBlocked(userId, post.getUserId());
-            ERelationship relationship = Optional.ofNullable(relationshipDatabasePort.find(userId, post.getUserId()))
+            ERelationship relationship = relationshipDatabasePort.find(userId, post.getUserId())
                     .map(RelationshipDomain::getRelation)
                     .orElse(null);
-            checkPostVisibility(post, userId, relationship);
+
+            if (relationship == ERelationship.BLOCK ||
+                    post.getVisibility() == Visibility.FRIEND && relationship != ERelationship.FRIEND ||
+                    post.getVisibility() == Visibility.PRIVATE) {
+                throw new NotAllowException("You are not allowed to interact with this post");
+            }
         }
     }
 

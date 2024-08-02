@@ -7,10 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RelationshipDatabasePort {
 
-    RelationshipDomain find(long senderId, long receiverId);
+    Optional<RelationshipDomain> find(long senderId, long receiverId);
 
     Page<UserDomain> getListSendRequest(int page, int pageSize, long userId);
 

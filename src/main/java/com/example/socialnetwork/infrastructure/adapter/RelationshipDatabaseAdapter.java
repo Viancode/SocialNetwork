@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -31,9 +32,9 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public RelationshipDomain find(long userId, long friendId) {
+    public Optional<RelationshipDomain> find(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
-        return relationshipMapper.toRelationshipDomain(relationship);
+        return Optional.ofNullable(relationshipMapper.toRelationshipDomain(relationship));
     }
 
     @Override

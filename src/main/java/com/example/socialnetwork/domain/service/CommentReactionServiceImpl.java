@@ -32,8 +32,8 @@ public class CommentReactionServiceImpl implements CommentReactionServicePort {
 
         CommentDomain commentDomain = commentDatabasePort.findById(commentReactionDomain.getComment().getCommentId());
 
-        RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId());
-        RelationshipDomain relationshipDomainWithPost = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId());
+        RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
+        RelationshipDomain relationshipDomainWithPost = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
         PostDomain postDomain = postDatabasePort.findById(commentDomain.getPost().getId());
 
         if (canCreateReactionComment(relationshipDomainWithComment) && canAccessPost(currentUserId, postDomain, relationshipDomainWithPost)) {
@@ -84,8 +84,8 @@ public class CommentReactionServiceImpl implements CommentReactionServicePort {
             Long currentUserId = SecurityUtil.getCurrentUserId();
             CommentDomain commentDomain = commentDatabasePort.findById(commentId);
             PostDomain postDomain = postDatabasePort.findById(commentDomain.getPost().getId());
-            RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId());
-            RelationshipDomain relationshipDomainWithPost = relationshipDatabasePort.find(currentUserId, postDomain.getUserId());
+            RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
+            RelationshipDomain relationshipDomainWithPost = relationshipDatabasePort.find(currentUserId, postDomain.getUserId()).orElse(null);
 
             if (canViewReactions(relationshipDomainWithComment) && canAccessPost(currentUserId,postDomain,relationshipDomainWithPost)) {
                 Sort sort = createSort(sortDirection, sortBy);

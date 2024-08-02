@@ -29,7 +29,7 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
     public PostReactionDomain createPostReaction(PostReactionDomain postReactionDomain) {
         Long currentUserId = SecurityUtil.getCurrentUserId();
         PostDomain postDomain = postDatabasePort.findById(postReactionDomain.getPostId());
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(currentUserId, postDomain.getUserId());
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(currentUserId, postDomain.getUserId()).orElse(null);
 
         if (canCreateReaction(currentUserId, postDomain, relationshipDomain)) {
             return postReactionDatabasePort.createPostReaction(postReactionDomain);
@@ -69,7 +69,7 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
         try {
             Long currentUserId = SecurityUtil.getCurrentUserId();
             PostDomain postDomain = postDatabasePort.findById(postId);
-            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(currentUserId, postDomain.getUserId());
+            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(currentUserId, postDomain.getUserId()).orElse(null);
 
             if (canViewReactions(postDomain, relationshipDomain)) {
                 Sort sort = createSort(sortDirection, sortBy);
