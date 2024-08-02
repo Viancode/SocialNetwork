@@ -5,6 +5,7 @@ import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.*;
 import com.example.socialnetwork.domain.port.api.CommentReactionServicePort;
+import com.example.socialnetwork.domain.port.api.CommentServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.domain.port.spi.CommentReactionDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
@@ -17,6 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+@Transactional
 @RequiredArgsConstructor
 public class CommentReactionServiceImpl implements CommentReactionServicePort {
     private final CommentReactionDatabasePort commentReactionDatabasePort;
@@ -25,21 +29,52 @@ public class CommentReactionServiceImpl implements CommentReactionServicePort {
     private final PostDatabasePort postDatabasePort;
 
 
+    public void checkUserBlocked(Long userId, Long postOwnerId) {
+        RelationshipDomain relationship = relationshipDatabasePort.find(userId, postOwnerId).orElse(null);
+        if (relationship == null) return;
+        if (relationship.getRelation() == ERelationship.BLOCK) {
+            throw new NotAllowException("You are not allowed to access with this comment");
+        }
+    }
+
+    public void checkCommentParentBlock(CommentDomain commentDomain, Long currentUserId) {
+        if(commentDomain == null) {
+            throw new ClientErrorException("Comment not found");
+        }else{
+            Long parentCommentId =  commentDomain.getParentCommentId();
+            if(parentCommentId != null){
+                CommentDomain commentParentDomain = commentDatabasePort.findById(parentCommentId);
+                checkUserBlocked(currentUserId, commentParentDomain.getUser().getId());
+            }
+        }
+    }
+
 
     @Override
     public CommentReactionDomain createCommentReaction(CommentReactionDomain commentReactionDomain) {
         Long currentUserId = SecurityUtil.getCurrentUserId();
-
         CommentDomain commentDomain = commentDatabasePort.findById(commentReactionDomain.getComment().getCommentId());
 
-        RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
-        RelationshipDomain relationshipDomainWithPost = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
-        PostDomain postDomain = postDatabasePort.findById(commentDomain.getPost().getId());
+        checkCommentParentBlock(commentDomain, currentUserId);
 
-        if (canCreateReactionComment(relationshipDomainWithComment) && canAccessPost(currentUserId, postDomain, relationshipDomainWithPost)) {
-            return commentReactionDatabasePort.createCommentReaction(commentReactionDomain);
+        CommentReactionDomain commentReactionDomainExist = commentReactionDatabasePort.findByUserIdAndCommentId(currentUserId, commentReactionDomain.getComment().getCommentId());
+        if (commentReactionDomainExist != null ) {
+            if(!commentReactionDomainExist.getReactionType().equals(commentReactionDomain.getReactionType())){
+                commentReactionDomain.setId(commentReactionDomainExist.getId());
+                return commentReactionDatabasePort.updateCommentReaction(commentReactionDomain);
+            }else{
+                throw new  ClientErrorException("Comment reaction already exist");
+            }
+        }else{
+            RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
+            PostDomain postDomain = postDatabasePort.findById(commentDomain.getPost().getId());
+            RelationshipDomain relationshipDomainWithPost = relationshipDatabasePort.find(currentUserId, postDomain.getUserId()).orElse(null);
+
+            if (canCreateReactionComment(relationshipDomainWithComment) && canAccessPost(currentUserId, postDomain, relationshipDomainWithPost)) {
+                return commentReactionDatabasePort.createCommentReaction(commentReactionDomain);
+            }
+            throw new NotAllowException("User does not have permission to post reaction");
         }
-        throw new NotAllowException("User does not have permission to post reaction");
     }
 
     private boolean canCreateReactionComment( RelationshipDomain relationshipDomain) {
@@ -56,7 +91,6 @@ public class CommentReactionServiceImpl implements CommentReactionServicePort {
         return relationshipDomain.getRelation().equals(ERelationship.FRIEND) && !postDomain.getVisibility().equals(Visibility.PRIVATE);
     }
 
-    @Transactional
     @Override
     public Boolean deleteCommentReaction(Long commentReactionId) {
         Long currentUserId = SecurityUtil.getCurrentUserId();
@@ -81,15 +115,19 @@ public class CommentReactionServiceImpl implements CommentReactionServicePort {
     @Override
     public Page<CommentReactionDomain> getAllCommentReactions(int page, int pageSize, String sortBy, String sortDirection, Long commentId, String commentReactionType) {
         try {
-            Long currentUserId = SecurityUtil.getCurrentUserId();
+            long currentUserId = SecurityUtil.getCurrentUserId();
             CommentDomain commentDomain = commentDatabasePort.findById(commentId);
+
+            checkCommentParentBlock(commentDomain, currentUserId);
+
             PostDomain postDomain = postDatabasePort.findById(commentDomain.getPost().getId());
             RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
             RelationshipDomain relationshipDomainWithPost = relationshipDatabasePort.find(currentUserId, postDomain.getUserId()).orElse(null);
+            List<Long> listBlockFriend = relationshipDatabasePort.getListBlock(currentUserId).stream().map(UserDomain::getId).collect(Collectors.toList());
 
             if (canViewReactions(relationshipDomainWithComment) && canAccessPost(currentUserId,postDomain,relationshipDomainWithPost)) {
                 Sort sort = createSort(sortDirection, sortBy);
-                return commentReactionDatabasePort.getAllCommentReactions(page, pageSize, sort, commentId, commentReactionType);
+                return commentReactionDatabasePort.getAllCommentReactions(page, pageSize, sort, commentId, commentReactionType, listBlockFriend);
             }
             throw new NotAllowException("User does not have permission to view this post's reactions");
         } catch (Exception e) {

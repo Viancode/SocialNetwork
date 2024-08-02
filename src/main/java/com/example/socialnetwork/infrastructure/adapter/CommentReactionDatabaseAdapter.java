@@ -16,7 +16,7 @@ import java.util.List;
 
 import static com.example.socialnetwork.infrastructure.specification.CommentReactionSpecification.withCommentId;
 import static com.example.socialnetwork.infrastructure.specification.CommentReactionSpecification.withCommentReactionType;
-import static com.example.socialnetwork.infrastructure.specification.CommentSpecification.withoutUserId;
+import static com.example.socialnetwork.infrastructure.specification.CommentReactionSpecification.withoutUserId;
 
 @RequiredArgsConstructor
 public class CommentReactionDatabaseAdapter implements CommentReactionDatabasePort {
@@ -32,7 +32,7 @@ public class CommentReactionDatabaseAdapter implements CommentReactionDatabasePo
     @Override
     public Boolean deleteCommentReaction(Long commentReactionId) {
         if(commentReactionRepository.existsById(commentReactionId)) {
-            commentReactionRepository.deleteById(commentReactionId);
+            commentReactionRepository.deleteCommentReactionById(commentReactionId);
             return true;
         }else{
             return false;
@@ -46,16 +46,32 @@ public class CommentReactionDatabaseAdapter implements CommentReactionDatabasePo
     }
 
     @Override
-    public Page<CommentReactionDomain> getAllCommentReactions(int page, int pageSize, Sort sort, Long commentId, String commentReactionType) {
+    public Page<CommentReactionDomain> getAllCommentReactions(int page, int pageSize, Sort sort, Long commentId, String commentReactionType, List<Long> listBlockFriend) {
         var pageable = PageRequest.of(page - 1, pageSize, sort);
-        var spec = getSpec(commentId,commentReactionType);
+        var spec = getSpec(commentId,commentReactionType, listBlockFriend);
         return commentReactionRepository.findAll(spec, pageable).map(CommentReactionMapper.INSTANCE::entityToDomain);
     }
 
-    private Specification<CommentReaction> getSpec(Long commentId, String commentReactionType) {
+    @Override
+    public CommentReactionDomain findByUserIdAndCommentId(Long userId, Long commentId) {
+        return commentReactionRepository.findByUserIdAndCommentId(userId, commentId)
+                .map(CommentReactionMapper.INSTANCE::entityToDomain)
+                .orElse(null);
+    }
+
+    @Override
+    public CommentReactionDomain updateCommentReaction(CommentReactionDomain commentReactionDomain) {
+        CommentReaction commentReaction = commentReactionRepository.findById(commentReactionDomain.getId()).orElse(null);
+
+        assert commentReaction != null;
+        commentReaction.setReactionType(commentReactionDomain.getReactionType());
+        return CommentReactionMapper.INSTANCE.entityToDomain(commentReactionRepository.save(commentReaction));
+    }
+
+    private Specification<CommentReaction> getSpec(Long commentId, String commentReactionType, List<Long> listBlockFriend) {
         Specification<CommentReaction> spec = Specification.where(null);
         if (commentId != null) {
-            spec = spec.and(withCommentId(commentId));
+            spec = spec.and(withCommentId(commentId).and(withoutUserId(listBlockFriend)));
         }
         if (commentReactionType != null && !commentReactionType.isEmpty()) {
             spec = spec.and(withCommentReactionType(commentReactionType));
