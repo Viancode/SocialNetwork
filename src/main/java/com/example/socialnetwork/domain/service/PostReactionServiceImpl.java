@@ -6,6 +6,7 @@ import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.PostReactionDomain;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.PostReactionServicePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostReactionDatabasePort;
@@ -16,6 +17,9 @@ import com.example.socialnetwork.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class PostReactionServiceImpl implements PostReactionServicePort {
@@ -28,6 +32,17 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
     @Override
     public PostReactionDomain createPostReaction(PostReactionDomain postReactionDomain) {
         Long currentUserId = SecurityUtil.getCurrentUserId();
+
+        PostReactionDomain postReactionDomainExist = postReactionDatabasePort.findByUserIdAndPostIdAndReactionType(currentUserId,postReactionDomain.getPostId(),postReactionDomain.getReactionType());
+        if (postReactionDomainExist != null) {
+            throw new ClientErrorException("Post reaction already exists");
+        }
+        PostReactionDomain postReactionDomainUpdate = postReactionDatabasePort.findByUserIdAndPostId(currentUserId,postReactionDomain.getPostId());
+        if( postReactionDomainUpdate!= null) {
+            postReactionDomain.setId(postReactionDomainUpdate.getId());
+            postReactionDatabasePort.updatePostReaction(postReactionDomain);
+        }
+
         PostDomain postDomain = postDatabasePort.findById(postReactionDomain.getPostId());
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(currentUserId, postDomain.getUserId()).orElse(null);
 
@@ -67,13 +82,15 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
     @Override
     public Page<PostReactionDomain> getAllPostReactions(int page, int pageSize, String sortBy, String sortDirection, Long postId, String postReactionType) {
         try {
-            Long currentUserId = SecurityUtil.getCurrentUserId();
+            long currentUserId = SecurityUtil.getCurrentUserId();
             PostDomain postDomain = postDatabasePort.findById(postId);
             RelationshipDomain relationshipDomain = relationshipDatabasePort.find(currentUserId, postDomain.getUserId()).orElse(null);
+            List<Long> listBlockFriend = relationshipDatabasePort.getListBlock(currentUserId).stream().map(UserDomain::getId).collect(Collectors.toList());
+
 
             if (canViewReactions(postDomain, relationshipDomain)) {
                 Sort sort = createSort(sortDirection, sortBy);
-                return postReactionDatabasePort.getAllPostReactions(page, pageSize, sort, postId, postReactionType);
+                return postReactionDatabasePort.getAllPostReactions(page, pageSize, sort, postId, postReactionType,listBlockFriend);
             }
             throw new NotAllowException("User does not have permission to view this post's reactions");
         } catch (Exception e) {

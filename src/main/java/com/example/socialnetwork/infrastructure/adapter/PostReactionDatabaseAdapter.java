@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 import static com.example.socialnetwork.infrastructure.specification.PostReactionSpecification.*;
 
 
@@ -42,16 +44,37 @@ public class PostReactionDatabaseAdapter implements PostReactionDatabasePort {
     }
 
     @Override
-    public Page<PostReactionDomain> getAllPostReactions(int page, int pageSize, Sort sort, Long postId, String postReactionType) {
+    public Page<PostReactionDomain> getAllPostReactions(int page, int pageSize, Sort sort, Long postId, String postReactionType,  List<Long> listBlockFriend) {
         var pageable = PageRequest.of(page - 1, pageSize, sort);
-        var spec = getSpec(postId,postReactionType);
+        var spec = getSpec(postId,postReactionType, listBlockFriend);
         return postReactionRepository.findAll(spec, pageable).map(PostReactionMapper.INSTANCE::entityToDomain);
     }
 
-    private Specification<PostReaction> getSpec(Long postId, String postReactionType) {
+    @Override
+    public PostReactionDomain findByUserIdAndPostIdAndReactionType(Long userId, Long postId, String reactionType) {
+        return postReactionRepository.findByUserIdAndPostIdAndReactionType(userId, postId, reactionType)
+                .map(PostReactionMapper.INSTANCE::entityToDomain)
+                .orElse(null); // Trả về null nếu không tìm thấy giá trị phù hợp
+    }
+
+    @Override
+    public PostReactionDomain findByUserIdAndPostId(Long userId, Long postId) {
+        return postReactionRepository.findByUserIdAndPostId(userId, postId)
+                .map(PostReactionMapper.INSTANCE::entityToDomain)
+                .orElse(null);
+    }
+
+    @Override
+    public PostReactionDomain updatePostReaction(PostReactionDomain postReactionDomain) {
+        postReactionRepository.findById(postReactionDomain.getId()).ifPresent(postReactionRepository::save);
+        return null;
+
+    }
+
+    private Specification<PostReaction> getSpec(Long postId, String postReactionType, List<Long> listBlockFriend) {
         Specification<PostReaction> spec = Specification.where(null);
         if (postId != null) {
-            spec = spec.and(withPostId(postId));
+            spec = spec.and(withPostId(postId).and(withoutUserId(listBlockFriend)));
         }
         if (postReactionType != null && !postReactionType.isEmpty()) {
             spec = spec.and(withPostReactionType(postReactionType));
