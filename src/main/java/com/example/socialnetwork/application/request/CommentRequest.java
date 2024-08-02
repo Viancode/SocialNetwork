@@ -10,7 +10,7 @@ import lombok.*;
 public class CommentRequest {
     private Long postId;
     @Builder.Default
-    private Long parentComment = null;
+    private Long parentCommentId = null;
     private String content;
     @Builder.Default
     private String image = null;

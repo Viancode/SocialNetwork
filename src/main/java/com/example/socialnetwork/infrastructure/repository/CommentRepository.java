@@ -15,5 +15,6 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long>, PagingAndSortingRepository<Comment, Long> {
   Page<Comment> findAll(Specification<Comment> spec, Pageable pageable);
-  List<Comment> findAllByParentComment(Comment parentComment);
+  List<Comment> findAllByParentCommentId(Long parentCommentId);
+  void deleteAllByParentCommentId(Long parentCommentId);
 }

@@ -23,7 +23,7 @@ public class Comment {
     @Column(name = "comment_id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)     // FetchType.LAZY
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -31,9 +31,8 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_comment_id")
-    private Comment parentComment;
+    @Column(name = "parent_comment_id")
+    private Long parentCommentId;
 
     @Size(max = 255)
     @Column(name = "content")

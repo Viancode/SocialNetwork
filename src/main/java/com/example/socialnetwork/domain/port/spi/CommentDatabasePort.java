@@ -12,7 +12,7 @@ public interface CommentDatabasePort {
     CommentDomain updateComment(CommentDomain comment);
     void deleteComment(Long commentId);
     CommentDomain findById(Long id);
-    List<CommentDomain> findAllByParentComment(CommentDomain parentComment);
+    List<CommentDomain> findAllByParentCommentId(Long parentCommentId);
     Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long userId, Long postId, List<Long> listBlockFriend);
     Page<CommentDomain> getChildComments(int page, int pageSize, Sort sort, Long userId, Long commentId, List<Long> listBlockFriend);
 }

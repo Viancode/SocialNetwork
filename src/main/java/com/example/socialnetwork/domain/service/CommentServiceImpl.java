@@ -108,7 +108,7 @@ public class CommentServiceImpl implements CommentServicePort {
                 throw new NotFoundException("Parent comment not found");
             }
 
-            if (parentComment.getParentComment() != null) {
+            if (parentComment.getParentCommentId() != null) {
                 throw new NotAllowException("You are not allowed to reply to this comment");
             }
             checkUserBlockedByCommentOwner(userId, parentComment.getUser().getId());
@@ -119,7 +119,7 @@ public class CommentServiceImpl implements CommentServicePort {
     public CommentDomain createComment(CommentRequest commentRequest) {
         Long userId = SecurityUtil.getCurrentUserId();
         validateUserCommentAndUserPost(userId, commentRequest.getPostId());
-        checkParentComment(userId, commentRequest.getParentComment());
+        checkParentComment(userId, commentRequest.getParentCommentId());
         return commentDatabasePort.createComment(commentMapper.commentRequestToCommentDomain(commentRequest));
     }
 
@@ -135,7 +135,7 @@ public class CommentServiceImpl implements CommentServicePort {
             throw new NotAllowException("You are not allowed to update this comment");
         }
 
-        checkParentComment(userId, currentComment.getParentComment() != null ? currentComment.getParentComment().getCommentId() : null);
+        checkParentComment(userId, currentComment.getParentCommentId());
 
         currentComment.setContent(content);
         currentComment.setUpdatedAt(LocalDateTime.now());
@@ -144,6 +144,7 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
+    @Transactional
     public void deleteComment(Long commentId) {
         Long userId = SecurityUtil.getCurrentUserId();
         CommentDomain comment = commentDatabasePort.findById(commentId);

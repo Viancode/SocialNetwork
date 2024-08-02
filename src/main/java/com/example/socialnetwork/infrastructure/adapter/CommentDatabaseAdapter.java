@@ -39,6 +39,7 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     @Override
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
+        commentRepository.deleteAllByParentCommentId(commentId);
     }
 
     @Override
@@ -52,8 +53,8 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     }
 
     @Override
-    public List<CommentDomain> findAllByParentComment(CommentDomain parentComment) {
-        return commentRepository.findAllByParentComment(commentMapper.commentDomainToCommentEntity(parentComment))
+    public List<CommentDomain> findAllByParentCommentId(Long parentCommentId) {
+        return commentRepository.findAllByParentCommentId(parentCommentId)
                 .stream()
                 .map(commentMapper::commentEntityToCommentDomain)
                 .collect(Collectors.toList());

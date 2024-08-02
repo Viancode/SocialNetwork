@@ -20,7 +20,7 @@ public class CommentDomain {
     private Long commentId;
     private UserDomain user;
     private PostDomain post;
-    private CommentDomain parentComment;
+    private Long parentCommentId;
     private Long numberOfChild;
     private String content;
     private LocalDateTime createdAt;

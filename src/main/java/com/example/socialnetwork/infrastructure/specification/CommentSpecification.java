@@ -11,11 +11,11 @@ public class CommentSpecification {
     }
 
     public static Specification<Comment> withParentCommentId(Long parentCommentId) {
-        return (root, query, cb) -> cb.equal(root.get(Comment.Fields.parentComment).get("id"), parentCommentId);
+        return (root, query, cb) -> cb.equal(root.get(Comment.Fields.parentCommentId), parentCommentId);
     }
 
     public static Specification<Comment> withParentCommentIsNull() {
-        return (root, query, cb) -> cb.isNull(root.get(Comment.Fields.parentComment));
+        return (root, query, cb) -> cb.isNull(root.get(Comment.Fields.parentCommentId));
     }
 
     public static Specification<Comment> withoutUserId(List<Long> userId) {

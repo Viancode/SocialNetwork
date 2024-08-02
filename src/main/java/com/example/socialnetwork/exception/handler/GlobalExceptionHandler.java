@@ -2,6 +2,7 @@ package com.example.socialnetwork.exception.handler;
 
 import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.ConflictException;
+import com.example.socialnetwork.exception.custom.NotAllowException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.http.HttpServletRequest;
@@ -95,7 +96,6 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
             ClientErrorException.class
-
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFileException(Exception e, HttpServletRequest request) {
