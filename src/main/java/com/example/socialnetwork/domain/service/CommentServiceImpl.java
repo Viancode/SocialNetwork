@@ -8,6 +8,7 @@ import com.example.socialnetwork.common.mapper.CommentMapper;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CommentDomain;
 import com.example.socialnetwork.domain.model.PostDomain;
+import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.CommentServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServicePort {
@@ -92,7 +94,9 @@ public class CommentServiceImpl implements CommentServicePort {
         // Check if the user is the post owner
         if (!Objects.equals(post.getUserId(), userId)) {
             checkUserBlocked(userId, post.getUserId());
-            ERelationship relationship = relationshipDatabasePort.find(userId, post.getUserId()).getRelation();
+            ERelationship relationship = Optional.ofNullable(relationshipDatabasePort.find(userId, post.getUserId()))
+                    .map(RelationshipDomain::getRelation)
+                    .orElse(null);
             checkPostVisibility(post, userId, relationship);
         }
     }
@@ -102,6 +106,10 @@ public class CommentServiceImpl implements CommentServicePort {
             CommentDomain parentComment = commentDatabasePort.findById(parentCommentId);
             if (parentComment == null) {
                 throw new NotFoundException("Parent comment not found");
+            }
+
+            if (parentComment.getParentComment() != null) {
+                throw new NotAllowException("You are not allowed to reply to this comment");
             }
             checkUserBlockedByCommentOwner(userId, parentComment.getUser().getId());
         }
