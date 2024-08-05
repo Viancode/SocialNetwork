@@ -2,13 +2,18 @@ package com.example.socialnetwork.infrastructure.adapter;
 
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
+import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
+import com.example.socialnetwork.domain.model.SuggestionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
+import com.example.socialnetwork.infrastructure.entity.Suggestion;
+import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
+import com.example.socialnetwork.infrastructure.repository.SuggestionRepository;
 import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -29,6 +37,8 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     private final RelationshipMapper relationshipMapper;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final SuggestionRepository suggestionRepository;
+    private final SuggestionMapper suggestionMapper;
 
     @Override
     @Transactional
@@ -98,6 +108,14 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
+    public List<SuggestionDomain> getListSuggestionUser(long userId) {
+        User user1 = userRepository.findById(userId).orElseThrow();
+        List<Suggestion> suggestions = suggestionRepository.findByUserOrFriend(user1);
+        return suggestions.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
     public void deleteFriend(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
         if(relationship == null || relationship.getRelation() == ERelationship.PENDING) {
@@ -108,6 +126,24 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
             relationshipRepository.delete(relationship);
         }
     }
+
+    @Override
+    @Transactional
+    public List<SuggestionDomain> searchUserByKeyWord(long userId, String keyWord) {
+        User user1 = userRepository.findById(userId).orElseThrow();
+        List<Suggestion> searchUsers = suggestionRepository.searchUser(user1);
+        List<Suggestion> unsuitableSearchUsers = new ArrayList<>();
+        for(Suggestion suggestion : searchUsers) {
+            User user2 = suggestion.getUser();
+            if(user1 == user2) user2 = suggestion.getFriend();
+            if (!user2.getEmail().toLowerCase().contains(keyWord.toLowerCase()) || !user2.getUsername().toLowerCase().contains(keyWord.toLowerCase())) {
+                unsuitableSearchUsers.add(suggestion);
+            }
+        }
+        searchUsers.removeAll(unsuitableSearchUsers);
+        return searchUsers.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+    }
+
 
     @Override
     @Transactional

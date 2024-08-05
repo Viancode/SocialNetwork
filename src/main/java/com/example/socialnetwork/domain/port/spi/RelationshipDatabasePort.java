@@ -2,6 +2,7 @@ package com.example.socialnetwork.domain.port.spi;
 
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
+import com.example.socialnetwork.domain.model.SuggestionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -28,6 +29,10 @@ public interface RelationshipDatabasePort {
     Page<UserDomain> findFriendByKeyWord(int page, int pageSize, long userId, String keyWord);
 
     List<UserDomain> findFriendByKeyWord(long userId, String keyWord);
+
+    List<SuggestionDomain> getListSuggestionUser(long userId);
+
+    List<SuggestionDomain> searchUserByKeyWord(long userId, String keyWord);
 
     void deleteFriend(long userId, long friendId);
 
