@@ -110,4 +110,13 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Relationship> relationships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL)
+    private List<Relationship> relationshipsFriends = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<CloseRelationship> closeRelationships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL)
+    private List<CloseRelationship> closeRelationshipsTarget = new ArrayList<>();
 }

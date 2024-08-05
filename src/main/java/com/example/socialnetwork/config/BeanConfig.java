@@ -129,4 +129,15 @@ public class BeanConfig {
         return new CommentReactionServiceImpl(commentReactionDatabasePort, relationshipDatabasePort, commentDatabasePort, postDatabasePort);
     }
 
+    @Bean
+    public CloseRelationshipDatabasePort closeRelationshipDatabasePort(CloseRelationshipRepository closeRelationshipRepository){
+        return new  CloseRelationshipDatabaseAdapter(closeRelationshipRepository);
+    }
+
+    @Bean
+    public CloseRelationshipServicePort closeRelationshipServicePort(CloseRelationshipDatabasePort closeRelationshipDatabasePort, RelationshipDatabasePort relationshipDatabasePort){
+        return new CloseRelationshipServiceImpl(closeRelationshipDatabasePort, relationshipDatabasePort);
+    }
+
+
 }
