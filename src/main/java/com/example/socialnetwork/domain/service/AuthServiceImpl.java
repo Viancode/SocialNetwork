@@ -4,6 +4,7 @@ import com.example.socialnetwork.application.request.AuthRequest;
 import com.example.socialnetwork.application.request.RegisterRequest;
 import com.example.socialnetwork.application.response.AuthResponse;
 import com.example.socialnetwork.common.constant.TokenType;
+import com.example.socialnetwork.common.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.port.api.AuthServicePort;
 import com.example.socialnetwork.domain.port.api.JwtServicePort;
 import com.example.socialnetwork.domain.port.api.TokenServicePort;
@@ -30,6 +31,7 @@ public class AuthServiceImpl implements AuthServicePort {
     private final UserServicePort userService;
     private final UserDatabasePort userDatabase;
     private final AuthenticationManager authenticationManager;
+    private final CustomEventPublisher customEventPublisher;
     @Value("${token.verified-expiration}")
     private long verifyExpiration;
     @Value("${token.refresh-expiration}")
@@ -53,6 +55,7 @@ public class AuthServiceImpl implements AuthServicePort {
         }
 
         String confirmToken = jwtService.generateVerifyToken();
+        System.out.println(confirmToken);
         tokenService.saveToken(confirmToken, String.valueOf(user.getId()), TokenType.VERIFIED, verifyExpiration);
         userService.sendVerificationEmail(user, confirmToken);
     }
@@ -65,7 +68,7 @@ public class AuthServiceImpl implements AuthServicePort {
         user.setIsEmailVerified(true);
         user.getRole().getName(); // This line is just to trigger the lazy loading within the transaction
         userRepository.save(user);
-
+        customEventPublisher.publishRegisterEvent(user.getId());
         tokenService.revokeAllUserTokens(String.valueOf(user.getId()), TokenType.VERIFIED);
     }
 

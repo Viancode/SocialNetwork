@@ -26,6 +26,6 @@ public class SearchController extends BaseController{
     public ResponseEntity<?> search(@RequestParam(value = "page", defaultValue = "1") int page,
                                     @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
                                     @RequestParam(value = "keyWord") String keyWord) {
-        return buildResponse("Search user successfully", relationshipServicePort.searchUser(page, pageSize, keyWord).map(userMapper::toFriendResponse));
+        return buildResponse("Search user successfully", relationshipServicePort.searchUser(page, pageSize, keyWord));
     }
 }

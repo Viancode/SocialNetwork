@@ -1,5 +1,7 @@
 package com.example.socialnetwork.application.controller;
 
+import com.example.socialnetwork.common.mapper.RelationshipMapper;
+import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public class RelationshipController  extends BaseController{
     private final RelationshipServicePort relationshipService;
     private final UserMapper userMapper;
+    private final RelationshipMapper relationshipMapper;
+    private final SuggestionMapper suggestionMapper;
 
     @PostMapping("/send_request")
     public ResponseEntity<?> createRequest(@RequestParam(value = "userId") long userId){
@@ -82,7 +86,7 @@ public class RelationshipController  extends BaseController{
     public ResponseEntity<?> viewSuggest(@RequestParam(value = "page", defaultValue = "1") int page,
                                          @RequestParam(value = "pageSize", defaultValue = "5") int pageSize
     ){
-        return buildResponse("Get friend suggestions successfully", relationshipService.getFriendSuggestions(page, pageSize).map(userMapper::toFriendResponse));
+        return buildResponse("Get friend suggestions successfully", relationshipService.getFriendSuggestions(page, pageSize));
     }
 
     @GetMapping("find_friend")
