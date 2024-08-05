@@ -4,6 +4,7 @@ import com.example.socialnetwork.application.request.ProfileRequest;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.constant.Visibility;
+import com.example.socialnetwork.common.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserServicePort {
     private final RelationshipServicePort relationshipService;
     private final S3ServicePort s3Service;
     private final StorageServicePort storageService;
+    private final CustomEventPublisher customEventPublisher;
     @Value("${link.front-end-domain}")
     private String domain;
     @Value("${link.confirm-email-verify}")
@@ -132,6 +134,7 @@ public class UserServiceImpl implements UserServicePort {
         user.setBackgroundImage(profileRequest.getBackground());
 
         userDatabase.save(user);
+        customEventPublisher.publishProfileUpdatedEvent(userId);
     }
 
     @Override

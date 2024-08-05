@@ -3,11 +3,11 @@ USE socialnetwork;
 INSERT INTO roles (name) VALUES ('USER');
 
 -- Tạo 3 người dùng
-INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
+INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, location, work, education, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
 VALUES
-    ('user1', 'user1@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First1', 'Last1', 'MALE', 'PUBLIC', 1, NOW(), NOW(), null, null, '1990-01-01', true),
-    ('user2', 'user2@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First2', 'Last2', 'FEMALE', 'PUBLIC', 1, NOW(), NOW(), null, null, '1990-01-01', true),
-    ('user3', 'user3@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First3', 'Last3', 'OTHERS', 'PUBLIC', 1, NOW(), NOW(), null, null, '1990-01-01', true);
+    ('user1', 'user1@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First1', 'Last1', 'MALE', 'PUBLIC', 1, 'Ha Noi', 'Ha Noi', 'HUST', NOW(), NOW(), null, null, '1990-01-01', true),
+    ('user2', 'user2@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First2', 'Last2', 'FEMALE', 'PUBLIC', 1, 'Ha Noi', 'HCM', 'NEU', NOW(), NOW(), null, null, '1992-01-01', true),
+    ('user3', 'user3@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First3', 'Last3', 'OTHERS', 'PUBLIC', 1, 'Bac Giang', 'Ha Noi', 'NEU', NOW(), NOW(), null, null, '1991-01-01', true);
 
 -- Tạo mối quan hệ giữa 3 người dùng
 INSERT INTO relationships (user_id, friend_id, created_at, relation)
@@ -131,96 +131,3 @@ CALL create_posts_comments_reactions();
 
 -- Xóa procedure sau khi sử dụng
 DROP PROCEDURE create_posts_comments_reactions;
-
--- Tạo 50 bản ghi ngẫu nhiên cho bảng users
-DELIMITER //
-
-CREATE PROCEDURE populate_users()
-BEGIN
-    DECLARE i INT DEFAULT 0;
-    DECLARE first_name_list VARCHAR(255);
-    DECLARE last_name_list VARCHAR(255);
-    DECLARE location_list VARCHAR(255);
-    DECLARE work_list VARCHAR(255);
-    DECLARE education_list VARCHAR(255);
-
-    SET first_name_list = 'Lan,Hà,Nam,Minh,Trung,Hoàng,Mạnh,Nhung,Đức,Cường,Quân';
-    SET last_name_list = 'Nguyễn,Trần,Ngô,Tống';
-    SET location_list = 'Hà Nội,Hải Phòng,Quảng Ninh,Bắc Ninh,Hải Dương,Hưng Yên,Hà Nam,Thái Bình,Nam Định,Ninh Bình';
-    SET work_list = 'doctor,teacher,student,farmer,policeman,engineer,IT';
-    SET education_list = 'ĐH Bách Khoa,ĐH Quốc Gia,ĐH Xây Dựng,ĐH Kinh Tế Quốc Dân,ĐH Công Nghệ';
-
-    WHILE i < 50 DO
-            INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, bio, location, work, education, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
-            VALUES (
-                       (SELECT CONCAT_WS(' ', SUBSTRING_INDEX(SUBSTRING_INDEX(first_name_list, ',', FLOOR(1 + (RAND() * 11))), ',', -1), SUBSTRING_INDEX(SUBSTRING_INDEX(last_name_list, ',', FLOOR(1 + (RAND() * 4))), ',', -1))),
-                       CONCAT(LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(first_name_list, ',', FLOOR(1 + (RAND() * 11))), ',', -1)), '.', LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(last_name_list, ',', FLOOR(1 + (RAND() * 4))), ',', -1)), '@example.com'),
-                       '$2a$12$rPhLzKBcnY/CwnEAINZ4L.09YaLvRQjphN2QT8nIEWX/BrA37xIzC',
-                       SUBSTRING_INDEX(SUBSTRING_INDEX(first_name_list, ',', FLOOR(1 + (RAND() * 11))), ',', -1),
-                       SUBSTRING_INDEX(SUBSTRING_INDEX(last_name_list, ',', FLOOR(1 + (RAND() * 4))), ',', -1),
-                       CASE
-                           WHEN RAND() < 0.33 THEN 'MALE'
-                           WHEN RAND() < 0.66 THEN 'FEMALE'
-                           ELSE 'OTHERS'
-                           END,
-                       CASE
-                           WHEN RAND() < 0.33 THEN 'PUBLIC'
-                           WHEN RAND() < 0.66 THEN 'PRIVATE'
-                           ELSE 'FRIEND'
-                           END,
-                       1,
-                       'This is a bio.',
-                       SUBSTRING_INDEX(SUBSTRING_INDEX(location_list, ',', FLOOR(1 + (RAND() * 10))), ',', -1),
-                       SUBSTRING_INDEX(SUBSTRING_INDEX(work_list, ',', FLOOR(1 + (RAND() * 7))), ',', -1),
-                       SUBSTRING_INDEX(SUBSTRING_INDEX(education_list, ',', FLOOR(1 + (RAND() * 5))), ',', -1),
-                       NOW(),
-                       NOW(),
-                       'avatar.jpg',
-                       'background.jpg',
-                       DATE_ADD('1990-01-01', INTERVAL FLOOR(RAND() * 10000) DAY),
-                       TRUE
-                   );
-            SET i = i + 1;
-        END WHILE;
-END//
-
-DELIMITER ;
-
--- Gọi thủ tục để tạo dữ liệu
-CALL populate_users();
-
--- Xóa procedure sau khi sử dụng
-DROP PROCEDURE populate_users;
-
-
-
--- Tạo 300 bản ghi ngẫu nhiên cho bảng relationships
-DELIMITER //
-
-CREATE PROCEDURE populate_relationships()
-BEGIN
-    DECLARE i INT DEFAULT 0;
-
-    WHILE i < 300 DO
-            INSERT INTO relationships (user_id, friend_id, created_at, relation)
-            VALUES (
-                       FLOOR(1 + (RAND() * 53)),
-                       FLOOR(1 + (RAND() * 53)),
-                       NOW(),
-                       CASE
-                           WHEN RAND() < 0.5 THEN 'FRIEND'
-                           WHEN RAND() < 0.75 THEN 'PENDING'
-                           ELSE 'BLOCK'
-                           END
-                   );
-            SET i = i + 1;
-        END WHILE;
-END//
-
-DELIMITER ;
-
--- Gọi thủ tục để tạo dữ liệu
-CALL populate_relationships();
-
--- Xóa procedure sau khi sử dụng
-DROP PROCEDURE populate_relationships;
