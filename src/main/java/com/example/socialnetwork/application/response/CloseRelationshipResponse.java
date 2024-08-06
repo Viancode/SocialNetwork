@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,4 +18,7 @@ public class CloseRelationshipResponse {
     private String targetUsername;
 
     private ECloseRelationship closeRelationshipName;
+
+    private LocalDateTime createdAt;
+
 }
