@@ -83,6 +83,11 @@ public class CommentServiceImpl implements CommentServicePort {
             if (!Objects.equals(parentComment.getPost().getId(), postId)) {
                 throw new NotAllowException("You are not allowed to reply to this comment");
             }
+
+            // check parent comment is not hidden
+            if (parentComment.getIsHidden()) {
+                throw new NotAllowException("You are not allowed to reply to this comment");
+            }
         }
     }
 
@@ -103,6 +108,10 @@ public class CommentServiceImpl implements CommentServicePort {
 
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
         if (currentComment.getUser().getId() != userId) {
+            throw new NotAllowException("You are not allowed to update this comment");
+        }
+
+        if (currentComment.getIsHidden()) {
             throw new NotAllowException("You are not allowed to update this comment");
         }
 
