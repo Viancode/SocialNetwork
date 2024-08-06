@@ -37,8 +37,8 @@ public class HideCommentSchedule {
         }
     }
 
-//    @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
-    @Scheduled(fixedRate = 5, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
+//    @Scheduled(fixedRate = 5, timeUnit = TimeUnit.MINUTES)
     public void hideComment() {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         List<CommentDomain> comments = commentDatabasePort.findAllUpdateWithinLastDay(yesterday);
