@@ -41,6 +41,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     private final SuggestionMapper suggestionMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<RelationshipDomain> find(long senderId, long receiverId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(senderId, receiverId);
         return Optional.ofNullable(relationshipMapper.toRelationshipDomain(relationship));    }
