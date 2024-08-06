@@ -27,7 +27,7 @@ SET comment_content = ELT(FLOOR(1 + RAND() * 10),
             'Mày nên tìm hiểu kỹ trước khi bình luận, đừng để lộ sự ngu dốt của mày ra ngoài.',
             'Ngu',
             'Vai lon',
-            'Địt mẹ mày',
+            'Địt cụ mày',
             'Hèn như chó vậy'
         );
 
