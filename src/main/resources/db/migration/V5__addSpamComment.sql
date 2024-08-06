@@ -28,7 +28,7 @@ SET comment_content = ELT(FLOOR(1 + RAND() * 10),
             'Ngu',
             'Vai lon',
             'Địt mẹ mày',
-            'Sao lại tồn tại cái thằng ngu như mày nhỉ'
+            'Hèn như chó vậy'
         );
 
         -- Chèn bình luận xúc phạm vào cơ sở dữ liệu

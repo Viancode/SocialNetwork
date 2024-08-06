@@ -27,19 +27,25 @@ public class HideCommentSchedule {
     private final CommentDatabasePort commentDatabasePort;
     private Model model;
     private static final double SPAM_THRESHOLD = 0.6;
+    private boolean isModelLoaded = false;
 
     @PostConstruct
     public void init()  {
         try {
-            model = Model.fromFile("/home/manh/Documents/GHTK-TEST/SocialNetwork/src/main/resources/model/comment-model.pmml");
+            ClassPathResource resource = new ClassPathResource("model/comment-model.pmml");
+            model = Model.fromInputStream(resource.getInputStream());
+            isModelLoaded = true;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load model");
+            isModelLoaded = false;
         }
     }
 
     @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
 //    @Scheduled(fixedRate = 5, timeUnit = TimeUnit.MINUTES)
     public void hideComment() {
+        if (!isModelLoaded) {
+            throw new RuntimeException("Failed to load model");
+        }
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         List<CommentDomain> comments = commentDatabasePort.findAllUpdateWithinLastDay(yesterday);
         for (CommentDomain comment : comments) {
