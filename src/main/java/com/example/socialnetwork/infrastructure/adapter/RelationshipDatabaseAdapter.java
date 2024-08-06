@@ -41,10 +41,18 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     private final SuggestionMapper suggestionMapper;
 
     @Override
+    public Optional<RelationshipDomain> find(long senderId, long receiverId) {
+        Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(senderId, receiverId);
+        return Optional.ofNullable(relationshipMapper.toRelationshipDomain(relationship));    }
+
+    @Override
     @Transactional
-    public Optional<RelationshipDomain> find(long userId, long friendId) {
+    public ERelationship getRelationship(long userId, long friendId) {
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userId, friendId);
-        return Optional.ofNullable(relationshipMapper.toRelationshipDomain(relationship));
+        if (relationship == null) {
+            return null;
+        }
+        return relationship.getRelation();
     }
 
     @Override

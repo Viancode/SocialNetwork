@@ -11,5 +11,5 @@ public interface PostServicePort {
     void deletePost(Long postId);
     Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId);
 
-    Page<PostDomain> getNewsFeed(int page, int pageSize, String sortBy, long userId);
+    Page<PostResponse> getNewsFeed(int page, int pageSize, long userId);
 }

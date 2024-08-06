@@ -2,12 +2,15 @@ package com.example.socialnetwork.infrastructure.adapter;
 
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
+import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.Post;
+import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.PostRepository;
 import com.example.socialnetwork.infrastructure.repository.RelationshipRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     private final PostRepository postRepository;
     private final RelationshipRepository relationshipRepository;
     private final PostMapper postMapper;
+    private final UserMapper userMapper;
 
     @Override
     public PostDomain createPost(PostDomain postDomain) {
@@ -68,6 +72,13 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         var spec = getSpec(targetUserId, visibilities);
         return postRepository.findAll(spec, pageable).map(postMapper::postToPostDomain);
     }
+
+    @Override
+    public List<PostDomain> getAllPostByFriends(List<UserDomain> userDomains){
+        List<User> users = userDomains.stream().map(userMapper::toUser).toList();
+        return postMapper.toPostDomains(postRepository.findByListUser(users));
+    }
+
     private Specification<Post> getSpec(Long targetUserId, List<Visibility> visibilities) {
         Specification<Post> spec = Specification.where(null);
         if (visibilities != null && !visibilities.isEmpty()) {
@@ -75,6 +86,4 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         }
         return spec;
     }
-
-
 }

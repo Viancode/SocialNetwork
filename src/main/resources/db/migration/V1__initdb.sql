@@ -42,7 +42,8 @@ CREATE TABLE close_relationships (
                                 close_relationship_id BIGINT PRIMARY KEY AUTO_INCREMENT,
                                 user_id BIGINT,
                                 target_user_id BIGINT,
-                                close_relationship_name ENUM('FATHER', 'MOTHER', 'BROTHER', 'SISTER', 'DATING')
+                                close_relationship_name ENUM('FATHER', 'MOTHER', 'BROTHER', 'SISTER', 'DATING'),
+                                created_at DATETIME
 );
 
 CREATE TABLE posts (

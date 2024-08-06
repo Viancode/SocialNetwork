@@ -5,24 +5,32 @@ import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
+import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
 import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
+import com.example.socialnetwork.domain.port.spi.CloseRelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
+import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
+import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostServicePort {
-
     private final PostDatabasePort postDatabasePort;
-    private final RelationshipServicePort relationshipService;
+    private final RelationshipDatabasePort relationshipDatabasePort;
+    private final CloseRelationshipDatabasePort closeRelationshipDatabasePort;
+    private final UserDatabasePort userDatabasePort;
     private final PostMapper postMapper;
 
     @Override
@@ -64,7 +72,7 @@ public class PostServiceImpl implements PostServicePort {
         if (userId.equals(targetUserId)) {
             posts = postDatabasePort.getAllPosts(page, pageSize, sort, userId, List.of(Visibility.PUBLIC, Visibility.FRIEND, Visibility.PRIVATE));
         } else {
-            ERelationship relationship = relationshipService.getRelationship(userId, targetUserId);
+            ERelationship relationship = relationshipDatabasePort.getRelationship(userId, targetUserId);
             if (relationship == null || relationship == ERelationship.PENDING) {
                 posts = postDatabasePort.getAllPosts(page, pageSize, sort, targetUserId, List.of(Visibility.PUBLIC));
             }
@@ -80,7 +88,29 @@ public class PostServiceImpl implements PostServicePort {
     }
 
     @Override
-    public Page<PostDomain> getNewsFeed(int page, int pageSize, String sortBy, long userId) {
-        return null;
+    public Page<PostResponse> getNewsFeed(int page, int pageSize, long userId) {
+        long currentUserId = SecurityUtil.getCurrentUserId();
+        UserDomain currentUser = userDatabasePort.findById(currentUserId);
+        List<UserDomain> friends = relationshipDatabasePort.getListFriend(currentUserId);
+        friends.add(currentUser);
+        List<UserDomain> closedFriends = closeRelationshipDatabasePort.findUserHadClosedRelationshipWith(currentUserId);
+        List<PostDomain> postOfClosedFriends = postDatabasePort.getAllPostByFriends(closedFriends);
+        List<PostDomain> postOfClosedFriendsToday = new ArrayList<>();
+        for (PostDomain postDomain : postOfClosedFriends) {
+            if (postDomain.getCreatedAt().toLocalDate().equals(LocalDate.now())) {
+                postOfClosedFriendsToday.add(postDomain);
+            }
+        }
+        List<PostDomain> newsFeed = new ArrayList<>();
+        List<PostDomain> postOfFriends = postDatabasePort.getAllPostByFriends(friends);
+        postOfFriends.removeAll(postOfClosedFriendsToday);
+        newsFeed.addAll(postOfClosedFriendsToday);
+        newsFeed.addAll(postOfFriends);
+        List<PostResponse> postResponses = postMapper.toPostResponses(newsFeed);
+        var pageable = PageRequest.of(page - 1, pageSize);
+        int start = Math.min((int) pageable.getOffset(), postResponses.size());
+        int end = Math.min((start + pageable.getPageSize()), postResponses.size());
+        List<PostResponse> pagedPostDomain = postResponses.subList(start, end);
+        return new PageImpl<>(pagedPostDomain, pageable, postResponses.size());
     }
 }

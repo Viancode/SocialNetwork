@@ -45,6 +45,9 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "last_comment")
+    private LocalDateTime lastComment;
+
     @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;
 
