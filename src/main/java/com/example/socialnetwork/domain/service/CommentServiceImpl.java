@@ -91,6 +91,10 @@ public class CommentServiceImpl implements CommentServicePort {
         Long userId = SecurityUtil.getCurrentUserId();
         checkUserCommentAndUserPost(userId, commentRequest.getPostId());
         checkParentComment(userId, commentRequest.getParentCommentId(), commentRequest.getPostId());
+        long postId = commentRequest.getPostId();
+        PostDomain postDomain = postDatabasePort.findById(postId);
+        postDomain.setLastComment(LocalDateTime.now());
+        postDatabasePort.updatePost(postDomain);
         return commentDatabasePort.createComment(commentMapper.commentRequestToCommentDomain(commentRequest));
     }
 

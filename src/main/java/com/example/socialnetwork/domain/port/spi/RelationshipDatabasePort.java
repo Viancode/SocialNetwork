@@ -14,6 +14,8 @@ public interface RelationshipDatabasePort {
 
     Optional<RelationshipDomain> find(long senderId, long receiverId);
 
+    ERelationship getRelationship(long senderId, long receiverId);
+
     Page<UserDomain> getListSendRequest(int page, int pageSize, long userId);
 
     Page<UserDomain> getListReceiveRequest(int page, int pageSize, long userId);

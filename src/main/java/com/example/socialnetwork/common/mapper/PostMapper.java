@@ -31,8 +31,22 @@ public class PostMapper {
             postDomain.setVisibility(post.getVisibility());
             postDomain.setCreatedAt(post.getCreatedAt());
             postDomain.setUpdatedAt(post.getUpdatedAt());
+            postDomain.setLastComment(post.getLastComment());
             postDomain.setPhotoLists(post.getPhotoLists());
             return postDomain;
+        }
+    }
+
+    public List<PostDomain> toPostDomains(List<Post> posts) {
+        if (posts == null) {
+            return null;
+        } else {
+            List<PostDomain> postDomains = new ArrayList<>();
+            for (Post post : posts) {
+                PostDomain postDomain = this.postToPostDomain(post);
+                postDomains.add(postDomain);
+            }
+            return postDomains;
         }
     }
 
@@ -47,6 +61,7 @@ public class PostMapper {
             post.setVisibility(postDomain.getVisibility());
             post.setCreatedAt(postDomain.getCreatedAt());
             post.setUpdatedAt(postDomain.getUpdatedAt());
+            post.setLastComment(postDomain.getLastComment());
             post.setPhotoLists(postDomain.getPhotoLists());
             return post;
         }
@@ -74,10 +89,23 @@ public class PostMapper {
             postResponse.setUpdatedAt(postDomain.getUpdatedAt());
             List<Long> list1 = postDomain.getTagsIds();
             if (list1 != null) {
-                postResponse.setTagsIds(new ArrayList(list1));
+                postResponse.setTagsIds(new ArrayList<>(list1));
             }
 
             return postResponse;
+        }
+    }
+
+    public List<PostResponse> toPostResponses(List<PostDomain> postDomains) {
+        if (postDomains == null) {
+            return null;
+        } else {
+            List<PostResponse> postResponses = new ArrayList<>();
+            for (PostDomain postDomain : postDomains) {
+                PostResponse postResponse = this.postDomainToPostResponse(postDomain);
+                postResponses.add(postResponse);
+            }
+            return postResponses;
         }
     }
 
@@ -98,8 +126,7 @@ public class PostMapper {
             if (user == null) {
                 return null;
             } else {
-                Long id = user.getId();
-                return id == null ? null : id;
+                return user.getId();
             }
         }
     }

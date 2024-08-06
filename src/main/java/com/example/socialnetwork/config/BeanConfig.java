@@ -55,8 +55,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public UserServicePort userServicePort(EmailServicePort emailService, UserDatabasePort userDatabase, RelationshipServicePort relationshipService, S3ServicePort s3Service, StorageServicePort storageService, CustomEventPublisher customEventPublisher) {
-        return new UserServiceImpl(emailService, userDatabase, relationshipService, s3Service, storageService, customEventPublisher);
+    public UserServicePort userServicePort(EmailServicePort emailService, UserDatabasePort userDatabase, RelationshipDatabasePort relationshipDatabasePort, S3ServicePort s3Service, StorageServicePort storageService, CustomEventPublisher customEventPublisher) {
+        return new UserServiceImpl(emailService, userDatabase, relationshipDatabasePort, s3Service, storageService, customEventPublisher);
     }
 
     @Bean
@@ -65,8 +65,8 @@ public class BeanConfig {
     }
 
     @Bean
-    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, CustomEventPublisher customEventPublisher, SuggestionMapper suggestionMapper) {
-        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, customEventPublisher, suggestionMapper);
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort,CustomEventPublisher customEventPublisher, SuggestionMapper suggestionMapper) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, closeRelationshipDatabasePort, customEventPublisher, suggestionMapper);
     }
 
     @Bean
@@ -76,13 +76,13 @@ public class BeanConfig {
 
 
     @Bean
-    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository, PostMapper postMapper) {
-        return new PostDatabaseAdapter(repository,relationshipRepository,postMapper);
+    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository, PostMapper postMapper, UserMapper userMapper) {
+        return new PostDatabaseAdapter(repository,relationshipRepository,postMapper, userMapper);
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipServicePort relationshipService, PostMapper postMapper) {
-        return new PostServiceImpl(postDatabasePort,relationshipService, postMapper);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort, UserDatabasePort userDatabasePort, PostMapper postMapper) {
+        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort, closeRelationshipDatabasePort, userDatabasePort, postMapper);
     }
 
     @Bean
@@ -131,8 +131,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public CloseRelationshipDatabasePort closeRelationshipDatabasePort(CloseRelationshipRepository closeRelationshipRepository){
-        return new  CloseRelationshipDatabaseAdapter(closeRelationshipRepository);
+    public CloseRelationshipDatabasePort closeRelationshipDatabasePort(CloseRelationshipRepository closeRelationshipRepository, UserMapper userMapper){
+        return new  CloseRelationshipDatabaseAdapter(closeRelationshipRepository, userMapper);
     }
 
     @Bean

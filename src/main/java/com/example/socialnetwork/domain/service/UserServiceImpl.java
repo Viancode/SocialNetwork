@@ -7,19 +7,16 @@ import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.*;
+import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.infrastructure.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,7 +25,7 @@ import java.util.Objects;
 public class UserServiceImpl implements UserServicePort {
     private final EmailServicePort emailService;
     private final UserDatabasePort userDatabase;
-    private final RelationshipServicePort relationshipService;
+    private final RelationshipDatabasePort relationshipDatabasePort;
     private final S3ServicePort s3Service;
     private final StorageServicePort storageService;
     private final CustomEventPublisher customEventPublisher;
@@ -56,7 +53,7 @@ public class UserServiceImpl implements UserServicePort {
         boolean isOwnProfile = Objects.equals(sourceUserId, targetUserID);
         boolean isPublicProfile = targetUser.getVisibility() == Visibility.PUBLIC;
         boolean isFriendProfile = targetUser.getVisibility() == Visibility.FRIEND &&
-                relationshipService.getRelationship(sourceUserId, targetUserID) == ERelationship.FRIEND;
+                relationshipDatabasePort.getRelationship(sourceUserId, targetUserID) == ERelationship.FRIEND;
 
         if (isOwnProfile || isPublicProfile || isFriendProfile) {
             targetUser.setAvatar(targetUser.getAvatar() == null ?
