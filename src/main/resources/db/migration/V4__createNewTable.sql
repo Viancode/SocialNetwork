@@ -1,3 +1,4 @@
+USE socialnetwork;
 CREATE TABLE suggestions
 (
     suggestion_id BIGINT PRIMARY KEY AUTO_INCREMENT,

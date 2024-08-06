@@ -3,6 +3,7 @@ package com.example.socialnetwork.infrastructure.specification;
 import com.example.socialnetwork.infrastructure.entity.Comment;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CommentSpecification {
@@ -24,6 +25,14 @@ public class CommentSpecification {
 
     public static Specification<Comment> withPostIdAndParentCommentIsNull(Long postId) {
         return Specification.where(withPostId(postId)).and(withParentCommentIsNull());
+    }
+
+    public static Specification<Comment> updateWithinLastDay(LocalDateTime yesterday) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get(Comment.Fields.createdAt), yesterday);
+    }
+
+    public static Specification<Comment> isNotHidden() {
+        return (root, query, cb) -> cb.isFalse(root.get(Comment.Fields.isHidden));
     }
 
 }

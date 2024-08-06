@@ -5,6 +5,7 @@ import com.example.socialnetwork.infrastructure.entity.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CommentDatabasePort {
@@ -13,6 +14,7 @@ public interface CommentDatabasePort {
     void deleteComment(Long commentId);
     CommentDomain findById(Long id);
     List<CommentDomain> findAllByParentCommentId(Long parentCommentId);
+    List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday);
     Page<CommentDomain> getAllComments(int page, int pageSize, Sort sort, Long userId, Long postId, List<Long> listBlockFriend);
     Page<CommentDomain> getChildComments(int page, int pageSize, Sort sort, Long userId, Long commentId, List<Long> listBlockFriend);
 }

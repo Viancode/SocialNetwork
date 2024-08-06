@@ -131,6 +131,11 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
+    public List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday) {
+        return commentDatabasePort.findAllUpdateWithinLastDay(yesterday);
+    }
+
+    @Override
     public Page<CommentResponse> getAllComments(Long postId, int page, int pageSize, String sortBy, String sortDirection) {
         Long userId = SecurityUtil.getCurrentUserId();
         checkUserCommentAndUserPost(userId, postId);

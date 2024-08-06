@@ -1,3 +1,4 @@
+USE socialnetwork;
 -- Tạo chỉ mục cho cột user_id trong bảng post_reactions
 CREATE INDEX idx_post_user_id ON posts(user_id);
 

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,15 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     public List<CommentDomain> findAllByParentCommentId(Long parentCommentId) {
         return commentRepository.findAllByParentCommentId(parentCommentId)
                 .stream()
+                .map(commentMapper::commentEntityToCommentDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday) {
+        var spec = Specification.where(updateWithinLastDay(yesterday).and(isNotHidden()));
+        List<Comment> yesterdayComment = commentRepository.findAll(spec);
+        return yesterdayComment.stream()
                 .map(commentMapper::commentEntityToCommentDomain)
                 .collect(Collectors.toList());
     }
