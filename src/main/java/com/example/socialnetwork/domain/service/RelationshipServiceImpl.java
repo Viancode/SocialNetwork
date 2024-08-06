@@ -10,6 +10,7 @@ import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.SuggestionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
+import com.example.socialnetwork.domain.port.spi.CloseRelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.exception.custom.NotFoundException;
@@ -26,24 +27,16 @@ import java.util.*;
 public class RelationshipServiceImpl implements RelationshipServicePort {
     private final RelationshipDatabasePort relationshipDatabasePort;
     private final UserDatabasePort userDatabasePort;
+    private final CloseRelationshipDatabasePort closeRelationshipDatabasePort;
     private final CustomEventPublisher customEventPublisher;
     private final SuggestionMapper suggestionMapper;
-
-    @Override
-    public ERelationship getRelationship(long sourceUserID, long targetUserID) {
-        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(sourceUserID, targetUserID).orElse(null);
-        if (relationshipDomain == null) {
-//            throw new NotFoundException("Not found relationship");
-            return null;
-        }
-        return relationshipDomain.getRelation();
-    }
 
     @Override
     public void deleteRelationship(long friendId) {
         long userId = getCurrentUser();
         checkFriend(friendId);
         relationshipDatabasePort.deleteFriend(userId, friendId);
+        closeRelationshipDatabasePort.deleteCloseRelationship(friendId);
         customEventPublisher.publishFriendDeletedEvent(userId, friendId);
     }
 
@@ -119,6 +112,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         } else {
             relationshipDatabasePort.updateRelation(userId, friendId, ERelationship.BLOCK);
         }
+        closeRelationshipDatabasePort.deleteCloseRelationship(friendId);
     }
 
     @Override
@@ -127,7 +121,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         checkFriend(friendId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId).orElse(null);
         customEventPublisher.publishUnblockedEvent(userId, friendId);
-        if (relationshipDomain != null && relationshipDomain.getUser().getId() == userId  && relationshipDomain.getRelation() == ERelationship.BLOCK) {
+        if (relationshipDomain != null && relationshipDomain.getUser().getId() == userId && relationshipDomain.getRelation() == ERelationship.BLOCK) {
             relationshipDatabasePort.unblock(userId, friendId);
             customEventPublisher.publishUnblockedEvent(userId, friendId);
         } else {
@@ -156,7 +150,6 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     @Override
     public Page<UserDomain> getListFriend(int page, int pageSize, long userId, String sortDirection, String sortBy) {
         long currentUserId = getCurrentUser();
-        var pageable = PageRequest.of(page - 1, pageSize);
         UserDomain friend = userDatabasePort.findById(userId);
         if (friend == null)
             throw new NotFoundException("Not found user");
@@ -169,10 +162,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
             RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, currentUserId).orElse(null);
             if (visibility == Visibility.PRIVATE || (relationshipDomain != null && relationshipDomain.getRelation() != ERelationship.FRIEND && visibility == Visibility.FRIEND)) {
                 List<UserDomain> mutualFriends = getListMutualFriends(userId, currentUserId);
-                int start = Math.min((int) pageable.getOffset(), mutualFriends.size());
-                int end = Math.min((start + pageable.getPageSize()), mutualFriends.size());
-                List<UserDomain> pagedUsers = mutualFriends.subList(start, end);
-                return new PageImpl<>(pagedUsers, pageable, mutualFriends.size());
+                return getPage(page, pageSize, mutualFriends);
             } else {
                 Sort sort = Sort.by(Sort.Direction.ASC, "username");
                 return relationshipDatabasePort.getListFriend(page, pageSize, userId, sort);
@@ -193,11 +183,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         long userId = getCurrentUser();
         List<SuggestionDomain> suggestionDomains = relationshipDatabasePort.getListSuggestionUser(userId);
         List<FriendSuggestionResponse> friendSuggestions = suggestionMapper.toFriendSuggestionResponses(suggestionDomains);
-        var pageable = PageRequest.of(page - 1, pageSize);
-        int start = Math.min((int) pageable.getOffset(), friendSuggestions.size());
-        int end = Math.min((start + pageable.getPageSize()), friendSuggestions.size());
-        List<FriendSuggestionResponse> pagedUsers = friendSuggestions.subList(start, end);
-        return new PageImpl<>(pagedUsers, pageable, friendSuggestions.size());
+        return getPage(page, pageSize, friendSuggestions);
     }
 
     @Override
@@ -205,11 +191,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         long userId = getCurrentUser();
         List<SuggestionDomain> suggestionDomains = relationshipDatabasePort.searchUserByKeyWord(userId, keyWord);
         List<SearchFriendResponse> searchFriendResponses = suggestionMapper.toSearchFriendResponses(suggestionDomains);
-        var pageable = PageRequest.of(page - 1, pageSize);
-        int start = Math.min((int) pageable.getOffset(), searchFriendResponses.size());
-        int end = Math.min((start + pageable.getPageSize()), searchFriendResponses.size());
-        List<SearchFriendResponse> pagedUsers = searchFriendResponses.subList(start, end);
-        return new PageImpl<>(pagedUsers, pageable, searchFriendResponses.size());
+        return getPage(page, pageSize, searchFriendResponses);
     }
 
     private long getCurrentUser() {
@@ -230,5 +212,13 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         HashSet<UserDomain> set2 = new HashSet<>(friends2);
         set1.retainAll(set2);
         return new ArrayList<>(set1);
+    }
+
+    private <T> PageImpl<T> getPage(int page, int pageSize, List<T> list){
+        var pageable = PageRequest.of(page - 1, pageSize);
+        int start = Math.min((int) pageable.getOffset(), list.size());
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        List<T> paged = list.subList(start, end);
+        return new PageImpl<>(paged, pageable, list.size());
     }
 }

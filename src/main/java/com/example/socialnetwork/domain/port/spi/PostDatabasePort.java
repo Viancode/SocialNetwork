@@ -2,6 +2,7 @@ package com.example.socialnetwork.domain.port.spi;
 
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.domain.model.PostDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -15,4 +16,5 @@ public interface PostDatabasePort {
     void deletePost(Long postId);
     PostDomain findById(Long id);
     Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, List<Visibility> visibility);
+    List<PostDomain> getAllPostByFriends(List<UserDomain> userDomains);
 }

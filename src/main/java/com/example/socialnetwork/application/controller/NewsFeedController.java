@@ -21,9 +21,8 @@ public class NewsFeedController extends BaseController{
     @GetMapping
     private ResponseEntity<?> getNewsFeedController(@RequestParam(defaultValue = "1") int page,
                                                     @RequestParam(defaultValue = "5") int pageSize,
-                                                    @RequestParam(defaultValue = "createdAt") String sortBy,
                                                     Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        return buildResponse("Get News Feed successfully", postServicePort.getNewsFeed(page, pageSize, sortBy, Long.parseLong(user.getUsername())));
+        return buildResponse("Get News Feed successfully", postServicePort.getNewsFeed(page, pageSize, Long.parseLong(user.getUsername())));
     }
 }

@@ -3,11 +3,14 @@ package com.example.socialnetwork.infrastructure.adapter;
 import aj.org.objectweb.asm.commons.InstructionAdapter;
 import com.example.socialnetwork.common.mapper.CloseRelationshipMapper;
 import com.example.socialnetwork.common.mapper.CommentReactionMapper;
+import com.example.socialnetwork.common.mapper.UserMapper;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CloseRelationshipDomain;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.CloseRelationshipDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.CloseRelationship;
 import com.example.socialnetwork.infrastructure.entity.CommentReaction;
+import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.CloseRelationshipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,8 +26,8 @@ import static com.example.socialnetwork.infrastructure.specification.CloseRelati
 @Transactional
 @RequiredArgsConstructor
 public class CloseRelationshipDatabaseAdapter implements CloseRelationshipDatabasePort {
-
     private final CloseRelationshipRepository closeRelationshipRepository;
+    private final UserMapper userMapper;
     @Override
     public CloseRelationshipDomain createRelationship(CloseRelationshipDomain closeRelationshipDomain) {
         CloseRelationship closeRelationship = CloseRelationshipMapper.INSTANCE.domainToEntity(closeRelationshipDomain);
@@ -56,6 +59,11 @@ public class CloseRelationshipDatabaseAdapter implements CloseRelationshipDataba
         else{
             return false;
         }
+    }
+
+    @Override
+    public List<UserDomain> findUserHadClosedRelationshipWith(long userId) {
+        return userMapper.toUserDomains(closeRelationshipRepository.findCloseRelationshipByUser(userId));
     }
 
     private Specification<CloseRelationship> getSpec(Long userId) {
