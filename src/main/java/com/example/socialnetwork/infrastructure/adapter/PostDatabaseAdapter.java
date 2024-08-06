@@ -42,7 +42,6 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         }else{
             post = postRepository.save(postMapper.postDomainToPost(postDomain));
             return postMapper.postToPostDomain(post);
-
         }
     }
 

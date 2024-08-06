@@ -74,7 +74,9 @@ public class PostMapper {
             PostResponse postResponse = new PostResponse();
             postResponse.setNumberOfComments(this.commentsToNumber(postDomain.getCommentsIds()));
             postResponse.setNumberOfReacts(this.postReactionsIdsToNumber(postDomain.getPostReactionsIds()));
-            postResponse.setPhotoLists(this.photoToList(postDomain.getPhotoLists()));
+            if(postDomain.getPhotoLists() != null) {
+                postResponse.setPhotoLists(this.photoToList(postDomain.getPhotoLists()));
+            }
             postResponse.setId(postDomain.getId());
             postResponse.setUserId(postDomain.getUserId());
             postResponse.setContent(postDomain.getContent());

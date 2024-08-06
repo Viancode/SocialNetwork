@@ -54,7 +54,11 @@ public class PostServiceImpl implements PostServicePort {
             postDomain.setContent(postRequest.getContent());
         }
         postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
-        postDomain.setPhotoLists(postRequest.getPhotoLists());
+        if (postRequest.getPhotoLists().isEmpty()) {
+            postDomain.setPhotoLists(null);
+        }else{
+            postDomain.setPhotoLists(postRequest.getPhotoLists());
+        }
         postDomain.setUpdatedAt(LocalDateTime.now());
         return postDatabasePort.updatePost(postDomain);
     }

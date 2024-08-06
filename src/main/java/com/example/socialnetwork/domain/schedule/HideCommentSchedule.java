@@ -31,7 +31,7 @@ public class HideCommentSchedule {
     @PostConstruct
     public void init()  {
         try {
-            model = Model.fromFile("/mnt/ntfs/Workspace/Project/SocialNetwork/src/main/resources/model/comment-model.pmml");
+            model = Model.fromFile("/home/manh/Documents/GHTK-TEST/SocialNetwork/src/main/resources/model/comment-model.pmml");
         } catch (Exception e) {
             throw new RuntimeException("Failed to load model");
         }

@@ -40,13 +40,15 @@ public class PostController extends BaseController {
     public ResponseEntity<?> createPost(
             @RequestParam("content") String content,
             @RequestParam(value = "visibility", defaultValue = "PUBLIC") String visibility,
-            @RequestParam("photoLists") String photoLists
+            @RequestParam(value = "photoLists", required = false) String photoLists
     ) {
         PostRequest postRequest = new PostRequest();
         postRequest.setUserId(SecurityUtil.getCurrentUserId());
         postRequest.setContent(content);
         postRequest.setVisibility(visibility);
-        postRequest.setPhotoLists(photoLists);
+        if(photoLists != null) {
+            postRequest.setPhotoLists(photoLists);
+        }
 
         PostDomain postDomain = postServicePort.createPost(postRequest);
         return buildResponse("Create post successfully", postMapper.postDomainToPostResponse(postDomain));
@@ -63,14 +65,16 @@ public class PostController extends BaseController {
             @RequestParam("postId") Long postId,
             @RequestParam("content") String content,
             @RequestParam("visibility") String visibility,
-            @RequestParam("photoLists") String photoLists
+            @RequestParam(value = "photoLists", required = false) String photoLists
     ){
         PostRequest postRequest = new PostRequest();
         postRequest.setId(postId);
         postRequest.setUserId(SecurityUtil.getCurrentUserId());
         postRequest.setContent(content);
         postRequest.setVisibility(visibility);
-        postRequest.setPhotoLists(photoLists);
+        if(photoLists != null) {
+            postRequest.setPhotoLists(photoLists);
+        }
         PostDomain postDomain = postServicePort.updatePost(postRequest);
         return buildResponse("Update post successfully", postMapper.postDomainToPostResponse(postDomain));
     }
