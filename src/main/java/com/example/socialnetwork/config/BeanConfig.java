@@ -1,6 +1,7 @@
 package com.example.socialnetwork.config;
 
 import com.example.socialnetwork.common.mapper.*;
+import com.example.socialnetwork.common.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.*;
 import com.example.socialnetwork.domain.service.*;
@@ -44,8 +45,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public AuthServicePort authServicePort(JwtServicePort jwtService, TokenServicePort tokenService, UserRepository userRepository, UserServicePort userService, UserDatabasePort userDatabase, AuthenticationManager authenticationManager) {
-        return new AuthServiceImpl(jwtService, tokenService, userRepository, userService, userDatabase, authenticationManager);
+    public AuthServicePort authServicePort(JwtServicePort jwtService, TokenServicePort tokenService, UserRepository userRepository, UserServicePort userService, UserDatabasePort userDatabase, AuthenticationManager authenticationManager, CustomEventPublisher customEventPublisher) {
+        return new AuthServiceImpl(jwtService, tokenService, userRepository, userService, userDatabase, authenticationManager, customEventPublisher);
     }
 
     @Bean
@@ -54,8 +55,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public UserServicePort userServicePort(EmailServicePort emailService, UserDatabasePort userDatabase, RelationshipServicePort relationshipService, S3ServicePort s3Service, StorageServicePort storageService) {
-        return new UserServiceImpl(emailService, userDatabase, relationshipService, s3Service, storageService);
+    public UserServicePort userServicePort(EmailServicePort emailService, UserDatabasePort userDatabase, RelationshipServicePort relationshipService, S3ServicePort s3Service, StorageServicePort storageService, CustomEventPublisher customEventPublisher) {
+        return new UserServiceImpl(emailService, userDatabase, relationshipService, s3Service, storageService, customEventPublisher);
     }
 
     @Bean
@@ -64,13 +65,13 @@ public class BeanConfig {
     }
 
     @Bean
-    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort) {
-        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort);
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, CustomEventPublisher customEventPublisher, SuggestionMapper suggestionMapper) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, customEventPublisher, suggestionMapper);
     }
 
     @Bean
-    RelationshipDatabasePort relationshipDatabasePort(RelationshipRepository relationshipRepository, RelationshipMapper relationshipMapper, UserRepository userRepository, UserMapper userMapper) {
-        return new RelationshipDatabaseAdapter(relationshipRepository, relationshipMapper, userRepository, userMapper);
+    RelationshipDatabasePort relationshipDatabasePort(RelationshipRepository relationshipRepository, RelationshipMapper relationshipMapper, UserRepository userRepository, UserMapper userMapper, SuggestionRepository suggestionRepository, SuggestionMapper suggestionMapper) {
+        return new RelationshipDatabaseAdapter(relationshipRepository, relationshipMapper, userRepository, userMapper, suggestionRepository, suggestionMapper);
     }
 
 
@@ -128,5 +129,16 @@ public class BeanConfig {
     public CommentReactionServicePort commentReactionServicePort(CommentReactionDatabasePort commentReactionDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CommentDatabasePort  commentDatabasePort, PostDatabasePort postDatabasePort){
         return new CommentReactionServiceImpl(commentReactionDatabasePort, relationshipDatabasePort, commentDatabasePort, postDatabasePort);
     }
+
+    @Bean
+    public CloseRelationshipDatabasePort closeRelationshipDatabasePort(CloseRelationshipRepository closeRelationshipRepository){
+        return new  CloseRelationshipDatabaseAdapter(closeRelationshipRepository);
+    }
+
+    @Bean
+    public CloseRelationshipServicePort closeRelationshipServicePort(CloseRelationshipDatabasePort closeRelationshipDatabasePort, RelationshipDatabasePort relationshipDatabasePort){
+        return new CloseRelationshipServiceImpl(closeRelationshipDatabasePort, relationshipDatabasePort);
+    }
+
 
 }

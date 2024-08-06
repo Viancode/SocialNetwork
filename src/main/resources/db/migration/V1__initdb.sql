@@ -33,9 +33,16 @@ CREATE TABLE relationships (
                          user_id BIGINT,
                          friend_id BIGINT,
                          created_at DATETIME,
-                        relation ENUM('FRIEND', 'PENDING', 'BLOCK'),
-                         CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id),
-                         CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES users(user_id)
+                        relation ENUM('FRIEND', 'PENDING', 'BLOCK')
+--                          CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+--                          CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE close_relationships (
+                                close_relationship_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                user_id BIGINT,
+                                target_user_id BIGINT,
+                                close_relationship_name ENUM('FATHER', 'MOTHER', 'BROTHER', 'SISTER', 'DATING')
 );
 
 CREATE TABLE posts (

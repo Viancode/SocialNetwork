@@ -1,6 +1,9 @@
 package com.example.socialnetwork.domain.port.api;
 
+import com.example.socialnetwork.application.response.FriendSuggestionResponse;
+import com.example.socialnetwork.application.response.SearchFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
+import com.example.socialnetwork.domain.model.SuggestionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import org.springframework.data.domain.Page;
 
@@ -22,6 +25,8 @@ public interface RelationshipServicePort {
 
     void block(long friendId);
 
+    void unblock(long friendId);
+
     Page<UserDomain> findFriend(int page, int pageSize, String keyWord);
 
     Page<UserDomain> getListReceiveRequest(int page, int pageSize);
@@ -32,7 +37,7 @@ public interface RelationshipServicePort {
 
     Page<UserDomain> getListBlock(int page, int pageSize, String sortDirection, String sortBy);
 
-    Page<UserDomain> getFriendSuggestions(int page, int pageSize);
+    Page<FriendSuggestionResponse> getFriendSuggestions(int page, int pageSize);
 
-    Page<UserDomain> searchUser(int page, int pageSize, String keyWord);
+    Page<SearchFriendResponse> searchUser(int page, int pageSize, String keyWord);
 }
