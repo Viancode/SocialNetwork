@@ -5,13 +5,13 @@ import com.example.socialnetwork.application.response.CloseRelationshipResponse;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CloseRelationshipDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
-import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.CloseRelationship;
-import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+
+import java.time.LocalDateTime;
 
 @Mapper(componentModel = "spring")
 public interface CloseRelationshipMapper {
@@ -19,8 +19,11 @@ public interface CloseRelationshipMapper {
 
 
     @Mapping(target = "user.id", expression = "java(getUserId())")
-    @Mapping(target = "targetUser.id", source = "targetUserId")
-    CloseRelationshipDomain requestToDomain(CloseRelationshipRequest request);
+    @Mapping(target = "targetUser.id", source = "userDomain.id")
+    @Mapping(target = "targetUser.username", source = "userDomain.username")
+    @Mapping(target = "targetUser.avatar", source = "userDomain.avatar")
+    @Mapping(target = "createdAt", expression = "java(getCreateAt())")
+    CloseRelationshipDomain requestToDomain(CloseRelationshipRequest request, UserDomain userDomain);
 
     @Mapping(source = "user.id", target = "user.id")
     @Mapping(source = "targetUser.id", target = "targetUser.id")
@@ -40,18 +43,9 @@ public interface CloseRelationshipMapper {
         return SecurityUtil.getCurrentUserId();
     }
 
-//    @Named("mapUserById")
-//    public class UserMapperHelper {
-//
-//        private final UserDatabasePort userRepository;
-//
-//        public UserMapperHelper(UserDatabasePort userRepository) {
-//            this.userRepository = userRepository;
-//        }
-//
-//        @Named("mapUserById")
-//        public UserDomain mapUserById(Long userId) {
-//            return userRepository.findById(userId);
-//        }
-//    }
+    @Named("getCreateAt")
+    default LocalDateTime getCreateAt() {
+        return LocalDateTime.now();
+    }
+
 }

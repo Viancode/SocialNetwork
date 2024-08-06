@@ -4,7 +4,11 @@ import com.example.socialnetwork.common.constant.ECloseRelationship;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
+import java.time.LocalDateTime;
+
+@FieldNameConstants
 @Getter
 @Setter
 @Entity
@@ -27,5 +31,8 @@ public class CloseRelationship {
     @Enumerated(EnumType.STRING)
     @Column(name = "close_relationship_name")
     private ECloseRelationship closeRelationshipName;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
 }

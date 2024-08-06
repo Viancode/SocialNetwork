@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +19,7 @@ public class CloseRelationshipDomain {
     private UserDomain targetUser;
 
     private ECloseRelationship closeRelationshipName;
+
+    private LocalDateTime createdAt;
+
 }
