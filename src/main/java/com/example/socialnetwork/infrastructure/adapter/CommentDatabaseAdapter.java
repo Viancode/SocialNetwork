@@ -88,13 +88,17 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
 
     private Specification<Comment> getSpecTopLevelComment(Long userId, Long postId, List<Long> listBlockFriend) {
         Specification<Comment> spec = Specification.where(null);
-        spec = spec.and(withPostIdAndParentCommentIsNull(postId).and(withoutUserId(listBlockFriend)));
+        spec = spec.and(withPostIdAndParentCommentIsNull(postId)
+                        .and(withoutUserId(listBlockFriend))
+                        .and(isNotHidden()));
         return spec;
     }
 
     private Specification<Comment> getSpecChildLevelComment(Long userId, Long commentId, List<Long> listBlockFriend) {
         Specification<Comment> spec = Specification.where(null);
-        spec = spec.and(withParentCommentId(commentId).and(withoutUserId(listBlockFriend)));
+        spec = spec.and(withParentCommentId(commentId)
+                        .and(withoutUserId(listBlockFriend))
+                        .and(isNotHidden()));
         return spec;
     }
 }
