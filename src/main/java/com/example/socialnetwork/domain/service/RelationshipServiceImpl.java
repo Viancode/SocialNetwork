@@ -122,6 +122,20 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
+    public void unblock(long friendId) {
+        long userId = getCurrentUser();
+        checkFriend(friendId);
+        RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId).orElse(null);
+        customEventPublisher.publishUnblockedEvent(userId, friendId);
+        if (relationshipDomain != null && relationshipDomain.getUser().getId() == userId  && relationshipDomain.getRelation() == ERelationship.BLOCK) {
+            relationshipDatabasePort.unblock(userId, friendId);
+            customEventPublisher.publishUnblockedEvent(userId, friendId);
+        } else {
+            throw new RelationshipException("You do not block this user");
+        }
+    }
+
+    @Override
     public Page<UserDomain> findFriend(int page, int pageSize, String keyWord) {
         long userId = getCurrentUser();
         return relationshipDatabasePort.findFriendByKeyWord(page, pageSize, userId, keyWord);

@@ -82,6 +82,12 @@ public class RelationshipController  extends BaseController{
         return buildResponse("Block user successfully");
     }
 
+    @PostMapping("/unblock")
+    public ResponseEntity<?> unblock(@RequestParam(value = "userId") long userId){
+        relationshipService.unblock(userId);
+        return buildResponse("UnBlock user successfully");
+    }
+
     @GetMapping("view_suggest")
     public ResponseEntity<?> viewSuggest(@RequestParam(value = "page", defaultValue = "1") int page,
                                          @RequestParam(value = "pageSize", defaultValue = "5") int pageSize

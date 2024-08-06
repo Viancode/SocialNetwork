@@ -25,6 +25,8 @@ public interface RelationshipServicePort {
 
     void block(long friendId);
 
+    void unblock(long friendId);
+
     Page<UserDomain> findFriend(int page, int pageSize, String keyWord);
 
     Page<UserDomain> getListReceiveRequest(int page, int pageSize);

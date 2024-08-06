@@ -54,6 +54,18 @@ public class CustomEventListener {
 
     @Async
     @EventListener
+    public void handleUnblockedEvent(UnblockedEvent event) {
+        long user1Id = event.getUser1Id();
+        User user1 = userRepository.findById(user1Id).orElse(null);
+        long user2Id = event.getUser2Id();
+        User user2 = userRepository.findById(user2Id).orElse(null);
+        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1, user2);
+        suggestion.setStatus(Status.NONE);
+        suggestionRepository.save(suggestion);
+    }
+
+    @Async
+    @EventListener
     public void handleFriendDeletedEvent(FriendDeletedEvent event) {
         long user1Id = event.getUser1Id();
         User user1 = userRepository.findById(user1Id).orElse(null);

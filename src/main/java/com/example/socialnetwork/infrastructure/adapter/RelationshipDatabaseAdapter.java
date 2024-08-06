@@ -70,6 +70,13 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
+    public void unblock(long userId, long blockId) {
+        Relationship relationship = relationshipRepository.getRelationship(userId, blockId);
+        relationshipRepository.delete(relationship);
+    }
+
+    @Override
+    @Transactional
     public Page<UserDomain> getListFriend(int page, int pageSize, long userId, Sort sort) {
         var pageable = PageRequest.of(page - 1, pageSize, sort);
         return relationshipRepository.getListUserWithRelation(userId, ERelationship.FRIEND, pageable).map(userMapper::toUserDomain);
@@ -85,7 +92,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     @Transactional
     public Page<UserDomain> getListBlock(int page, int pageSize, long userId, Sort sort) {
         var pageable = PageRequest.of(page - 1, pageSize, sort);
-        return relationshipRepository.getListUserWithRelation(userId, ERelationship.BLOCK, pageable).map(userMapper::toUserDomain);
+        return relationshipRepository.getListBlock(userId, pageable).map(userMapper::toUserDomain);
     }
 
     @Override

@@ -9,6 +9,6 @@ CREATE TABLE suggestions
 );
 
 INSERT INTO suggestions (user_id, friend_id, suggest_point, mutual_friends, status)
-VALUES (1, 2, 10, 0, 'FRIEND'),
+VALUES (1, 2, 20, 0, 'FRIEND'),
        (1, 3, 10, 0, 'BLOCK'),
        (2, 3, 10, 0, 'NONE');

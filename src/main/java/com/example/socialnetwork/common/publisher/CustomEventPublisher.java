@@ -15,6 +15,11 @@ public class CustomEventPublisher {
         applicationEventPublisher.publishEvent(customEvent);
     }
 
+    public void publishUnblockedEvent(long user1Id, long user2Id) {
+        UnblockedEvent customEvent = new UnblockedEvent(this, user1Id, user2Id);
+        applicationEventPublisher.publishEvent(customEvent);
+    }
+
     public void publishFriendDeletedEvent(long user1Id, long user2Id) {
         FriendDeletedEvent customEvent = new FriendDeletedEvent(this, user1Id, user2Id);
         applicationEventPublisher.publishEvent(customEvent);

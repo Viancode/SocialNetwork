@@ -38,6 +38,8 @@ public interface RelationshipDatabasePort {
 
     void deleteRequest(long senderId, long receiverId);
 
+    void unblock(long userId, long blockId);
+
     void updateRelation(long senderId, long receiverId, ERelationship relationship);
 
     void createRelationship(long senderId, long receiverId, ERelationship relation);
