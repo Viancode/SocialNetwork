@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CommentServicePort {
     CommentDomain createComment(CommentRequest commentRequest);
-    CommentDomain updateComment(Long commentId, String content, String image, Long postId);
+    CommentDomain updateComment(Long commentId, String content, String image);
     void deleteComment(Long commentId);
     List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday);
     Page<CommentResponse> getAllComments(Long postId, int page, int pageSize, String sortBy, String sortDirection);

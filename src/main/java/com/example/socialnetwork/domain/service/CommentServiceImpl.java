@@ -130,21 +130,17 @@ public class CommentServiceImpl implements CommentServicePort {
 
     @Override
     @Transactional
-    public CommentDomain updateComment(Long commentId, String content, String image, Long postId) {
+    public CommentDomain updateComment(Long commentId, String content, String image) {
         Long userId = SecurityUtil.getCurrentUserId();
-
-        checkUserCommentAndUserPost(userId, postId);
-
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
+
+        checkUserCommentAndUserPost(userId, currentComment.getPost().getId());
+
         if (currentComment.getUser().getId() != userId) {
             throw new NotAllowException("You are not allowed to update this comment");
         }
 
-        if (currentComment.getIsHidden()) {
-            throw new NotAllowException("You are not allowed to update this comment");
-        }
-
-        checkParentComment(userId, currentComment.getParentCommentId(), postId);
+        checkParentComment(userId, currentComment.getParentCommentId(), currentComment.getPost().getId());
         isSpam(content);
         currentComment.setContent(content);
         currentComment.setUpdatedAt(LocalDateTime.now());

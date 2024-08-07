@@ -54,11 +54,11 @@ public class CommentController extends BaseController {
     public ResponseEntity<?> updateComment(
             @RequestParam("commentId") Long commentId,
             @RequestParam("content") String content,
-            @RequestParam("image") String image,
-            @RequestParam("postId") Long postId
+            @RequestParam("image") String image
+//            @RequestParam("postId") Long postId
 //            @RequestParam(value = "parentCommentId", required = false) Long parentComment,
             ) {
-        CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image, postId);
+        CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image);
         return buildResponse("Update comment successfully", commentMapper.commentDomainToCommentResponse(commentDomain));
     }
 
