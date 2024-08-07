@@ -45,7 +45,9 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         long senderId = getCurrentUser();
         checkFriend(userId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId).orElse(null);
-        if (relationshipDomain == null) {
+        if (senderId == userId) {
+            throw new RelationshipException("Cannot send friend request for yourself");
+        } else if (relationshipDomain == null) {
             relationshipDatabasePort.createRelationship(senderId, userId, ERelationship.PENDING);
         } else if (relationshipDomain.getRelation() == ERelationship.FRIEND)
             throw new RelationshipException("Cannot send friend request because you two are already friends");
@@ -78,8 +80,8 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         if (relationshipDomain == null) {
             throw new NotFoundException("Friend request not found");
         } else if (relationshipDomain.getRelation() == ERelationship.PENDING && relationshipDomain.getUser().getId() == userId) {
-            relationshipDatabasePort.updateRelation(userId, receiverId, ERelationship.FRIEND);
             customEventPublisher.publishFriendRequestAcceptedEvent(receiverId, userId);
+            relationshipDatabasePort.updateRelation(userId, receiverId, ERelationship.FRIEND);
         } else if (relationshipDomain.getRelation() == ERelationship.BLOCK) {
             throw new RelationshipException("Cannot accept friend request");
         }
@@ -107,12 +109,16 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         checkFriend(friendId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId).orElse(null);
         customEventPublisher.publishBlockedEvent(userId, friendId);
-        if (relationshipDomain == null) {
-            relationshipDatabasePort.createRelationship(userId, friendId, ERelationship.BLOCK);
-        } else {
-            relationshipDatabasePort.updateRelation(userId, friendId, ERelationship.BLOCK);
+        if (userId != friendId) {
+            if (relationshipDomain == null) {
+                relationshipDatabasePort.createRelationship(userId, friendId, ERelationship.BLOCK);
+            } else {
+                relationshipDatabasePort.updateRelation(userId, friendId, ERelationship.BLOCK);
+            }
+            closeRelationshipDatabasePort.deleteCloseRelationship(friendId);
+        }else {
+            throw new RelationshipException("Cannot block yourself");
         }
-        closeRelationshipDatabasePort.deleteCloseRelationship(friendId);
     }
 
     @Override
@@ -214,7 +220,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
         return new ArrayList<>(set1);
     }
 
-    private <T> PageImpl<T> getPage(int page, int pageSize, List<T> list){
+    private <T> PageImpl<T> getPage(int page, int pageSize, List<T> list) {
         var pageable = PageRequest.of(page - 1, pageSize);
         int start = Math.min((int) pageable.getOffset(), list.size());
         int end = Math.min((start + pageable.getPageSize()), list.size());

@@ -33,21 +33,19 @@ public class CustomEventListener {
     @EventListener
     public void handleBlockedEvent(BlockedEvent event) {
         long user1Id = event.getUser1Id();
-        User user1 = userRepository.findById(user1Id).orElse(null);
         long user2Id = event.getUser2Id();
-        User user2 = userRepository.findById(user2Id).orElse(null);
-        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1, user2);
+        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1Id, user2Id);
         Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(user1Id, user2Id);
         suggestion.setStatus(Status.BLOCK);
         suggestionRepository.save(suggestion);
         if(relationship != null && relationship.getRelation() == ERelationship.FRIEND) {
             List<User> user1Friends = relationshipRepository.getListUserWithRelation(user1Id, ERelationship.FRIEND);
             List<User> user2Friends = relationshipRepository.getListUserWithRelation(user2Id, ERelationship.FRIEND);
-            if (user1 != null && !user2Friends.isEmpty()) {
-                updatePoint(user1, user2Friends, -1);
+            if (!user2Friends.isEmpty()) {
+                updatePoint(user1Id, user2Friends, -1);
             }
-            if (user2 != null && !user1Friends.isEmpty()) {
-                updatePoint(user2, user1Friends, -1);
+            if (!user1Friends.isEmpty()) {
+                updatePoint(user2Id, user1Friends, -1);
             }
         }
     }
@@ -56,10 +54,8 @@ public class CustomEventListener {
     @EventListener
     public void handleUnblockedEvent(UnblockedEvent event) {
         long user1Id = event.getUser1Id();
-        User user1 = userRepository.findById(user1Id).orElse(null);
         long user2Id = event.getUser2Id();
-        User user2 = userRepository.findById(user2Id).orElse(null);
-        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1, user2);
+        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1Id, user2Id);
         suggestion.setStatus(Status.NONE);
         suggestionRepository.save(suggestion);
     }
@@ -68,19 +64,17 @@ public class CustomEventListener {
     @EventListener
     public void handleFriendDeletedEvent(FriendDeletedEvent event) {
         long user1Id = event.getUser1Id();
-        User user1 = userRepository.findById(user1Id).orElse(null);
         long user2Id = event.getUser2Id();
-        User user2 = userRepository.findById(user2Id).orElse(null);
-        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1, user2);
+        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1Id, user2Id);
         suggestion.setStatus(Status.NONE);
         suggestionRepository.save(suggestion);
         List<User> user1Friends = relationshipRepository.getListUserWithRelation(user1Id, ERelationship.FRIEND);
         List<User> user2Friends = relationshipRepository.getListUserWithRelation(user2Id, ERelationship.FRIEND);
-        if(user1 !=null && !user2Friends.isEmpty()){
-            updatePoint(user1, user2Friends, -1);
+        if(!user2Friends.isEmpty()){
+            updatePoint(user1Id, user2Friends, -1);
         }
-        if(user2 !=null && !user1Friends.isEmpty()){
-            updatePoint(user2, user1Friends, -1);
+        if(!user1Friends.isEmpty()){
+            updatePoint(user2Id, user1Friends, -1);
         }
     }
 
@@ -88,19 +82,20 @@ public class CustomEventListener {
     @EventListener
     public void handleFriendRequestAcceptedEvent(FriendRequestAcceptedEvent event) {
         long user1Id = event.getUser1Id();
-        User user1 = userRepository.findById(user1Id).orElse(null);
         long user2Id = event.getUser2Id();
-        User user2 = userRepository.findById(user2Id).orElse(null);
-        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1, user2);
+        Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1Id, user2Id);
         suggestion.setStatus(Status.FRIEND);
         suggestionRepository.save(suggestion);
         List<User> user1Friends = relationshipRepository.getListUserWithRelation(user1Id, ERelationship.FRIEND);
-        List<User> user2Friends = relationshipRepository.getListUserWithRelation(user2Id, ERelationship.FRIEND);
-        if(user1 !=null && !user2Friends.isEmpty()){
-            updatePoint(user1, user2Friends, 1);
+        for(User user : user1Friends){
+            System.out.println(user.getId());
         }
-        if(user2 !=null && !user1Friends.isEmpty()){
-            updatePoint(user2, user1Friends, 1);
+        List<User> user2Friends = relationshipRepository.getListUserWithRelation(user2Id, ERelationship.FRIEND);
+        if(!user2Friends.isEmpty()){
+            updatePoint(user1Id, user2Friends, 1);
+        }
+        if(!user1Friends.isEmpty()){
+            updatePoint(user2Id, user1Friends, 1);
         }
     }
 
@@ -109,11 +104,11 @@ public class CustomEventListener {
     public void handleProfileUpdatedEvent(ProfileUpdatedEvent event) {
         long userId = event.getUserId();
         User user1 = userRepository.findById(userId).orElse(null);
-        List<Suggestion> suggestions = suggestionRepository.findByUserOrFriend(user1);
+        List<Suggestion> suggestions = suggestionRepository.findByUserOrFriend(userId);
         if (user1 != null) {
             for (Suggestion suggestion : suggestions) {
                 User user2 = suggestion.getUser();
-                if (Objects.equals(user1.getId(), user2.getId())) user2 = suggestion.getFriend();
+                if (Objects.equals(userId, user2.getId())) user2 = suggestion.getFriend();
                 suggestion.setPoint(suggestion.getMutualFriends() + calculateScore(user1, user2));
                 suggestionRepository.save(suggestion);
             }
@@ -154,9 +149,10 @@ public class CustomEventListener {
         return score;
     }
 
-    private void updatePoint(User user1, List<User> users, int point) {
+    private void updatePoint(long user1Id, List<User> users, int point) {
         for (User user2 : users) {
-            Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1, user2);
+            Suggestion suggestion = suggestionRepository.findByUserAndFriend(user1Id, user2.getId());
+            if(suggestion == null) continue;
             int numberOfMutualFriends = suggestion.getMutualFriends() + point;
             suggestion.setMutualFriends(numberOfMutualFriends);
             if(point < 0){

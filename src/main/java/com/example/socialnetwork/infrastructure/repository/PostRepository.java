@@ -20,6 +20,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSort
     @Query("SELECT p FROM Post p " +
             "WHERE p.user IN :users " +
             "AND p.visibility <> 'PRIVATE' " +
-            "ORDER BY p.lastComment DESC, p.createdAt DESC ")
+            "ORDER BY p.lastComment DESC, p.updatedAt DESC ")
     List<Post> findByListUser(@Param("users") List<User> users);
 }

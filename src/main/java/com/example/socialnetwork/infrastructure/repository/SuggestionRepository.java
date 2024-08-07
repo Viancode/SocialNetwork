@@ -12,19 +12,19 @@ import java.util.List;
 @Repository
 public interface SuggestionRepository extends JpaRepository<Suggestion, Long>{
     @Query("SELECT r FROM Suggestion r " +
-            "WHERE (r.user = :user OR r.friend = :user) " +
+            "WHERE (r.user.id = :userId OR r.friend.id = :userId) " +
             "AND r.status = 'NONE' " +
             "ORDER BY r.point DESC, r.mutualFriends DESC ")
-    List<Suggestion> findByUserOrFriend(@Param("user") User user);
+    List<Suggestion> findByUserOrFriend(@Param("userId") long userId);
 
     @Query("SELECT r FROM Suggestion r " +
-            "WHERE (r.user = :user1 AND r.friend = :user2) " +
-             "OR (r.user = :user2 AND r.friend = :user1)")
-    Suggestion findByUserAndFriend(@Param("user1") User user1, @Param("user2") User user2);
+            "WHERE (r.user.id = :user1Id AND r.friend.id = :user2Id) " +
+             "OR (r.user.id = :user2Id AND r.friend.id = :user1Id)")
+    Suggestion findByUserAndFriend(@Param("user1Id") long user1Id, @Param("user2Id") long user2Id);
 
     @Query("SELECT r FROM Suggestion r " +
-            "WHERE (r.user = :user OR r.friend = :user) " +
+            "WHERE (r.user.id = :userId OR r.friend.id = :userId) " +
             "AND r.status <> 'BLOCK' " +
             "ORDER BY r.status ASC, r.point DESC, r.mutualFriends DESC ")
-    List<Suggestion> searchUser(@Param("user") User user);
+    List<Suggestion> searchUser(@Param("userId") long userId);
 }

@@ -125,8 +125,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     @Override
     @Transactional
     public List<SuggestionDomain> getListSuggestionUser(long userId) {
-        User user1 = userRepository.findById(userId).orElseThrow();
-        List<Suggestion> suggestions = suggestionRepository.findByUserOrFriend(user1);
+        List<Suggestion> suggestions = suggestionRepository.findByUserOrFriend(userId);
         return suggestions.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
     }
 
@@ -146,12 +145,12 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
     @Override
     @Transactional
     public List<SuggestionDomain> searchUserByKeyWord(long userId, String keyWord) {
-        User user1 = userRepository.findById(userId).orElseThrow();
-        List<Suggestion> searchUsers = suggestionRepository.searchUser(user1);
+//        User user1 = userRepository.findById(userId).orElseThrow();
+        List<Suggestion> searchUsers = suggestionRepository.searchUser(userId);
         List<Suggestion> unsuitableSearchUsers = new ArrayList<>();
         for(Suggestion suggestion : searchUsers) {
             User user2 = suggestion.getUser();
-            if(user1 == user2) user2 = suggestion.getFriend();
+            if(userId == user2.getId()) user2 = suggestion.getFriend();
             if (!user2.getEmail().toLowerCase().contains(keyWord.toLowerCase()) || !user2.getUsername().toLowerCase().contains(keyWord.toLowerCase())) {
                 unsuitableSearchUsers.add(suggestion);
             }
