@@ -1,7 +1,6 @@
 package com.example.socialnetwork.infrastructure.repository;
 
 import com.example.socialnetwork.infrastructure.entity.Suggestion;
-import com.example.socialnetwork.infrastructure.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

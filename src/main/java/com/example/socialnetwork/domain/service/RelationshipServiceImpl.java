@@ -5,7 +5,7 @@ import com.example.socialnetwork.application.response.SearchFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.SuggestionMapper;
-import com.example.socialnetwork.common.publisher.CustomEventPublisher;
+import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.SuggestionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;

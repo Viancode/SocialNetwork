@@ -2,12 +2,10 @@ package com.example.socialnetwork.infrastructure.repository;
 
 
 import com.example.socialnetwork.common.constant.ERelationship;
-import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.infrastructure.entity.Relationship;
 import com.example.socialnetwork.infrastructure.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,7 +1,7 @@
 package com.example.socialnetwork.config;
 
 import com.example.socialnetwork.common.mapper.*;
-import com.example.socialnetwork.common.publisher.CustomEventPublisher;
+import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.*;
 import com.example.socialnetwork.domain.schedule.HideCommentSchedule;

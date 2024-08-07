@@ -1,4 +1,4 @@
-package com.example.socialnetwork.common.publisher;
+package com.example.socialnetwork.domain.publisher;
 
 import com.example.socialnetwork.common.event.*;
 import lombok.RequiredArgsConstructor;

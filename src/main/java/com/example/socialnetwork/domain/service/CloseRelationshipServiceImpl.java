@@ -1,11 +1,8 @@
 package com.example.socialnetwork.domain.service;
 
 import com.example.socialnetwork.common.constant.ERelationship;
-import com.example.socialnetwork.common.mapper.RelationshipMapper;
-import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CloseRelationshipDomain;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
-import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.CloseRelationshipServicePort;
 import com.example.socialnetwork.domain.port.spi.CloseRelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
@@ -13,9 +10,6 @@ import com.example.socialnetwork.exception.custom.ClientErrorException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 public class CloseRelationshipServiceImpl implements CloseRelationshipServicePort {

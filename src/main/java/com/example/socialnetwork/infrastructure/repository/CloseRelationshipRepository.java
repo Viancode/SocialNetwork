@@ -1,7 +1,6 @@
 package com.example.socialnetwork.infrastructure.repository;
 
 import com.example.socialnetwork.infrastructure.entity.CloseRelationship;
-import com.example.socialnetwork.infrastructure.entity.CommentReaction;
 import com.example.socialnetwork.infrastructure.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

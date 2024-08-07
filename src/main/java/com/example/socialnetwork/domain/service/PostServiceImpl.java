@@ -9,7 +9,6 @@ import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
-import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import com.example.socialnetwork.domain.port.spi.CloseRelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
@@ -23,7 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostServicePort {

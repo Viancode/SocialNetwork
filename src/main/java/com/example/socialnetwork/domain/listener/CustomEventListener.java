@@ -1,4 +1,4 @@
-package com.example.socialnetwork.common.listener;
+package com.example.socialnetwork.domain.listener;
 
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Gender;

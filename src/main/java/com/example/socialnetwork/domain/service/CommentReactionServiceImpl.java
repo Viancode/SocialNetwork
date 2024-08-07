@@ -5,7 +5,6 @@ import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.*;
 import com.example.socialnetwork.domain.port.api.CommentReactionServicePort;
-import com.example.socialnetwork.domain.port.api.CommentServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.domain.port.spi.CommentReactionDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;

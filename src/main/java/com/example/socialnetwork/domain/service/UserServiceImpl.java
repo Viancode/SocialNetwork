@@ -4,7 +4,7 @@ import com.example.socialnetwork.application.request.ProfileRequest;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.constant.Visibility;
-import com.example.socialnetwork.common.publisher.CustomEventPublisher;
+import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;

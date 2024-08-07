@@ -4,7 +4,7 @@ import com.example.socialnetwork.application.request.AuthRequest;
 import com.example.socialnetwork.application.request.RegisterRequest;
 import com.example.socialnetwork.application.response.AuthResponse;
 import com.example.socialnetwork.common.constant.TokenType;
-import com.example.socialnetwork.common.publisher.CustomEventPublisher;
+import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.port.api.AuthServicePort;
 import com.example.socialnetwork.domain.port.api.JwtServicePort;
 import com.example.socialnetwork.domain.port.api.TokenServicePort;
