@@ -19,7 +19,6 @@ public class CommentResponse {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Boolean isHidden;
     private String image;
     private Long reactCount;
 }

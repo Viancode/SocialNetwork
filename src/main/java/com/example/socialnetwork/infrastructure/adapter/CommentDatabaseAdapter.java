@@ -63,7 +63,7 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
 
     @Override
     public List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday) {
-        var spec = Specification.where(updateWithinLastDay(yesterday).and(isNotHidden()));
+        var spec = Specification.where(updateWithinLastDay(yesterday));
         List<Comment> yesterdayComment = commentRepository.findAll(spec);
         return yesterdayComment.stream()
                 .map(commentMapper::commentEntityToCommentDomain)
@@ -89,16 +89,14 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     private Specification<Comment> getSpecTopLevelComment(Long userId, Long postId, List<Long> listBlockFriend) {
         Specification<Comment> spec = Specification.where(null);
         spec = spec.and(withPostIdAndParentCommentIsNull(postId)
-                        .and(withoutUserId(listBlockFriend))
-                        .and(isNotHidden()));
+                        .and(withoutUserId(listBlockFriend)));
         return spec;
     }
 
     private Specification<Comment> getSpecChildLevelComment(Long userId, Long commentId, List<Long> listBlockFriend) {
         Specification<Comment> spec = Specification.where(null);
         spec = spec.and(withParentCommentId(commentId)
-                        .and(withoutUserId(listBlockFriend))
-                        .and(isNotHidden()));
+                        .and(withoutUserId(listBlockFriend)));
         return spec;
     }
 }

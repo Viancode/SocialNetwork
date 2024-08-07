@@ -68,7 +68,7 @@ ELSE
                 SET comment_image = NULL;
 END IF;
 
-INSERT INTO comments (user_id, post_id, parent_comment_id, content, created_at, updated_at, is_hidden, image)
+INSERT INTO comments (user_id, post_id, parent_comment_id, content, created_at, updated_at, image)
 VALUES (
            FLOOR(1 + RAND() * 3),
            post_id_var,
@@ -79,7 +79,7 @@ VALUES (
                END,
            DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
            DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
-           0,  -- Giả sử mặc định không ẩn
+--            0,  -- Giả sử mặc định không ẩn
            comment_image
        );
 

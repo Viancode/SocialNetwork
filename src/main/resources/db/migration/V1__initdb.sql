@@ -65,7 +65,7 @@ CREATE TABLE comments (
                           content VARCHAR(255),
                           created_at DATETIME,
                           updated_at DATETIME,
-                          is_hidden BIT(1),
+--                           is_hidden BIT(1),
                           CONSTRAINT fk_comment_user FOREIGN KEY (user_id) REFERENCES users(user_id),
                           CONSTRAINT fk_comment_post FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );

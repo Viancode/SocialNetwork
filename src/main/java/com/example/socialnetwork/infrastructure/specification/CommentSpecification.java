@@ -31,8 +31,4 @@ public class CommentSpecification {
         return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get(Comment.Fields.createdAt), yesterday);
     }
 
-    public static Specification<Comment> isNotHidden() {
-        return (root, query, cb) -> cb.isFalse(root.get(Comment.Fields.isHidden));
-    }
-
 }

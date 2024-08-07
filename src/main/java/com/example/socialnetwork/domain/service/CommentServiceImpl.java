@@ -17,13 +17,18 @@ import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.pmml4s.model.Model;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -33,6 +38,30 @@ public class CommentServiceImpl implements CommentServicePort {
     private final PostDatabasePort postDatabasePort;
     private final RelationshipDatabasePort relationshipDatabasePort;
     private final CommentMapper commentMapper;
+    private Model model;
+    private static final double SPAM_THRESHOLD = 0.6;
+
+    @PostConstruct
+    public void init()  {
+        try {
+            ClassPathResource resource = new ClassPathResource("model/comment-model.pmml");
+            model = Model.fromInputStream(resource.getInputStream());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load model");
+        }
+    }
+
+    private void isSpam(String content) {
+        Map<String, Object> input = new HashMap<>();
+        input.put("free_text", content);
+
+        Map<?, ?> results = model.predict(input);
+        double spamProbability = (double) results.get("probability(1)");
+        System.out.println(content + " " + spamProbability);
+        if (spamProbability > SPAM_THRESHOLD) {
+            throw new NotAllowException("Your comment is considered as spam");
+        }
+    }
 
     private void checkUserCommentAndUserPost(Long userId, Long postId) {
         // check post exists
@@ -83,11 +112,6 @@ public class CommentServiceImpl implements CommentServicePort {
             if (!Objects.equals(parentComment.getPost().getId(), postId)) {
                 throw new NotAllowException("You are not allowed to reply to this comment");
             }
-
-            // check parent comment is not hidden
-            if (parentComment.getIsHidden()) {
-                throw new NotAllowException("You are not allowed to reply to this comment");
-            }
         }
     }
 
@@ -96,6 +120,7 @@ public class CommentServiceImpl implements CommentServicePort {
         Long userId = SecurityUtil.getCurrentUserId();
         checkUserCommentAndUserPost(userId, commentRequest.getPostId());
         checkParentComment(userId, commentRequest.getParentCommentId(), commentRequest.getPostId());
+        isSpam(commentRequest.getContent());
         long postId = commentRequest.getPostId();
         PostDomain postDomain = postDatabasePort.findById(postId);
         postDomain.setLastComment(LocalDateTime.now());
@@ -120,7 +145,7 @@ public class CommentServiceImpl implements CommentServicePort {
         }
 
         checkParentComment(userId, currentComment.getParentCommentId(), postId);
-
+        isSpam(content);
         currentComment.setContent(content);
         currentComment.setUpdatedAt(LocalDateTime.now());
         currentComment.setImage(image);

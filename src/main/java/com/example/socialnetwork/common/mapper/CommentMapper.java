@@ -29,7 +29,6 @@ public class CommentMapper {
                 .image(request.getImage())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .isHidden(false)
                 .build();
     }
 
@@ -42,7 +41,6 @@ public class CommentMapper {
                 .content(domain.getContent())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
-                .isHidden(domain.getIsHidden())
                 .image(domain.getImage())
                 .build();
     }
@@ -60,7 +58,6 @@ public class CommentMapper {
                 .content(entity.getContent())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
-                .isHidden(entity.getIsHidden())
                 .image(entity.getImage())
                 .reactionsId(entity.getCommentReactions())
                 .build();
@@ -78,7 +75,6 @@ public class CommentMapper {
                 .content(domain.getContent())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
-                .isHidden(domain.getIsHidden())
                 .image(domain.getImage())
                 .reactCount(domain.getReactionsId() != null ? (long) domain.getReactionsId().size() : 0)
                 .build();

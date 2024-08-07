@@ -4,7 +4,7 @@ import com.example.socialnetwork.common.mapper.*;
 import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.*;
-import com.example.socialnetwork.domain.schedule.HideCommentSchedule;
+import com.example.socialnetwork.domain.service.HideCommentServiceImpl;
 import com.example.socialnetwork.domain.service.*;
 import com.example.socialnetwork.infrastructure.adapter.*;
 import com.example.socialnetwork.infrastructure.repository.*;
@@ -142,8 +142,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public HideCommentSchedule hideCommentSchedule(CommentDatabasePort commentDatabasePort) {
-        return new HideCommentSchedule(commentDatabasePort);
+    public HideCommentServiceImpl hideCommentSchedule(CommentDatabasePort commentDatabasePort) {
+        return new HideCommentServiceImpl(commentDatabasePort);
     }
 
 }
