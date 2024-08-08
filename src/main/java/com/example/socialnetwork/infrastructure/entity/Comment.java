@@ -47,6 +47,6 @@ public class Comment {
     @Column(name = "image")
     private String image;
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CommentReaction> commentReactions = new ArrayList<>();
 }

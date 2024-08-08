@@ -27,5 +27,5 @@ public class CommentDomain {
     private LocalDateTime updatedAt;
     private Boolean isHidden;
     private String image;
-    private List<CommentReaction> reactionsId;
+    private Long reactCount;
 }

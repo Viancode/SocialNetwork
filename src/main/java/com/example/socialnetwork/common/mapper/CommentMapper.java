@@ -10,6 +10,7 @@ import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.Comment;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import com.example.socialnetwork.infrastructure.entity.User;
+import com.example.socialnetwork.infrastructure.repository.CommentReactionRepository;
 import com.example.socialnetwork.infrastructure.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CommentMapper {
     private final CommentRepository commentRepository;
+    private final CommentReactionRepository commentReactionRepository;
     public CommentDomain commentRequestToCommentDomain(CommentRequest request) {
         return CommentDomain.builder()
                 .user(UserDomain.builder().id(SecurityUtil.getCurrentUserId()).build())
@@ -59,7 +61,7 @@ public class CommentMapper {
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .image(entity.getImage())
-                .reactionsId(entity.getCommentReactions())
+                .reactCount(commentReactionRepository.countByComment_Id(entity.getId()))
                 .build();
     }
 
@@ -71,12 +73,12 @@ public class CommentMapper {
                 .avatar(domain.getUser().getAvatar())
                 .postId(domain.getPost().getId())
                 .parentCommentId(domain.getParentCommentId())
-                .numberOfChild((long) commentRepository.findAllByParentCommentId(domain.getCommentId()).size())
+                .numberOfChild(commentRepository.countByParentCommentId(domain.getCommentId()))
                 .content(domain.getContent())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
                 .image(domain.getImage())
-                .reactCount(domain.getReactionsId() != null ? (long) domain.getReactionsId().size() : 0)
+                .reactCount(domain.getReactCount())
                 .build();
     }
 }
