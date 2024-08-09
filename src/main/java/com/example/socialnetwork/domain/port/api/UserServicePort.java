@@ -10,8 +10,8 @@ import java.util.List;
 public interface UserServicePort {
     UserDomain getProfile(Long sourceUserId, Long targetUserID);
     void deleteProfile(Long userId);
-    void sendVerificationEmail(User user, String confirmToken);
-    void sendEmailResetPassword(User user, String resetToken);
+    void sendVerificationEmail(UserDomain user, String confirmToken);
+    void sendEmailResetPassword(UserDomain user, String resetToken);
     void updateProfile(Long userId, ProfileRequest profileRequest);
     UserDomain findUserById(Long userId);
 }

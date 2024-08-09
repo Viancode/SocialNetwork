@@ -3,8 +3,12 @@ package com.example.socialnetwork.application.controller;
 import com.example.socialnetwork.application.request.AuthRequest;
 import com.example.socialnetwork.application.request.RegisterRequest;
 import com.example.socialnetwork.application.response.AuthResponse;
+import com.example.socialnetwork.common.ValidationRegex;
 import com.example.socialnetwork.domain.port.api.AuthServicePort;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthController extends BaseController {
     private final AuthServicePort authService;
 
@@ -36,23 +41,18 @@ public class AuthController extends BaseController {
 
     @PostMapping("/forgot-pass")
     public ResponseEntity<?> forgotPassword(
+            @Email(message = "Email should be valid", regexp = ValidationRegex.EMAIL_REGEX)
             @RequestParam("email") String email
     ) {
         authService.forgotPassword(email);
         return buildResponse("Reset password request has been sent to your email");
     }
 
-//    @PostMapping("/forgot-pass/verify")
-//    public ResponseEntity<?> verifyForgotPassToken(
-//            @RequestParam("token") String token
-//    ) {
-//        authService.verifyForgetPassToken(token);
-//        return ResponseEntity.ok("Token is valid");
-//    }
-
     @PostMapping("/reset-pass")
     public ResponseEntity<?> resetPassword(
             @RequestParam("token") String token,
+            @NotBlank(message = "New password cannot be blank")
+            @Pattern(message = "Password should be valid", regexp = ValidationRegex.PASSWORD_REGEX)
             @RequestParam("newPassword") String newPassword
     ) {
         authService.resetPasswordWithToken(token, newPassword);
@@ -61,12 +61,12 @@ public class AuthController extends BaseController {
 
     @PostMapping("/change-pass") ///
     public ResponseEntity<?> changePassword(
+            @NotBlank(message = "New password cannot be blank")
+            @Pattern(message = "Password should be valid", regexp = ValidationRegex.PASSWORD_REGEX)
             @RequestParam("newPassword") String newPassword,
-            @RequestParam("oldPassword") String oldPassword,
-            Authentication authentication
+            @RequestParam("oldPassword") String oldPassword
     ) {
-        User user = (User) authentication.getPrincipal();
-        authService.changePassword(user, newPassword, oldPassword);
+        authService.changePassword(newPassword, oldPassword);
         return buildResponse("Change password successfully");
     }
 
@@ -88,11 +88,9 @@ public class AuthController extends BaseController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
-            @RequestParam("refreshToken") String refreshToken,
-            Authentication authentication
+            @RequestParam("refreshToken") String refreshToken
     ) {
-        User user = (User) authentication.getPrincipal();
-        authService.logout(refreshToken, user);
+        authService.logout(refreshToken);
         return buildResponse("Logout successfully");
     }
 

@@ -7,7 +7,7 @@ import com.example.socialnetwork.infrastructure.entity.User;
 import java.util.List;
 
 public interface UserDatabasePort {
-    User createUser(RegisterRequest registerRequest);
+    UserDomain createUser(RegisterRequest registerRequest);
 
     UserDomain findById(long id);
 
@@ -16,4 +16,6 @@ public interface UserDatabasePort {
     void save(UserDomain user);
 
     List<UserDomain> getAllUser();
+    UserDomain findByEmail(String email);
+    void updatePassword(Long userId, String password);
 }

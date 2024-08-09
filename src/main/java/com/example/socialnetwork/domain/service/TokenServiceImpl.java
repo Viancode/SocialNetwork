@@ -30,9 +30,9 @@ public class TokenServiceImpl implements TokenServicePort {
     }
 
     @Override
-    public void revokeRefreshToken(String refreshToken, User user) {
+    public void revokeRefreshToken(String refreshToken, String currentUserId) {
         String userId = getTokenInfo(refreshToken, TokenType.REFRESH);
-        if (!userId.equals(user.getUsername())) {
+        if (!userId.equals(currentUserId)) {
             throw new IllegalArgumentException("Invalid token");
         }
         redisTemplate.delete(String.format(KEY_PATTERN, "REFRESH", userId, refreshToken));

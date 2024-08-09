@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserServicePort {
     }
 
     @Override
-    public void sendVerificationEmail(User user, String confirmToken) {
+    public void sendVerificationEmail(UserDomain user, String confirmToken) {
         String subject = "Confirm your email address, " + user.getFirstName() + " " + user.getLastName();
         Map<String, Object> model = new HashMap<>();
         String link = domain + confirmEmailVerifyLink + confirmToken;
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserServicePort {
     }
 
     @Override
-    public void sendEmailResetPassword(User user, String token) {
+    public void sendEmailResetPassword(UserDomain user, String token) {
         String subject = "Reset your password, " + user.getFirstName();
         Map<String, Object> model = new HashMap<>();
         String link = domain + resetPasswordVerifyLink + token;

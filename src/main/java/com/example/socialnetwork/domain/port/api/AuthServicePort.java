@@ -10,10 +10,10 @@ public interface AuthServicePort {
     void verifyRegisterToken(String token);
     void verifyForgetPassToken(String token);
     void forgotPassword(String email);
-    void changePassword(User user, String newPassword, String oldPassword);
+    void changePassword(String newPassword, String oldPassword);
     AuthResponse login(AuthRequest authRequest);
     AuthResponse refreshToken(String refreshToken);
-    void logout(String refreshToken, User user);
+    void logout(String refreshToken);
     void logoutAllDevices(User user);
     void resetPasswordWithToken(String token, String newPassword);
 }

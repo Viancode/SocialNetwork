@@ -4,7 +4,6 @@ import com.example.socialnetwork.common.mapper.*;
 import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.port.api.*;
 import com.example.socialnetwork.domain.port.spi.*;
-import com.example.socialnetwork.domain.service.HideCommentServiceImpl;
 import com.example.socialnetwork.domain.service.*;
 import com.example.socialnetwork.infrastructure.adapter.*;
 import com.example.socialnetwork.infrastructure.repository.*;
@@ -46,8 +45,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public AuthServicePort authServicePort(JwtServicePort jwtService, TokenServicePort tokenService, UserRepository userRepository, UserServicePort userService, UserDatabasePort userDatabase, AuthenticationManager authenticationManager, CustomEventPublisher customEventPublisher) {
-        return new AuthServiceImpl(jwtService, tokenService, userRepository, userService, userDatabase, authenticationManager, customEventPublisher);
+    public AuthServicePort authServicePort(JwtServicePort jwtService, TokenServicePort tokenService, UserServicePort userService, UserDatabasePort userDatabase, AuthenticationManager authenticationManager, CustomEventPublisher customEventPublisher) {
+        return new AuthServiceImpl(jwtService, tokenService, userService, userDatabase, authenticationManager, customEventPublisher);
     }
 
     @Bean
@@ -139,11 +138,6 @@ public class BeanConfig {
     @Bean
     public CloseRelationshipServicePort closeRelationshipServicePort(CloseRelationshipDatabasePort closeRelationshipDatabasePort, RelationshipDatabasePort relationshipDatabasePort){
         return new CloseRelationshipServiceImpl(closeRelationshipDatabasePort, relationshipDatabasePort);
-    }
-
-    @Bean
-    public HideCommentServiceImpl hideCommentSchedule(CommentDatabasePort commentDatabasePort) {
-        return new HideCommentServiceImpl(commentDatabasePort);
     }
 
 }

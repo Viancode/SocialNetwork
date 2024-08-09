@@ -22,33 +22,28 @@ public class UserDatabaseAdapter implements UserDatabasePort {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     @Override
-    public User createUser(RegisterRequest registerRequest) {
-        User user = userRepository.findByEmail(registerRequest.getEmail()).orElse(null);
-        if (user ==null) {
-            user = new User();
-            user.setEmail(registerRequest.getEmail());
-            user.setPassword(encoder.encode(registerRequest.getPassword()));
-            user.setFirstName(registerRequest.getFirstName());
-            user.setLastName(registerRequest.getLastName());
-            user.setBio(registerRequest.getBio());
-            user.setLocation(registerRequest.getLocation());
-            user.setWork(registerRequest.getWork());
-            user.setEducation(registerRequest.getEducation());
-            user.setAvatar(null);
-            user.setBackgroundImage(null);
-            user.setDateOfBirth(registerRequest.getDateOfBirth());
-            user.setRole(Role.builder().id(1L).build());
-            user.setIsEmailVerified(false);
-            user.setUsername(registerRequest.getFirstName() + " " + registerRequest.getLastName());
-            user.setGender(Gender.valueOf(registerRequest.getGender()));
-            user.setCreatedAt(LocalDateTime.now());
-            user.setUpdatedAt(LocalDateTime.now());
-            user.setVisibility(String.valueOf(Visibility.PUBLIC));
+    public UserDomain createUser(RegisterRequest registerRequest) {
+        User user = new User();
+        user.setEmail(registerRequest.getEmail());
+        user.setPassword(encoder.encode(registerRequest.getPassword()));
+        user.setFirstName(registerRequest.getFirstName());
+        user.setLastName(registerRequest.getLastName());
+        user.setBio(registerRequest.getBio());
+        user.setLocation(registerRequest.getLocation());
+        user.setWork(registerRequest.getWork());
+        user.setEducation(registerRequest.getEducation());
+        user.setAvatar(null);
+        user.setBackgroundImage(null);
+        user.setDateOfBirth(registerRequest.getDateOfBirth());
+        user.setRole(Role.builder().id(1L).build());
+        user.setIsEmailVerified(false);
+        user.setUsername(registerRequest.getFirstName() + " " + registerRequest.getLastName());
+        user.setGender(Gender.valueOf(registerRequest.getGender()));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setVisibility(String.valueOf(Visibility.PUBLIC));
 
-            return userRepository.save(user);
-        } else {
-            return user;
-        }
+        return userMapper.toUserDomain(userRepository.save(user));
     }
 
     @Override
@@ -71,5 +66,15 @@ public class UserDatabaseAdapter implements UserDatabasePort {
     @Override
     public List<UserDomain> getAllUser() {
         return userMapper.toUserDomains(userRepository.findAll());
+    }
+
+    @Override
+    public UserDomain findByEmail(String email) {
+        return userMapper.toUserDomain(userRepository.findByEmail(email).orElse(null));
+    }
+
+    @Override
+    public void updatePassword(Long userId, String password) {
+        userRepository.updatePassword(userId, password);
     }
 }
