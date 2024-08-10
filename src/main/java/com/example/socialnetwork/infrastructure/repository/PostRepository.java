@@ -17,9 +17,9 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSortingRepository<Post, Long> {
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
 
-    @Query("SELECT p FROM Post p " +
-            "WHERE p.user IN :users " +
-            "AND p.visibility <> 'PRIVATE' " +
-            "ORDER BY p.lastComment DESC, p.updatedAt DESC ")
-    List<Post> findByListUser(@Param("users") List<User> users);
+//    @Query("SELECT p FROM Post p " +
+//            "WHERE p.user IN :users " +
+//            "AND p.visibility <> 'PRIVATE' " +
+//            "ORDER BY p.lastComment DESC, p.updatedAt DESC ")
+    Page<Post> findPostOfFriends(Pageable pageable, Specification<Post> spec);
 }

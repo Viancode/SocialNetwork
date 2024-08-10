@@ -5,6 +5,7 @@ import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 
@@ -16,5 +17,5 @@ public interface PostDatabasePort {
     void deletePost(Long postId);
     PostDomain findById(Long id);
     Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, List<Visibility> visibility);
-    List<PostDomain> getAllPostByFriends(List<UserDomain> userDomains);
+    Page<PostDomain> getAllPostByFriends(Pageable pageable, List<Long> targetUserIds, List<Visibility> visibility);
 }
