@@ -74,7 +74,7 @@ public class PostDatabaseAdapter implements PostDatabasePort {
 
     @Override
     public Page<PostDomain> getAllPostByFriends(Pageable pageable,List<Long> targetUserIds, List<Visibility> visibilities){
-        Page<Post> posts = postRepository.findPostOfFriends(pageable, getSpec(targetUserIds, visibilities));
+        Page<Post> posts = postRepository.findAll(getSpec(targetUserIds, visibilities), pageable);
         return posts.map(postMapper::postToPostDomain);
     }
 

@@ -102,13 +102,12 @@ public class PostServiceImpl implements PostServicePort {
         List<UserDomain> closedFriends = closeRelationshipDatabasePort.findUserHadClosedRelationshipWith(currentUserId);
 
         Sort sort = Sort.by(Sort.Direction.DESC, "lastComment", "updatedAt");
-        Pageable pageable1 = PageRequest.of(1, 100, sort);
+        Pageable pageable1 = PageRequest.of(0, 100, sort);
         List<Visibility> list = List.of(Visibility.PUBLIC, Visibility.FRIEND);
         Page<PostDomain> postOfFriends = postDatabasePort.getAllPostByFriends(pageable1, friendIds, list);
         List<PostDomain> newsFeed = postOfFriends.getContent().stream()
                 .sorted(Comparator.comparing((PostDomain post) -> closedFriends.contains(userDatabasePort.findById(post.getUserId())) && post.getCreatedAt().toLocalDate().equals(LocalDate.now())).reversed())
                 .collect(Collectors.toList());
-
         List<PostResponse> postResponses = postMapper.toPostResponses(newsFeed);
         Pageable pageable2 = PageRequest.of(page - 1, pageSize);
         int start = Math.min((int) pageable2.getOffset(), postResponses.size());
