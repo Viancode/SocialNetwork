@@ -31,12 +31,24 @@ public class PostServiceImpl implements PostServicePort {
     private final UserDatabasePort userDatabasePort;
     private final PostMapper postMapper;
 
+    public Boolean checkNumberImage(String image){
+        if(image == null){
+            return true;
+        }else{
+            String [] images = image.split(",");
+            return images.length <= 4;
+        }
+    }
+
     @Override
     public PostDomain createPost(PostRequest postRequest) {
         PostDomain postDomain = new PostDomain();
         postDomain.setUserId(postRequest.getUserId());
         postDomain.setContent(postRequest.getContent());
         postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
+        if(!checkNumberImage(postRequest.getPhotoLists())){
+            throw new ClientErrorException("The number of photos exceeds the limit");
+        }
         postDomain.setPhotoLists(postRequest.getPhotoLists());
         postDomain.setLastComment(LocalDateTime.now());
         postDomain.setCreatedAt(LocalDateTime.now());
@@ -53,6 +65,9 @@ public class PostServiceImpl implements PostServicePort {
             postDomain.setContent(postRequest.getContent());
         }
         postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
+        if(!checkNumberImage(postRequest.getPhotoLists())){
+            throw new ClientErrorException("The number of photos exceeds the limit");
+        }
         if (postRequest.getPhotoLists().isEmpty()) {
             postDomain.setPhotoLists(null);
         }else{
@@ -84,7 +99,7 @@ public class PostServiceImpl implements PostServicePort {
             }
         }
         if (posts != null) {
-            return posts.map(postMapper::postDomainToPostResponse);
+            return posts.map(postMapper::domainToResponse);
         } else {
             throw new NotAllowException("You don't have permission to view this user's posts or user doesn't have any posts");
         }
@@ -109,7 +124,7 @@ public class PostServiceImpl implements PostServicePort {
         postOfFriends.removeAll(postOfClosedFriendsToday);
         newsFeed.addAll(postOfClosedFriendsToday);
         newsFeed.addAll(postOfFriends);
-        List<PostResponse> postResponses = postMapper.toPostResponses(newsFeed);
+        List<PostResponse> postResponses = postMapper.listDomainToResponse(newsFeed);
         var pageable = PageRequest.of(page - 1, pageSize);
         int start = Math.min((int) pageable.getOffset(), postResponses.size());
         int end = Math.min((start + pageable.getPageSize()), postResponses.size());

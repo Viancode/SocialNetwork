@@ -32,9 +32,9 @@ public class PostDomain {
 
     private String photoLists;
 
-    private List<Long> commentsIds = new ArrayList<>();
+    private  Long numberOfComments;
 
-    private List<Long> postReactionsIds = new ArrayList<>();
+    private Long numberOfReacts;
 
-    private List<Long> tagsIds = new ArrayList<>();
+    private Long numberTags;
 }

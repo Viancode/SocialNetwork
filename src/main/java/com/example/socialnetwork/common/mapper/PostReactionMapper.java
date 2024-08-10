@@ -5,13 +5,17 @@ import com.example.socialnetwork.application.response.PostReactionResponse;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostReactionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
+import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
+import com.example.socialnetwork.infrastructure.adapter.UserDatabaseAdapter;
 import com.example.socialnetwork.infrastructure.entity.PostReaction;
+import com.example.socialnetwork.infrastructure.repository.CommentReactionRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-@Mapper
+@Mapper(componentModel = "spring", uses = {SecurityUtil.class, UserDatabasePort.class})
 public interface PostReactionMapper {
     PostReactionMapper INSTANCE = Mappers.getMapper(PostReactionMapper.class);
 
@@ -50,4 +54,5 @@ public interface PostReactionMapper {
     @Mapping(source = "userDomain.username", target = "username")
     @Mapping(source = "userDomain.avatar", target = "avatar")
     PostReactionResponse domainToResponseWithUser(PostReactionDomain postReactionDomain, UserDomain userDomain);
+
 }

@@ -13,4 +13,5 @@ public interface CloseRelationshipDatabasePort {
     Page<CloseRelationshipDomain> getAllCloseRelationship(int page, int pageSize, Sort sort, Long userId);
     Boolean deleteCloseRelationship(Long targetUserId);
     List<UserDomain> findUserHadClosedRelationshipWith(long userId);
+    CloseRelationshipDomain updateCloseRelationship(CloseRelationshipDomain closeRelationshipDomain);
 }

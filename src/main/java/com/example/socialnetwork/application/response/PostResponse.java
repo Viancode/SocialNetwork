@@ -35,5 +35,5 @@ public class PostResponse {
 
     private Long numberOfReacts;
 
-    private List<Long> tagsIds = new ArrayList<>();
+    private Long numberTags;
 }

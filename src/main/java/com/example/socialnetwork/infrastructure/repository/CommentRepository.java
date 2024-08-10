@@ -19,4 +19,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, PagingA
   List<Comment> findAll(Specification<Comment> spec);
   void deleteAllByParentCommentId(Long parentCommentId);
   Long countByParentCommentId(Long parentCommentId);
+  Long countByPostId(Long postId);
 }

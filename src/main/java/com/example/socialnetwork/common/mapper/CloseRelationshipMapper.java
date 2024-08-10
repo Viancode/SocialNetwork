@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {SecurityUtil.class})
 public interface CloseRelationshipMapper {
     CloseRelationshipMapper INSTANCE = Mappers.getMapper(CloseRelationshipMapper.class);
 

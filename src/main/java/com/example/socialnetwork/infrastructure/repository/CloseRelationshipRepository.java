@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface CloseRelationshipRepository extends JpaRepository<CloseRelationship, Long> {
     Optional<CloseRelationship> findCloseRelationshipByUserIdAndTargetUserId(Long userId, Long targetUserId);
     Page<CloseRelationship> findAll(Specification<CloseRelationship> spec, Pageable pageable);
-    void deleteByTargetUserId(Long targetUserId);
+    void deleteByUserIdAndTargetUserId(Long userId, Long targetUserId);
 
     @Query("SELECT u FROM User u " +
             "INNER JOIN CloseRelationship r ON r.user = u OR r.targetUser = u " +

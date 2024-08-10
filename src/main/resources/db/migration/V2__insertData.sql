@@ -116,8 +116,8 @@ FROM relationships
 WHERE user_id = post_user_id AND friend_id = tag_user_id AND relation = 'FRIEND';
 
 IF can_tag AND tag_user_id != post_user_id THEN
-            INSERT INTO tags (tagged_user_id, post_id, tagged_by_user_id)
-            VALUES (tag_user_id, post_id_var, post_user_id);
+            INSERT INTO tags (tagged_user_id, post_id, tagged_by_user_id, created_at)
+            VALUES (tag_user_id, post_id_var, post_user_id, DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE));
 END IF;
 
         SET i = i + 1;
