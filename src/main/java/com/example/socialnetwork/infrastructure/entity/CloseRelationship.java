@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @FieldNameConstants
 @Getter
@@ -33,6 +33,6 @@ public class CloseRelationship {
     private ECloseRelationship closeRelationshipName;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
 }

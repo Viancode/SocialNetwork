@@ -7,7 +7,7 @@ import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -23,8 +23,8 @@ public class CommentDomain {
     private Long parentCommentId;
     private Long numberOfChild;
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private Boolean isHidden;
     private String image;
     private Long reactCount;

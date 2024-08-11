@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @EqualsAndHashCode
@@ -36,8 +36,8 @@ public class UserDomain {
     String avatar;
     String backgroundImage;
     Visibility visibility;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    Instant createdAt;
+    Instant updatedAt;
     Boolean isEmailVerified;
 
 }

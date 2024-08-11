@@ -8,7 +8,7 @@ import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 @FieldNameConstants
@@ -73,10 +73,10 @@ public class User {
     private String education;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     @Size(max = 255)
     @Column(name = "avatar")

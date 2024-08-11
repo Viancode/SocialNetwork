@@ -73,9 +73,9 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     }
 
     @Override
-    public List<PostDomain> getAllPostByFriends(List<UserDomain> userDomains){
-        List<User> users = userDomains.stream().map(userMapper::toUser).toList();
-        return postMapper.listEntityToDomain(postRepository.findByListUser(users));
+    public Page<PostDomain> getAllPostByFriends(Pageable pageable,List<Long> targetUserIds, List<Visibility> visibilities){
+        Page<Post> posts = postRepository.findAll(getSpec(targetUserIds, visibilities), pageable);
+        return posts.map(postMapper::entityToDomain);
     }
 
     private Specification<Post> getSpec(Long targetUserId, List<Visibility> visibilities) {
@@ -83,6 +83,11 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         if (visibilities != null && !visibilities.isEmpty()) {
             spec = spec.and(withUserIdAndVisibility(targetUserId, visibilities));
         }
+        return spec;
+    }
+    private Specification<Post> getSpec(List<Long> targetUserIds, List<Visibility> visibilities) {
+        Specification<Post> spec = Specification.where(null);
+        spec = spec.and(withUserIdAndVisibility(targetUserIds, visibilities));
         return spec;
     }
 }

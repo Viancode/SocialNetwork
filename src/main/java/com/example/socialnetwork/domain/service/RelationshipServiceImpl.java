@@ -5,6 +5,7 @@ import com.example.socialnetwork.application.response.SearchFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.SuggestionMapper;
+import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.SuggestionDomain;
@@ -17,9 +18,6 @@ import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.example.socialnetwork.exception.custom.RelationshipException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.*;
 
@@ -33,7 +31,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public void deleteRelationship(long friendId) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         checkFriend(friendId);
         relationshipDatabasePort.deleteFriend(userId, friendId);
         closeRelationshipDatabasePort.deleteCloseRelationship(friendId);
@@ -42,7 +40,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public void sendRequestMakeFriendship(long userId) {
-        long senderId = getCurrentUser();
+        long senderId = SecurityUtil.getCurrentUserId();
         checkFriend(userId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId).orElse(null);
         if (senderId == userId) {
@@ -58,7 +56,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public void deleteRequestMakeFriendship(long userId) {
-        long senderId = getCurrentUser();
+        long senderId = SecurityUtil.getCurrentUserId();
         checkFriend(userId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(senderId, userId).orElse(null);
         if (relationshipDomain == null) {
@@ -74,7 +72,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public void acceptRequestMakeFriendship(long userId) {
-        long receiverId = getCurrentUser();
+        long receiverId = SecurityUtil.getCurrentUserId();
         checkFriend(userId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId).orElse(null);
         if (relationshipDomain == null) {
@@ -89,7 +87,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public void refuseRequestMakeFriendship(long userId) {
-        long receiverId = getCurrentUser();
+        long receiverId = SecurityUtil.getCurrentUserId();
         checkFriend(userId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, receiverId).orElse(null);
         if (relationshipDomain == null) {
@@ -105,7 +103,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public void block(long friendId) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         checkFriend(friendId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId).orElse(null);
         customEventPublisher.publishBlockedEvent(userId, friendId);
@@ -123,7 +121,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public void unblock(long friendId) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         checkFriend(friendId);
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, friendId).orElse(null);
         customEventPublisher.publishUnblockedEvent(userId, friendId);
@@ -137,25 +135,25 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public Page<UserDomain> findFriend(int page, int pageSize, String keyWord) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         return relationshipDatabasePort.findFriendByKeyWord(page, pageSize, userId, keyWord);
     }
 
     @Override
     public Page<UserDomain> getListReceiveRequest(int page, int pageSize) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         return relationshipDatabasePort.getListReceiveRequest(page, pageSize, userId);
     }
 
     @Override
     public Page<UserDomain> getListSendRequest(int page, int pageSize) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         return relationshipDatabasePort.getListSendRequest(page, pageSize, userId);
     }
 
     @Override
     public Page<UserDomain> getListFriend(int page, int pageSize, long userId, String sortDirection, String sortBy) {
-        long currentUserId = getCurrentUser();
+        long currentUserId = SecurityUtil.getCurrentUserId();
         UserDomain friend = userDatabasePort.findById(userId);
         if (friend == null)
             throw new NotFoundException("Not found user");
@@ -178,7 +176,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public Page<UserDomain> getListBlock(int page, int pageSize, String sortDirection, String sortBy) {
-        long currentUserId = getCurrentUser();
+        long currentUserId = SecurityUtil.getCurrentUserId();
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         return relationshipDatabasePort.getListBlock(page, pageSize, currentUserId, sort);
@@ -186,7 +184,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public Page<FriendSuggestionResponse> getFriendSuggestions(int page, int pageSize) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         List<SuggestionDomain> suggestionDomains = relationshipDatabasePort.getListSuggestionUser(userId);
         List<FriendSuggestionResponse> friendSuggestions = suggestionMapper.toFriendSuggestionResponses(suggestionDomains);
         return getPage(page, pageSize, friendSuggestions);
@@ -194,16 +192,10 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     @Override
     public Page<SearchFriendResponse> searchUser(int page, int pageSize, String keyWord) {
-        long userId = getCurrentUser();
+        long userId = SecurityUtil.getCurrentUserId();
         List<SuggestionDomain> suggestionDomains = relationshipDatabasePort.searchUserByKeyWord(userId, keyWord);
         List<SearchFriendResponse> searchFriendResponses = suggestionMapper.toSearchFriendResponses(suggestionDomains);
         return getPage(page, pageSize, searchFriendResponses);
-    }
-
-    private long getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        org.springframework.security.core.userdetails.User user = (User) authentication.getPrincipal();
-        return Long.parseLong(user.getUsername());
     }
 
     private void checkFriend(long friendId) {

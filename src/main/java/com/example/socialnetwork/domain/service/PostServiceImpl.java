@@ -19,9 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostServicePort {
@@ -31,28 +32,16 @@ public class PostServiceImpl implements PostServicePort {
     private final UserDatabasePort userDatabasePort;
     private final PostMapper postMapper;
 
-    public Boolean checkNumberImage(String image){
-        if(image == null){
-            return true;
-        }else{
-            String [] images = image.split(",");
-            return images.length <= 4;
-        }
-    }
-
     @Override
     public PostDomain createPost(PostRequest postRequest) {
         PostDomain postDomain = new PostDomain();
         postDomain.setUserId(postRequest.getUserId());
         postDomain.setContent(postRequest.getContent());
         postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
-        if(!checkNumberImage(postRequest.getPhotoLists())){
-            throw new ClientErrorException("The number of photos exceeds the limit");
-        }
         postDomain.setPhotoLists(postRequest.getPhotoLists());
-        postDomain.setLastComment(LocalDateTime.now());
-        postDomain.setCreatedAt(LocalDateTime.now());
-        postDomain.setUpdatedAt(LocalDateTime.now());
+        postDomain.setLastComment(Instant.now());
+        postDomain.setCreatedAt(Instant.now());
+        postDomain.setUpdatedAt(Instant.now());
         return postDatabasePort.createPost(postDomain);
     }
 
@@ -65,15 +54,12 @@ public class PostServiceImpl implements PostServicePort {
             postDomain.setContent(postRequest.getContent());
         }
         postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
-        if(!checkNumberImage(postRequest.getPhotoLists())){
-            throw new ClientErrorException("The number of photos exceeds the limit");
-        }
         if (postRequest.getPhotoLists().isEmpty()) {
             postDomain.setPhotoLists(null);
         }else{
             postDomain.setPhotoLists(postRequest.getPhotoLists());
         }
-        postDomain.setUpdatedAt(LocalDateTime.now());
+        postDomain.setUpdatedAt(Instant.now());
         return postDatabasePort.updatePost(postDomain);
     }
 
@@ -108,27 +94,25 @@ public class PostServiceImpl implements PostServicePort {
     @Override
     public Page<PostResponse> getNewsFeed(int page, int pageSize, long userId) {
         long currentUserId = SecurityUtil.getCurrentUserId();
-        UserDomain currentUser = userDatabasePort.findById(currentUserId);
-        List<UserDomain> friends = relationshipDatabasePort.getListFriend(currentUserId);
-        friends.add(currentUser);
+        List<Long> friendIds = relationshipDatabasePort.getListFriend(currentUserId).stream()
+                .map(UserDomain::getId) // Assuming getId() returns the ID of the user as a Long
+                .collect(Collectors.toList());
+        friendIds.add(currentUserId);
+
         List<UserDomain> closedFriends = closeRelationshipDatabasePort.findUserHadClosedRelationshipWith(currentUserId);
-        List<PostDomain> postOfClosedFriends = postDatabasePort.getAllPostByFriends(closedFriends);
-        List<PostDomain> postOfClosedFriendsToday = new ArrayList<>();
-        for (PostDomain postDomain : postOfClosedFriends) {
-            if (postDomain.getCreatedAt().toLocalDate().equals(LocalDate.now())) {
-                postOfClosedFriendsToday.add(postDomain);
-            }
-        }
-        List<PostDomain> newsFeed = new ArrayList<>();
-        List<PostDomain> postOfFriends = postDatabasePort.getAllPostByFriends(friends);
-        postOfFriends.removeAll(postOfClosedFriendsToday);
-        newsFeed.addAll(postOfClosedFriendsToday);
-        newsFeed.addAll(postOfFriends);
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "lastComment", "updatedAt");
+        Pageable pageable1 = PageRequest.of(0, 100, sort);
+        List<Visibility> list = List.of(Visibility.PUBLIC, Visibility.FRIEND);
+        Page<PostDomain> postOfFriends = postDatabasePort.getAllPostByFriends(pageable1, friendIds, list);
+        List<PostDomain> newsFeed = postOfFriends.getContent().stream()
+                .sorted(Comparator.comparing((PostDomain post) -> closedFriends.contains(userDatabasePort.findById(post.getUserId())) && LocalDate.from(post.getCreatedAt()).equals(LocalDate.now())).reversed())
+                .collect(Collectors.toList());
         List<PostResponse> postResponses = postMapper.listDomainToResponse(newsFeed);
-        var pageable = PageRequest.of(page - 1, pageSize);
-        int start = Math.min((int) pageable.getOffset(), postResponses.size());
-        int end = Math.min((start + pageable.getPageSize()), postResponses.size());
+        Pageable pageable2 = PageRequest.of(page - 1, pageSize);
+        int start = Math.min((int) pageable2.getOffset(), postResponses.size());
+        int end = Math.min((start + pageable2.getPageSize()), postResponses.size());
         List<PostResponse> pagedPostDomain = postResponses.subList(start, end);
-        return new PageImpl<>(pagedPostDomain, pageable, postResponses.size());
+        return new PageImpl<>(pagedPostDomain, pageable2, postResponses.size());
     }
 }
