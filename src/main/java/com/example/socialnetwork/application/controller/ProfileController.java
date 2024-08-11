@@ -21,7 +21,7 @@ public class ProfileController extends BaseController {
     private final UserServicePort userService;
     private final UserMapper userMapper;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<ResultResponse> getProfile(@RequestParam Long targetUserID, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Long sourceUserId = Long.parseLong(user.getUsername());
@@ -29,7 +29,7 @@ public class ProfileController extends BaseController {
         return buildResponse("Get profile successfully", profile);
     }
 
-    @PutMapping("/")
+    @PutMapping("")
     public ResponseEntity<ResultResponse> updateProfile(@ModelAttribute ProfileRequest profileRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Long userId = Long.parseLong(user.getUsername());
@@ -37,7 +37,7 @@ public class ProfileController extends BaseController {
         return buildResponse("Update profile successfully");
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public ResponseEntity<ResultResponse> deleteProfile(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Long userId = Long.parseLong(user.getUsername());

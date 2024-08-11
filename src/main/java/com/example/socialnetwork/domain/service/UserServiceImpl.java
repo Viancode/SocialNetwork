@@ -56,15 +56,7 @@ public class UserServiceImpl implements UserServicePort {
                 relationshipDatabasePort.getRelationship(sourceUserId, targetUserID) == ERelationship.FRIEND;
 
         if (isOwnProfile || isPublicProfile || isFriendProfile) {
-            targetUser.setAvatar(targetUser.getAvatar() == null ?
-                    "User does not have avatar" :
-                    storageService.getUrl(targetUser.getAvatar()));
-
-            targetUser.setBackgroundImage(targetUser.getBackgroundImage() == null ?
-                    "User does not have background image" :
-                    storageService.getUrl(targetUser.getBackgroundImage()));
-
-            return targetUser;
+            return userDatabase.findById(targetUserID);
         }
 
         // now allow when target user is private or relation between source and target is block and other case

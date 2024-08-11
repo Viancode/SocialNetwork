@@ -21,6 +21,7 @@ public class ProfileResponse {
     private String work;
     private String education;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String avatar;
     private String backgroundImage;
     private LocalDate dateOfBirth;

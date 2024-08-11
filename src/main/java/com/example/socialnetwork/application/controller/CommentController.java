@@ -23,7 +23,7 @@ public class CommentController extends BaseController {
     private final CommentServicePort commentServicePort;
     private final CommentMapper commentMapper;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<ResultResponse> getComments(@RequestParam Long postId,
                                                       @RequestParam(defaultValue = "1") int page,
                                                       @RequestParam(defaultValue = "5") int pageSize,
@@ -44,13 +44,13 @@ public class CommentController extends BaseController {
         return buildResponse("Get comment successfully", childComments);
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<?> createComment(@ModelAttribute CommentRequest commentRequest) {
         CommentDomain newComment = commentServicePort.createComment(commentRequest);
         return buildResponse("Create comment successfully", commentMapper.commentDomainToCommentResponse(newComment));
     }
 
-    @PutMapping("/")
+    @PutMapping("")
     public ResponseEntity<?> updateComment(
             @RequestParam("commentId") Long commentId,
             @RequestParam("content") String content,
@@ -62,7 +62,7 @@ public class CommentController extends BaseController {
         return buildResponse("Update comment successfully", commentMapper.commentDomainToCommentResponse(commentDomain));
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public ResponseEntity<?> deleteComment(@RequestParam("commentId") Long commentId) {
         commentServicePort.deleteComment(commentId);
         return buildResponse("Delete comment successfully");
