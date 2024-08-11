@@ -2,7 +2,7 @@ package com.example.socialnetwork.application.response;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -17,8 +17,8 @@ public class CommentResponse {
     private Long parentCommentId;
     private Long numberOfChild;
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private String image;
     private Long reactCount;
 }

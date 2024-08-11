@@ -14,4 +14,5 @@ public interface PostReactionRepository extends JpaRepository<PostReaction, Long
     Page<PostReaction> findAll(Specification<PostReaction> spec, Pageable pageable);
     Optional<PostReaction> findByUserIdAndPostIdAndReactionType(Long userId, Long postId, String reactionType);
     Optional<PostReaction> findByUserIdAndPostId(Long userId, Long postId);
+    Long countByPostId(Long postId);
 }

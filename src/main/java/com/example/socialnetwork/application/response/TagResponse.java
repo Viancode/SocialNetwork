@@ -1,4 +1,4 @@
-package com.example.socialnetwork.domain.model;
+package com.example.socialnetwork.application.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,14 +9,18 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagDomain {
+public class TagResponse {
     private Long id = null;
 
     private Long userIdTag;
 
+    private String usernameTag;
+
     private Long postId;
 
     private Long userIdTagged;
+
+    private String usernameTagged;
 
     private LocalDateTime createdAt;
 }

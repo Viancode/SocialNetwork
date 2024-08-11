@@ -15,7 +15,7 @@ import com.example.socialnetwork.infrastructure.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -29,8 +29,8 @@ public class CommentMapper {
                 .parentCommentId(request.getParentCommentId())
                 .content(request.getContent())
                 .image(request.getImage())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
     }
 

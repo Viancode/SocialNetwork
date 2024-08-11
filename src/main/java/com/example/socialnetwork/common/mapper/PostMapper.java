@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.socialnetwork.infrastructure.repository.CommentRepository;
+import com.example.socialnetwork.infrastructure.repository.PostReactionRepository;
+import com.example.socialnetwork.infrastructure.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,16 +19,19 @@ import org.springframework.stereotype.Component;
 public class PostMapper {
 
     private final UserServicePort userServicePort;
+    private final PostReactionRepository postReactionRepository;
+    private final CommentRepository commentRepository;
+    private final TagRepository tagRepository;
 
-    public PostDomain postToPostDomain(Post post) {
+    public PostDomain entityToDomain(Post post) {
         if (post == null) {
             return null;
         } else {
             PostDomain postDomain = new PostDomain();
             postDomain.setUserId(this.postUserId(post));
-            postDomain.setPostReactionsIds(this.postReactionsToIds(post.getPostReactions()));
-            postDomain.setCommentsIds(this.commentsToIds(post.getComments()));
-            postDomain.setTagsIds(this.tagsToIds(post.getTags()));
+            postDomain.setNumberOfReacts(postReactionRepository.countByPostId(post.getId()));
+            postDomain.setNumberOfComments(commentRepository.countByPostId(post.getId()));
+            postDomain.setNumberTags(tagRepository.countByPostId(post.getId()));
             postDomain.setId(post.getId());
             postDomain.setContent(post.getContent());
             postDomain.setVisibility(post.getVisibility());
@@ -37,20 +43,20 @@ public class PostMapper {
         }
     }
 
-    public List<PostDomain> toPostDomains(List<Post> posts) {
+    public List<PostDomain> listEntityToDomain(List<Post> posts) {
         if (posts == null) {
             return null;
         } else {
             List<PostDomain> postDomains = new ArrayList<>();
             for (Post post : posts) {
-                PostDomain postDomain = this.postToPostDomain(post);
+                PostDomain postDomain = this.entityToDomain(post);
                 postDomains.add(postDomain);
             }
             return postDomains;
         }
     }
 
-    public Post postDomainToPost(PostDomain postDomain) {
+    public Post domainToEntity(PostDomain postDomain) {
         if (postDomain == null) {
             return null;
         } else {
@@ -67,13 +73,13 @@ public class PostMapper {
         }
     }
 
-    public PostResponse postDomainToPostResponse(PostDomain postDomain) {
+    public PostResponse domainToResponse(PostDomain postDomain) {
         if (postDomain == null) {
             return null;
         } else {
             PostResponse postResponse = new PostResponse();
-            postResponse.setNumberOfComments(this.commentsToNumber(postDomain.getCommentsIds()));
-            postResponse.setNumberOfReacts(this.postReactionsIdsToNumber(postDomain.getPostReactionsIds()));
+            postResponse.setNumberOfComments(postDomain.getNumberOfComments());
+            postResponse.setNumberOfReacts(postDomain.getNumberOfReacts());
             if(postDomain.getPhotoLists() != null) {
                 postResponse.setPhotoLists(this.photoToList(postDomain.getPhotoLists()));
             }
@@ -89,22 +95,18 @@ public class PostMapper {
 
             postResponse.setCreatedAt(postDomain.getCreatedAt());
             postResponse.setUpdatedAt(postDomain.getUpdatedAt());
-            List<Long> list1 = postDomain.getTagsIds();
-            if (list1 != null) {
-                postResponse.setTagsIds(new ArrayList<>(list1));
-            }
-
+            postResponse.setNumberTags(postDomain.getNumberTags());
             return postResponse;
         }
     }
 
-    public List<PostResponse> toPostResponses(List<PostDomain> postDomains) {
+    public List<PostResponse> listDomainToResponse(List<PostDomain> postDomains) {
         if (postDomains == null) {
             return null;
         } else {
             List<PostResponse> postResponses = new ArrayList<>();
             for (PostDomain postDomain : postDomains) {
-                PostResponse postResponse = this.postDomainToPostResponse(postDomain);
+                PostResponse postResponse = this.domainToResponse(postDomain);
                 postResponses.add(postResponse);
             }
             return postResponses;
@@ -143,28 +145,28 @@ public class PostMapper {
         }
     }
 
-    public Long commentsToNumber(List<Long> comments) {
-        return (long) comments.size();
-    }
-
-    public Long postReactionsIdsToNumber(List<Long> reactions) {
-        return (long) reactions.size();
-    }
+//    public Long commentsToNumber(List<Long> comments) {
+//        return (long) comments.size();
+//    }
+//
+//    public Long postReactionsIdsToNumber(List<Long> reactions) {
+//        return (long) reactions.size();
+//    }
 
     public List<String> photoToList(String photo) {
         String[] split = photo.split(",");
         return new ArrayList<>(List.of(split));
     }
 
-    public List<Long> postReactionsToIds(List<PostReaction> reactions) {
-        return reactions != null ? reactions.stream().map(PostReaction::getId).collect(Collectors.toList()) : null;
-    }
-
-    public List<Long> commentsToIds(List<Comment> comments) {
-        return comments != null ? comments.stream().map(Comment::getId).collect(Collectors.toList()) : null;
-    }
-
-    public List<Long> tagsToIds(List<Tag> tags) {
-        return tags != null ? tags.stream().map(Tag::getId).collect(Collectors.toList()) : null;
-    }
+//    public List<Long> postReactionsToIds(List<PostReaction> reactions) {
+//        return reactions != null ? reactions.stream().map(PostReaction::getId).collect(Collectors.toList()) : null;
+//    }
+//
+//    public List<Long> commentsToIds(List<Comment> comments) {
+//        return comments != null ? comments.stream().map(Comment::getId).collect(Collectors.toList()) : null;
+//    }
+//
+//    public List<Long> tagsToIds(List<Tag> tags) {
+//        return tags != null ? tags.stream().map(Tag::getId).collect(Collectors.toList()) : null;
+//    }
 }

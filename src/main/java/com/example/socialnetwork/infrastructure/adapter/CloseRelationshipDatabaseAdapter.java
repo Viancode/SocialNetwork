@@ -53,7 +53,7 @@ public class CloseRelationshipDatabaseAdapter implements CloseRelationshipDataba
         Long currentUserId = SecurityUtil.getCurrentUserId();
 
         if(closeRelationshipRepository.findCloseRelationshipByUserIdAndTargetUserId(currentUserId, targetUserId).isPresent()) {
-            closeRelationshipRepository.deleteByTargetUserId(targetUserId);
+            closeRelationshipRepository.deleteByUserIdAndTargetUserId(currentUserId, targetUserId);
             return true;
         }
         else{
@@ -66,7 +66,17 @@ public class CloseRelationshipDatabaseAdapter implements CloseRelationshipDataba
         return userMapper.toUserDomains(closeRelationshipRepository.findCloseRelationshipByUser(userId));
     }
 
-    private Specification<CloseRelationship> getSpec(Long userId) {
+     @Override
+     public CloseRelationshipDomain updateCloseRelationship(CloseRelationshipDomain closeRelationshipDomain) {
+        CloseRelationship closeRelationship = closeRelationshipRepository.findCloseRelationshipByUserIdAndTargetUserId(closeRelationshipDomain.getUser().getId(), closeRelationshipDomain.getTargetUser().getId()).orElse(null);
+        if(closeRelationship != null) {
+            closeRelationship.setCloseRelationshipName(closeRelationshipDomain.getCloseRelationshipName());
+            return CloseRelationshipMapper.INSTANCE.entityToDomain(closeRelationshipRepository.save(closeRelationship));
+        }
+        return null;
+     }
+
+     private Specification<CloseRelationship> getSpec(Long userId) {
         Specification<CloseRelationship> spec = Specification.where(null);
         if (userId != null) {
             spec = spec.and(withUserId(userId));

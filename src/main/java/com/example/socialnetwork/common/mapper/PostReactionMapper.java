@@ -10,7 +10,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 @Mapper
 public interface PostReactionMapper {
     PostReactionMapper INSTANCE = Mappers.getMapper(PostReactionMapper.class);
@@ -26,8 +26,8 @@ public interface PostReactionMapper {
         return SecurityUtil.getCurrentUserId();
     }
     @org.mapstruct.Named("getCreateAt")
-    default LocalDateTime getCreateAt() {
-        return LocalDateTime.now();
+    default Instant getCreateAt() {
+        return Instant.now();
     }
 
     @Mapping(source = "userId", target = "user.id")

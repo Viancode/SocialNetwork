@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
@@ -22,5 +22,5 @@ public class RelationshipDomain {
 
     ERelationship relation;
 
-    LocalDateTime createdAt;
+    Instant createdAt;
 }

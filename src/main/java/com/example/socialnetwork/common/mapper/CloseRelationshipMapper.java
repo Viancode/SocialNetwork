@@ -11,9 +11,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {SecurityUtil.class})
 public interface CloseRelationshipMapper {
     CloseRelationshipMapper INSTANCE = Mappers.getMapper(CloseRelationshipMapper.class);
 
@@ -44,8 +44,8 @@ public interface CloseRelationshipMapper {
     }
 
     @Named("getCreateAt")
-    default LocalDateTime getCreateAt() {
-        return LocalDateTime.now();
+    default Instant getCreateAt() {
+        return Instant.now();
     }
 
 }

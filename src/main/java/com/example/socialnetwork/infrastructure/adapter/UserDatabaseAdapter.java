@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.socialnetwork.infrastructure.entity.Role;
 
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,27 +23,32 @@ public class UserDatabaseAdapter implements UserDatabasePort {
     private final UserMapper userMapper;
     @Override
     public UserDomain createUser(RegisterRequest registerRequest) {
-        User user = new User();
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(encoder.encode(registerRequest.getPassword()));
-        user.setFirstName(registerRequest.getFirstName());
-        user.setLastName(registerRequest.getLastName());
-        user.setBio(registerRequest.getBio());
-        user.setLocation(registerRequest.getLocation());
-        user.setWork(registerRequest.getWork());
-        user.setEducation(registerRequest.getEducation());
-        user.setAvatar(null);
-        user.setBackgroundImage(null);
-        user.setDateOfBirth(registerRequest.getDateOfBirth());
-        user.setRole(Role.builder().id(1L).build());
-        user.setIsEmailVerified(false);
-        user.setUsername(registerRequest.getFirstName() + " " + registerRequest.getLastName());
-        user.setGender(Gender.valueOf(registerRequest.getGender()));
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-        user.setVisibility(String.valueOf(Visibility.PUBLIC));
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElse(null);
+        if (user ==null) {
+            user = new User();
+            user.setEmail(registerRequest.getEmail());
+            user.setPassword(encoder.encode(registerRequest.getPassword()));
+            user.setFirstName(registerRequest.getFirstName());
+            user.setLastName(registerRequest.getLastName());
+            user.setBio(registerRequest.getBio());
+            user.setLocation(registerRequest.getLocation());
+            user.setWork(registerRequest.getWork());
+            user.setEducation(registerRequest.getEducation());
+            user.setAvatar(null);
+            user.setBackgroundImage(null);
+            user.setDateOfBirth(registerRequest.getDateOfBirth());
+            user.setRole(Role.builder().id(1L).build());
+            user.setIsEmailVerified(false);
+            user.setUsername(registerRequest.getFirstName() + " " + registerRequest.getLastName());
+            user.setGender(Gender.valueOf(registerRequest.getGender()));
+            user.setCreatedAt(Instant.now());
+            user.setUpdatedAt(Instant.now());
+            user.setVisibility(String.valueOf(Visibility.PUBLIC));
 
-        return userMapper.toUserDomain(userRepository.save(user));
+            return userMapper.toUserDomain(userRepository.save(user));
+        } else {
+            return userMapper.toUserDomain(user);
+        }
     }
 
     @Override

@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +25,9 @@ public class PostResponse {
 
     private String visibility;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     private List<String> photoLists;
 
@@ -35,5 +35,5 @@ public class PostResponse {
 
     private Long numberOfReacts;
 
-    private List<Long> tagsIds = new ArrayList<>();
+    private Long numberTags;
 }

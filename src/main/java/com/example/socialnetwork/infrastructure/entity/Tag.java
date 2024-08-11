@@ -3,7 +3,11 @@ package com.example.socialnetwork.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
+import java.time.LocalDateTime;
+
+@FieldNameConstants
 @Getter
 @Setter
 @Entity
@@ -25,5 +29,8 @@ public class Tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tagged_by_user_id")
     private User taggedByUser;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
 }

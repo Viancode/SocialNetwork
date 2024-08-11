@@ -99,6 +99,9 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
     }
 
     private boolean canViewReactions(PostDomain postDomain, RelationshipDomain relationshipDomain) {
+        if (relationshipDomain == null && postDomain.getUserId().equals(SecurityUtil.getCurrentUserId())) {
+            return true;
+        }
         if (relationshipDomain == null || relationshipDomain.getRelation().equals(ERelationship.PENDING)) {
             return postDomain.getVisibility().equals(Visibility.PUBLIC);
         }

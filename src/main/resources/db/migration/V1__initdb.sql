@@ -95,6 +95,7 @@ CREATE TABLE tags (
                       tagged_user_id BIGINT,
                       post_id BIGINT,
                       tagged_by_user_id BIGINT,
+                      created_at DATETIME,
                       CONSTRAINT fk_tagged_user FOREIGN KEY (tagged_user_id) REFERENCES users(user_id),
                       CONSTRAINT fk_tagged_by_user FOREIGN KEY (tagged_by_user_id) REFERENCES users(user_id),
                       CONSTRAINT fk_tag_post FOREIGN KEY (post_id) REFERENCES posts(post_id)

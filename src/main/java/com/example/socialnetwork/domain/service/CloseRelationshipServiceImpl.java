@@ -19,14 +19,21 @@ public class CloseRelationshipServiceImpl implements CloseRelationshipServicePor
 
     @Override
     public CloseRelationshipDomain createCloseRelationship(CloseRelationshipDomain closeRelationshipDomain) {
+
         long userId = closeRelationshipDomain.getUser().getId();
         long targetUserId = closeRelationshipDomain.getTargetUser().getId();
         RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, targetUserId).orElse(null);
+
         if(relationshipDomain == null) {
             throw new ClientErrorException("user is not friend");
         }else{
-            if (closeRelationshipDatabasePort.findCloseRelationshipByUserIdAndTargetUserId(closeRelationshipDomain.getUser().getId(), closeRelationshipDomain.getTargetUser().getId()) != null){
-                throw new ClientErrorException("Close relationship already exist");
+            CloseRelationshipDomain closeRelationshipDomainExist =closeRelationshipDatabasePort.findCloseRelationshipByUserIdAndTargetUserId(closeRelationshipDomain.getUser().getId(), closeRelationshipDomain.getTargetUser().getId());
+            if ( closeRelationshipDomainExist != null){
+                if(closeRelationshipDomainExist.getCloseRelationshipName().equals(closeRelationshipDomain.getCloseRelationshipName())){
+                    throw new ClientErrorException("Close relationship already exist");
+                }else{
+                    return closeRelationshipDatabasePort.updateCloseRelationship(closeRelationshipDomain);
+                }
             }
             if( !relationshipDomain.getRelation().equals(ERelationship.FRIEND)) {
                     throw new ClientErrorException("Target user is blocked");

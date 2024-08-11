@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,17 +24,17 @@ public class PostDomain {
 
     private Visibility visibility;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
-    private LocalDateTime lastComment;
+    private Instant lastComment;
 
     private String photoLists;
 
-    private List<Long> commentsIds = new ArrayList<>();
+    private  Long numberOfComments;
 
-    private List<Long> postReactionsIds = new ArrayList<>();
+    private Long numberOfReacts;
 
-    private List<Long> tagsIds = new ArrayList<>();
+    private Long numberTags;
 }

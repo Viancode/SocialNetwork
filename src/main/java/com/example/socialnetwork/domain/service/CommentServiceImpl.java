@@ -15,6 +15,7 @@ import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
+import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import jakarta.annotation.PostConstruct;
@@ -25,7 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,15 +116,27 @@ public class CommentServiceImpl implements CommentServicePort {
         }
     }
 
+    public Boolean checkNumberImage(String image){
+        if(image == null){
+            return true;
+        }else{
+            String [] images = image.split(",");
+            return images.length == 1;
+        }
+    }
+
     @Override
     public CommentDomain createComment(CommentRequest commentRequest) {
         Long userId = SecurityUtil.getCurrentUserId();
+        if(!checkNumberImage(commentRequest.getImage())){
+            throw new ClientErrorException("The number of photos exceeds the limit");
+        }
         checkUserCommentAndUserPost(userId, commentRequest.getPostId());
         checkParentComment(userId, commentRequest.getParentCommentId(), commentRequest.getPostId());
         isSpam(commentRequest.getContent());
         long postId = commentRequest.getPostId();
         PostDomain postDomain = postDatabasePort.findById(postId);
-        postDomain.setLastComment(LocalDateTime.now());
+        postDomain.setLastComment(Instant.now());
         postDatabasePort.updatePost(postDomain);
         return commentDatabasePort.createComment(commentMapper.commentRequestToCommentDomain(commentRequest));
     }
@@ -132,6 +145,9 @@ public class CommentServiceImpl implements CommentServicePort {
     @Transactional
     public CommentDomain updateComment(Long commentId, String content, String image) {
         Long userId = SecurityUtil.getCurrentUserId();
+        if(!checkNumberImage(image)){
+            throw new ClientErrorException("The number of photos exceeds the limit");
+        }
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
 
         checkUserCommentAndUserPost(userId, currentComment.getPost().getId());
@@ -143,7 +159,7 @@ public class CommentServiceImpl implements CommentServicePort {
         checkParentComment(userId, currentComment.getParentCommentId(), currentComment.getPost().getId());
         isSpam(content);
         currentComment.setContent(content);
-        currentComment.setUpdatedAt(LocalDateTime.now());
+        currentComment.setUpdatedAt(Instant.now());
         currentComment.setImage(image);
         return commentDatabasePort.updateComment(currentComment);
     }
@@ -165,7 +181,7 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday) {
+    public List<CommentDomain> findAllUpdateWithinLastDay(Instant yesterday) {
         return commentDatabasePort.findAllUpdateWithinLastDay(yesterday);
     }
 

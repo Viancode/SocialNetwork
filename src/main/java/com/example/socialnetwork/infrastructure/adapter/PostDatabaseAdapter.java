@@ -30,8 +30,8 @@ public class PostDatabaseAdapter implements PostDatabasePort {
 
     @Override
     public PostDomain createPost(PostDomain postDomain) {
-        Post post = postRepository.save(postMapper.postDomainToPost(postDomain));
-        return postMapper.postToPostDomain(post);
+        Post post = postRepository.save(postMapper.domainToEntity(postDomain));
+        return postMapper.entityToDomain(post);
     }
 
     @Override
@@ -40,8 +40,8 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         if (post == null) {
             throw new NotFoundException("Post not found");
         }else{
-            post = postRepository.save(postMapper.postDomainToPost(postDomain));
-            return postMapper.postToPostDomain(post);
+            post = postRepository.save(postMapper.domainToEntity(postDomain));
+            return postMapper.entityToDomain(post);
         }
     }
 
@@ -62,20 +62,20 @@ public class PostDatabaseAdapter implements PostDatabasePort {
 
     @Override
     public PostDomain findById(Long id) {
-        return postMapper.postToPostDomain(postRepository.findById(id).isPresent()? postRepository.findById(id).get():null);
+        return postMapper.entityToDomain(postRepository.findById(id).isPresent()? postRepository.findById(id).get():null);
     }
 
     @Override
     public Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, List<Visibility> visibilities) {
         var pageable = PageRequest.of(page - 1, pageSize, sort);
         var spec = getSpec(targetUserId, visibilities);
-        return postRepository.findAll(spec, pageable).map(postMapper::postToPostDomain);
+        return postRepository.findAll(spec, pageable).map(postMapper::entityToDomain);
     }
 
     @Override
-    public List<PostDomain> getAllPostByFriends(List<UserDomain> userDomains){
-        List<User> users = userDomains.stream().map(userMapper::toUser).toList();
-        return postMapper.toPostDomains(postRepository.findByListUser(users));
+    public Page<PostDomain> getAllPostByFriends(Pageable pageable,List<Long> targetUserIds, List<Visibility> visibilities){
+        Page<Post> posts = postRepository.findAll(getSpec(targetUserIds, visibilities), pageable);
+        return posts.map(postMapper::entityToDomain);
     }
 
     private Specification<Post> getSpec(Long targetUserId, List<Visibility> visibilities) {
@@ -83,6 +83,11 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         if (visibilities != null && !visibilities.isEmpty()) {
             spec = spec.and(withUserIdAndVisibility(targetUserId, visibilities));
         }
+        return spec;
+    }
+    private Specification<Post> getSpec(List<Long> targetUserIds, List<Visibility> visibilities) {
+        Specification<Post> spec = Specification.where(null);
+        spec = spec.and(withUserIdAndVisibility(targetUserIds, visibilities));
         return spec;
     }
 }

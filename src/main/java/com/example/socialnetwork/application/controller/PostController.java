@@ -36,7 +36,7 @@ public class PostController extends BaseController {
         return buildResponse("Get post successfully", posts);
     }
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<?> createPost(
             @RequestParam("content") String content,
             @RequestParam(value = "visibility", defaultValue = "PUBLIC") String visibility,
@@ -51,16 +51,16 @@ public class PostController extends BaseController {
         }
 
         PostDomain postDomain = postServicePort.createPost(postRequest);
-        return buildResponse("Create post successfully", postMapper.postDomainToPostResponse(postDomain));
+        return buildResponse("Create post successfully", postMapper.domainToResponse(postDomain));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public ResponseEntity<?> deletePost(@RequestParam Long postId){
         postServicePort.deletePost(postId);
         return buildResponse("Delete post successfully", HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/update")
+    @PutMapping("")
     public ResponseEntity<?> updatePost(
             @RequestParam("postId") Long postId,
             @RequestParam("content") String content,
@@ -76,6 +76,6 @@ public class PostController extends BaseController {
             postRequest.setPhotoLists(photoLists);
         }
         PostDomain postDomain = postServicePort.updatePost(postRequest);
-        return buildResponse("Update post successfully", postMapper.postDomainToPostResponse(postDomain));
+        return buildResponse("Update post successfully", postMapper.domainToResponse(postDomain));
     }
 }
