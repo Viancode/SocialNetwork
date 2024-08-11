@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,9 +39,9 @@ public class PostServiceImpl implements PostServicePort {
         postDomain.setContent(postRequest.getContent());
         postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
         postDomain.setPhotoLists(postRequest.getPhotoLists());
-        postDomain.setLastComment(LocalDateTime.now());
-        postDomain.setCreatedAt(LocalDateTime.now());
-        postDomain.setUpdatedAt(LocalDateTime.now());
+        postDomain.setLastComment(Instant.now());
+        postDomain.setCreatedAt(Instant.now());
+        postDomain.setUpdatedAt(Instant.now());
         return postDatabasePort.createPost(postDomain);
     }
 
@@ -59,7 +59,7 @@ public class PostServiceImpl implements PostServicePort {
         }else{
             postDomain.setPhotoLists(postRequest.getPhotoLists());
         }
-        postDomain.setUpdatedAt(LocalDateTime.now());
+        postDomain.setUpdatedAt(Instant.now());
         return postDatabasePort.updatePost(postDomain);
     }
 
@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostServicePort {
         List<Visibility> list = List.of(Visibility.PUBLIC, Visibility.FRIEND);
         Page<PostDomain> postOfFriends = postDatabasePort.getAllPostByFriends(pageable1, friendIds, list);
         List<PostDomain> newsFeed = postOfFriends.getContent().stream()
-                .sorted(Comparator.comparing((PostDomain post) -> closedFriends.contains(userDatabasePort.findById(post.getUserId())) && post.getCreatedAt().toLocalDate().equals(LocalDate.now())).reversed())
+                .sorted(Comparator.comparing((PostDomain post) -> closedFriends.contains(userDatabasePort.findById(post.getUserId())) && LocalDate.from(post.getCreatedAt()).equals(LocalDate.now())).reversed())
                 .collect(Collectors.toList());
         List<PostResponse> postResponses = postMapper.toPostResponses(newsFeed);
         Pageable pageable2 = PageRequest.of(page - 1, pageSize);

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -15,5 +15,5 @@ public class CommentReactionDomain {
     private UserDomain user;
     private CommentDomain comment;
     private String reactionType;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

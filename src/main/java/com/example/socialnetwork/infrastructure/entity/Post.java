@@ -9,7 +9,7 @@ import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 @FieldNameConstants
@@ -40,13 +40,13 @@ public class Post {
     private Visibility visibility;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     @Column(name = "last_comment")
-    private LocalDateTime lastComment;
+    private Instant lastComment;
 
     @Column(name = "photo_lists", columnDefinition = "MEDIUMTEXT")
     private String photoLists;

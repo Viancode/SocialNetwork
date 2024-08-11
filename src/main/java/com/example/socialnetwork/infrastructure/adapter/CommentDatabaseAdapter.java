@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +62,7 @@ public class CommentDatabaseAdapter implements CommentDatabasePort {
     }
 
     @Override
-    public List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday) {
+    public List<CommentDomain> findAllUpdateWithinLastDay(Instant yesterday) {
         var spec = Specification.where(updateWithinLastDay(yesterday));
         List<Comment> yesterdayComment = commentRepository.findAll(spec);
         return yesterdayComment.stream()

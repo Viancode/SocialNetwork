@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.socialnetwork.infrastructure.entity.Role;
 
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -41,8 +41,8 @@ public class UserDatabaseAdapter implements UserDatabasePort {
             user.setIsEmailVerified(false);
             user.setUsername(registerRequest.getFirstName() + " " + registerRequest.getLastName());
             user.setGender(Gender.valueOf(registerRequest.getGender()));
-            user.setCreatedAt(LocalDateTime.now());
-            user.setUpdatedAt(LocalDateTime.now());
+            user.setCreatedAt(Instant.now());
+            user.setUpdatedAt(Instant.now());
             user.setVisibility(String.valueOf(Visibility.PUBLIC));
 
             return userRepository.save(user);

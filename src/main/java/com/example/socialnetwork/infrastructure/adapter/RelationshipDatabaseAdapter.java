@@ -22,7 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -178,7 +178,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
         relationship.setUser(userRepository.findUserById(userId).get());
         relationship.setFriend(userRepository.findUserById(friendId).get());
         relationship.setRelation(relation);
-        relationship.setCreatedAt(LocalDateTime.now());
+        relationship.setCreatedAt(Instant.now());
         relationshipRepository.save(relationship);
     }
 }

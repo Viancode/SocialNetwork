@@ -15,7 +15,7 @@ import com.example.socialnetwork.infrastructure.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserServicePort {
         user.setLocation(profileRequest.getLocation());
         user.setWork(profileRequest.getWork());
         user.setEducation(profileRequest.getEducation());
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(Instant.now());
         user.setDateOfBirth(profileRequest.getDateOfBirth());
         user.setAvatar(profileRequest.getAvatar());
         user.setBackgroundImage(profileRequest.getBackground());

@@ -25,7 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +123,7 @@ public class CommentServiceImpl implements CommentServicePort {
         isSpam(commentRequest.getContent());
         long postId = commentRequest.getPostId();
         PostDomain postDomain = postDatabasePort.findById(postId);
-        postDomain.setLastComment(LocalDateTime.now());
+        postDomain.setLastComment(Instant.now());
         postDatabasePort.updatePost(postDomain);
         return commentDatabasePort.createComment(commentMapper.commentRequestToCommentDomain(commentRequest));
     }
@@ -143,7 +143,7 @@ public class CommentServiceImpl implements CommentServicePort {
         checkParentComment(userId, currentComment.getParentCommentId(), currentComment.getPost().getId());
         isSpam(content);
         currentComment.setContent(content);
-        currentComment.setUpdatedAt(LocalDateTime.now());
+        currentComment.setUpdatedAt(Instant.now());
         currentComment.setImage(image);
         return commentDatabasePort.updateComment(currentComment);
     }
@@ -165,7 +165,7 @@ public class CommentServiceImpl implements CommentServicePort {
     }
 
     @Override
-    public List<CommentDomain> findAllUpdateWithinLastDay(LocalDateTime yesterday) {
+    public List<CommentDomain> findAllUpdateWithinLastDay(Instant yesterday) {
         return commentDatabasePort.findAllUpdateWithinLastDay(yesterday);
     }
 
