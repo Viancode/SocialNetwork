@@ -24,22 +24,22 @@ public class CommentController extends BaseController {
     private final CommentMapper commentMapper;
 
     @GetMapping("")
-    public ResponseEntity<ResultResponse> getComments(@RequestParam Long postId,
+    public ResponseEntity<ResultResponse> getComments(@RequestParam(value = "post_id") Long postId,
                                                       @RequestParam(defaultValue = "1") int page,
-                                                      @RequestParam(defaultValue = "5") int pageSize,
-                                                      @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                      @RequestParam(defaultValue = "desc") String sortDirection) {
+                                                      @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                                      @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
+                                                      @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection) {
         Page<CommentResponse> comments = commentServicePort.getAllComments(postId, page, pageSize, sortBy, sortDirection);
         return buildResponse("Get comments successfully", comments);
     }
 
-    @GetMapping("/{commentId}")
-    public ResponseEntity<ResultResponse> getChildComment(@PathVariable Long commentId,
-                                                          @RequestParam Long postId,
+    @GetMapping("/{comment_id}")
+    public ResponseEntity<ResultResponse> getChildComment(@PathVariable(value = "comment_id") Long commentId,
+                                                          @RequestParam(value = "post_id") Long postId,
                                                           @RequestParam(defaultValue = "1") int page,
-                                                          @RequestParam(defaultValue = "5") int pageSize,
-                                                          @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                          @RequestParam(defaultValue = "desc") String sortDirection) {
+                                                          @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                                          @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
+                                                          @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection) {
         Page<CommentResponse> childComments = commentServicePort.getChildComments(postId, commentId, page, pageSize, sortBy, sortDirection);
         return buildResponse("Get comment successfully", childComments);
     }
@@ -52,11 +52,11 @@ public class CommentController extends BaseController {
 
     @PutMapping("")
     public ResponseEntity<?> updateComment(
-            @RequestParam("commentId") Long commentId,
+            @RequestParam(value = "comment_id") Long commentId,
             @RequestParam("content") String content,
             @RequestParam("image") String image
 //            @RequestParam("postId") Long postId
-//            @RequestParam(value = "parentCommentId", required = false) Long parentComment,
+//            @RequestParam(value = "parent_comment_id", required = false) Long parentComment,
             ) {
 
         CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image);
@@ -64,7 +64,7 @@ public class CommentController extends BaseController {
     }
 
     @DeleteMapping("")
-    public ResponseEntity<?> deleteComment(@RequestParam("commentId") Long commentId) {
+    public ResponseEntity<?> deleteComment(@RequestParam(value = "comment_id") Long commentId) {
         commentServicePort.deleteComment(commentId);
         return buildResponse("Delete comment successfully");
     }

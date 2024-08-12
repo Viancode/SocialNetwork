@@ -36,7 +36,7 @@ public class CommentReactionController extends BaseController {
 
     @DeleteMapping("")
     public ResponseEntity<?> deleteCommentReaction(
-            @RequestParam Long commentReactionId
+            @RequestParam(value = "comment_reaction_id") Long commentReactionId
     ){
         commentReactionServicePort.deleteCommentReaction(commentReactionId);
         return buildResponse("Delete comment reaction successfully");
@@ -45,11 +45,11 @@ public class CommentReactionController extends BaseController {
 
     @GetMapping("")
     public ResponseEntity<ResultResponse> getCommentReactions(@RequestParam(defaultValue = "1") int page,
-                                                   @RequestParam(defaultValue = "5") int pageSize,
-                                                   @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                   @RequestParam(defaultValue = "desc") String sortDirection,
-                                                   @RequestParam(required = false) Long commentId,
-                                                   @RequestParam(required = false) String commentReactionType
+                                                   @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                                   @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
+                                                   @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
+                                                   @RequestParam(value = "comment_id", required = false) Long commentId,
+                                                   @RequestParam(value = "comment_reaction_type", required = false) String commentReactionType
     ) {
 
         Page<CommentReactionDomain> commentReactionDomainPage = commentReactionServicePort.getAllCommentReactions(page, pageSize, sortBy, sortDirection, commentId, commentReactionType);

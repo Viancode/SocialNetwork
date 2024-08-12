@@ -59,8 +59,9 @@ public class UserServiceImpl implements UserServicePort {
         boolean isPublicProfile = targetUser.getVisibility() == Visibility.PUBLIC;
         boolean isFriendProfile = targetUser.getVisibility() == Visibility.FRIEND &&
                 relationshipDatabasePort.getRelationship(sourceUserId, targetUserID) == ERelationship.FRIEND;
+        boolean isBlock = relationshipDatabasePort.getRelationship(sourceUserId, targetUserID) == ERelationship.BLOCK;
 
-        if (isOwnProfile || isPublicProfile || isFriendProfile) {
+        if ((isOwnProfile || isPublicProfile || isFriendProfile) && !isBlock) {
             return userDatabase.findById(targetUserID);
         }
 

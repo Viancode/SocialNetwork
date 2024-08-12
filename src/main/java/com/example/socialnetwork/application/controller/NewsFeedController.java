@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/newsfeed")
 @RequiredArgsConstructor
 public class NewsFeedController extends BaseController{
     private final PostServicePort postServicePort;
@@ -20,7 +20,7 @@ public class NewsFeedController extends BaseController{
 
     @GetMapping
     private ResponseEntity<?> getNewsFeedController(@RequestParam(defaultValue = "1") int page,
-                                                    @RequestParam(defaultValue = "5") int pageSize,
+                                                    @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
                                                     Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return buildResponse("Get News Feed successfully", postServicePort.getNewsFeed(page, pageSize, Long.parseLong(user.getUsername())));
