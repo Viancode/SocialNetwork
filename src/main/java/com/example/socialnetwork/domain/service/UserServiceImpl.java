@@ -39,8 +39,13 @@ public class UserServiceImpl implements UserServicePort {
 
     @Override
     public UserDomain getProfile(Long sourceUserId, Long targetUserID) {
+        if (targetUserID == null) {
+             targetUserID = sourceUserId;
+        }
+
         UserDomain sourceUser = userDatabase.findById(sourceUserId);
         UserDomain targetUser = userDatabase.findById(targetUserID);
+
 
         if (sourceUser == null || targetUser == null) {
             throw new NotFoundException("User not found");

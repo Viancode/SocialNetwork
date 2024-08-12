@@ -105,6 +105,6 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/number_of_friends")
     public ResponseEntity<?> getNumberOfFriends(){
-        return buildResponse("Get number of friends successfully", new NumberOfFriendsResponse(relationshipService.getNumberOfFriend()));
+        return buildResponse("Get number of friends successfully", relationshipService.getNumberOfFriend());
     }
 }

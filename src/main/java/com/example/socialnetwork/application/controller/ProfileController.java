@@ -22,7 +22,7 @@ public class ProfileController extends BaseController {
     private final UserMapper userMapper;
 
     @GetMapping("")
-    public ResponseEntity<ResultResponse> getProfile(@RequestParam Long targetUserID, Authentication authentication) {
+    public ResponseEntity<ResultResponse> getProfile(@RequestParam(required = false) Long targetUserID, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Long sourceUserId = Long.parseLong(user.getUsername());
         ProfileResponse profile = userMapper.toProfileResponse(userService.getProfile(sourceUserId, targetUserID));
