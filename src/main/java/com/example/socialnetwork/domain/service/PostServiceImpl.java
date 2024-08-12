@@ -70,6 +70,9 @@ public class PostServiceImpl implements PostServicePort {
 
     @Override
     public Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId) {
+        if (targetUserId == null) {
+            targetUserId = userId;
+        }
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Page<PostDomain> posts = null;
