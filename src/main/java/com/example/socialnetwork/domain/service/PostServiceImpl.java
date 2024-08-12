@@ -115,4 +115,10 @@ public class PostServiceImpl implements PostServicePort {
         List<PostResponse> pagedPostDomain = postResponses.subList(start, end);
         return new PageImpl<>(pagedPostDomain, pageable2, postResponses.size());
     }
+
+    @Override
+    public Long countPostByUserId() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        return postDatabasePort.countPostByUserId(userId);
+    }
 }

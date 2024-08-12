@@ -12,4 +12,6 @@ public interface PostServicePort {
     Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId);
 
     Page<PostResponse> getNewsFeed(int page, int pageSize, long userId);
+
+    Long countPostByUserId();
 }

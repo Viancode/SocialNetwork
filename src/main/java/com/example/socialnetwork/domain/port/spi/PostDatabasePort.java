@@ -18,4 +18,5 @@ public interface PostDatabasePort {
     PostDomain findById(Long id);
     Page<PostDomain> getAllPosts(int page, int pageSize, Sort sort, Long targetUserId, List<Visibility> visibility);
     Page<PostDomain> getAllPostByFriends(Pageable pageable, List<Long> targetUserIds, List<Visibility> visibility);
+    Long countPostByUserId(Long userId);
 }

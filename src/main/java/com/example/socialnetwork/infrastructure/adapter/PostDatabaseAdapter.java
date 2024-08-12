@@ -78,6 +78,11 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         return posts.map(postMapper::entityToDomain);
     }
 
+    @Override
+    public Long countPostByUserId(Long userId) {
+        return postRepository.countByUserId(userId);
+    }
+
     private Specification<Post> getSpec(Long targetUserId, List<Visibility> visibilities) {
         Specification<Post> spec = Specification.where(null);
         if (visibilities != null && !visibilities.isEmpty()) {
