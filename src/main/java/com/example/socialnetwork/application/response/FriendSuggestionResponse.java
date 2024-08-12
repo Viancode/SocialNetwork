@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FriendSuggestionResponse {
     Long id;
+    String avatar;
     String username;
     String email;
     int mutualFriends;

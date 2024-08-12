@@ -131,3 +131,72 @@ CALL create_posts_comments_reactions();
 
 -- Xóa procedure sau khi sử dụng
 DROP PROCEDURE create_posts_comments_reactions;
+
+-- Tạo 50 bản ghi ngẫu nhiên cho bảng users
+DELIMITER //
+
+CREATE PROCEDURE populate_users()
+BEGIN
+    DECLARE i INT DEFAULT 0;
+    DECLARE first_name_list VARCHAR(255);
+    DECLARE last_name_list VARCHAR(255);
+    DECLARE location_list VARCHAR(255);
+    DECLARE work_list VARCHAR(255);
+    DECLARE education_list VARCHAR(255);
+
+    SET first_name_list = 'Lan,Hà,Nam,Minh,Trung,Hoàng,Mạnh,Nhung,Đức,Cường,Quân,Anh,Trâm,Đức,An,Bình,Xuân,Quang,Trường';
+    SET last_name_list = 'Nguyễn,Trần,Ngô,Tống,Phạm,Lê,Vương,Mạc,Vũ,Võ,Đặng,Phan,Trương,Bùi,Đỗ,Hồ,Dương';
+    SET location_list = 'Hà Nội,Hải Phòng,Quảng Ninh,Bắc Ninh,Hải Dương,Hưng Yên,Hà Nam,Thái Bình,Nam Định,Ninh Bình,Hồ Chí Minh,Quảng Ngãi,Quảng Nam,Bình Dương,Cà Mau,Vinh,Nghệ An,Thanh Hóa,Phú Thọ,Đà Nẵng';
+    SET work_list = 'doctor,teacher,student,farmer,policeman,engineer,IT';
+    SET education_list = 'ĐH Bách Khoa,ĐH Quốc Gia,ĐH Xây Dựng,ĐH Kinh Tế Quốc Dân,ĐH Công Nghệ,ĐH Luật,ĐH Dược,ĐH Y,ĐH Ngoại Ngữ,ĐH Hàng Hải,ĐH Thương Mại,ĐH Sư Phạm,ĐH Ngoại Thương';
+
+    WHILE i < 50 DO
+            SET @first_name = SUBSTRING_INDEX(SUBSTRING_INDEX(first_name_list, ',', FLOOR(1 + (RAND() * 19))), ',', -1);
+            SET @last_name = SUBSTRING_INDEX(SUBSTRING_INDEX(last_name_list, ',', FLOOR(1 + (RAND() * 16))), ',', -1);
+
+        -- Generate username
+            SET @username = CONCAT_WS(' ', @first_name, @last_name);
+
+        -- Generate email from username (replace spaces with periods)
+            SET @email = CONCAT(LOWER(REPLACE(@username, ' ', '.')), '@example.com');
+
+INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, bio, location, work, education, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
+VALUES (
+           @username,
+           @email,
+           '$2a$12$rPhLzKBcnY/CwnEAINZ4L.09YaLvRQjphN2QT8nIEWX/BrA37xIzC',
+           @first_name,
+           @last_name,
+           CASE
+               WHEN RAND() < 0.33 THEN 'MALE'
+               WHEN RAND() < 0.66 THEN 'FEMALE'
+               ELSE 'OTHERS'
+               END,
+           CASE
+               WHEN RAND() < 0.33 THEN 'PUBLIC'
+               WHEN RAND() < 0.66 THEN 'PRIVATE'
+               ELSE 'FRIEND'
+               END,
+           1,
+           'This is a bio.',
+           SUBSTRING_INDEX(SUBSTRING_INDEX(location_list, ',', FLOOR(1 + (RAND() * 10))), ',', -1),
+           SUBSTRING_INDEX(SUBSTRING_INDEX(work_list, ',', FLOOR(1 + (RAND() * 7))), ',', -1),
+           SUBSTRING_INDEX(SUBSTRING_INDEX(education_list, ',', FLOOR(1 + (RAND() * 5))), ',', -1),
+           NOW(),
+           NOW(),
+           'avatar.jpg',
+           'background.jpg',
+           DATE_ADD('1990-01-01', INTERVAL FLOOR(RAND() * 10000) DAY),
+           TRUE
+       );
+SET i = i + 1;
+END WHILE;
+END//
+
+DELIMITER ;
+
+-- Gọi thủ tục để tạo dữ liệu
+CALL populate_users();
+
+-- Xóa procedure sau khi sử dụng
+DROP PROCEDURE populate_users;

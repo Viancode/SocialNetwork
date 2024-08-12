@@ -1,6 +1,5 @@
 package com.example.socialnetwork.application.controller;
 
-import com.example.socialnetwork.application.response.NumberOfFriendsResponse;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;

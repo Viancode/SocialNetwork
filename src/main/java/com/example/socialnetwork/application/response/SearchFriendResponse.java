@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchFriendResponse {
     Long id;
+    String avatar;
     String username;
     String email;
     int mutualFriends;
