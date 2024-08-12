@@ -1,5 +1,6 @@
 package com.example.socialnetwork.application.controller;
 
+import com.example.socialnetwork.application.response.NumberOfFriendsResponse;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
@@ -88,17 +89,22 @@ public class RelationshipController  extends BaseController{
         return buildResponse("UnBlock user successfully");
     }
 
-    @GetMapping("view_suggest")
+    @GetMapping("/view_suggest")
     public ResponseEntity<?> viewSuggest(@RequestParam(value = "page", defaultValue = "1") int page,
                                          @RequestParam(value = "pageSize", defaultValue = "5") int pageSize
     ){
         return buildResponse("Get friend suggestions successfully", relationshipService.getFriendSuggestions(page, pageSize));
     }
 
-    @GetMapping("find_friend")
+    @GetMapping("/find_friend")
     public ResponseEntity<?> findFriend(@RequestParam(value = "page", defaultValue = "1") int page,
                                         @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
                                         @RequestParam("keyWord") String keyWord){
         return buildResponse("Find friend successfully", relationshipService.findFriend(page, pageSize, keyWord).map(userMapper::toFriendResponse));
+    }
+
+    @GetMapping("/number_of_friends")
+    public ResponseEntity<?> getNumberOfFriends(){
+        return buildResponse("Get number of friends successfully", new NumberOfFriendsResponse(relationshipService.getNumberOfFriend()));
     }
 }

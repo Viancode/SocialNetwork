@@ -134,6 +134,12 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
+    public int getNumberOfFriend() {
+        long userId = SecurityUtil.getCurrentUserId();
+        return relationshipDatabasePort.getListFriend(userId).size();
+    }
+
+    @Override
     public Page<UserDomain> findFriend(int page, int pageSize, String keyWord) {
         long userId = SecurityUtil.getCurrentUserId();
         return relationshipDatabasePort.findFriendByKeyWord(page, pageSize, userId, keyWord);
