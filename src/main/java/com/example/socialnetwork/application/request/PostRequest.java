@@ -1,9 +1,12 @@
 package com.example.socialnetwork.application.request;
 
 
+import com.example.socialnetwork.common.constant.Visibility;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -11,12 +14,12 @@ import lombok.NoArgsConstructor;
 public class PostRequest {
     private Long id = null;
 
-    private Long userId;
-
     private String content;
 
-    private String visibility;
+    private Visibility visibility;
 
     private String photoLists;
+
+    private List<TagRequest> tagUsers;
 
 }

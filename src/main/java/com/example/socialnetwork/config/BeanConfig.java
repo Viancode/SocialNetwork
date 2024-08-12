@@ -76,19 +76,15 @@ public class BeanConfig {
 
 
     @Bean
-    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository, PostMapper postMapper, UserMapper userMapper) {
-        return new PostDatabaseAdapter(repository,relationshipRepository,postMapper, userMapper);
+    public PostDatabasePort postDatabasePort(PostRepository repository, RelationshipRepository relationshipRepository, PostMapper postMapper, TagMapper tagMapper, TagRepository tagRepository) {
+        return new PostDatabaseAdapter(repository,relationshipRepository,postMapper, tagMapper, tagRepository);
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort, UserDatabasePort userDatabasePort, PostMapper postMapper) {
-        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort, closeRelationshipDatabasePort, userDatabasePort, postMapper);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort, UserDatabasePort userDatabasePort, PostMapper postMapper, TagMapper tagMapper) {
+        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort, closeRelationshipDatabasePort, userDatabasePort, postMapper, tagMapper);
     }
 
-    @Bean
-    public TagMapper tagMapper(UserRepository userRepository, PostRepository postRepository) {
-        return  new TagMapper(userRepository,postRepository);
-    }
 
     @Bean
     public TagDatabasePort tagDatabasePort(TagRepository repository, TagMapper tagMapper) {

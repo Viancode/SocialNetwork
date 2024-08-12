@@ -1,14 +1,16 @@
 package com.example.socialnetwork.common.mapper;
+import com.example.socialnetwork.application.request.PostRequest;
 import com.example.socialnetwork.application.response.PhotoResponse;
 import com.example.socialnetwork.application.response.PostResponse;
+import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
+import com.example.socialnetwork.domain.model.TagDomain;
 import com.example.socialnetwork.domain.port.api.UserServicePort;
 import com.example.socialnetwork.infrastructure.entity.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public class PostMapper {
     private final PostReactionRepository postReactionRepository;
     private final CommentRepository commentRepository;
     private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
 
     public PostDomain entityToDomain(Post post) {
         if (post == null) {
@@ -36,7 +39,6 @@ public class PostMapper {
             postDomain.setUserId(this.postUserId(post));
             postDomain.setNumberOfReacts(postReactionRepository.countByPostId(post.getId()));
             postDomain.setNumberOfComments(commentRepository.countByPostId(post.getId()));
-            postDomain.setNumberTags(tagRepository.countByPostId(post.getId()));
             postDomain.setId(post.getId());
             postDomain.setContent(post.getContent());
             postDomain.setVisibility(post.getVisibility());
@@ -44,6 +46,7 @@ public class PostMapper {
             postDomain.setUpdatedAt(post.getUpdatedAt());
             postDomain.setLastComment(post.getLastComment());
             postDomain.setPhotoLists(post.getPhotoLists());
+            postDomain.setTagDomains(post.getTags().stream().map(tagMapper::entityToDomain).toList());
             return postDomain;
         }
     }
@@ -74,6 +77,7 @@ public class PostMapper {
             post.setUpdatedAt(postDomain.getUpdatedAt());
             post.setLastComment(postDomain.getLastComment());
             post.setPhotoLists(postDomain.getPhotoLists());
+//            post.setTags(postDomain.getTagDomains().stream().map(tagMapper::domainToEntity).toList());
             return post;
         }
     }
@@ -100,12 +104,30 @@ public class PostMapper {
             postResponse.setUsername(getUsername(postDomain.getUserId()));
             postResponse.setAvatar(getAvatar(postDomain.getUserId()));
 
+            postResponse.setTagUsers(postDomain.getTagDomains().stream().map(tagMapper::domainToUserResponse).collect(Collectors.toList()));
+
             postResponse.setCreatedAt(postDomain.getCreatedAt());
             postResponse.setUpdatedAt(postDomain.getUpdatedAt());
-            postResponse.setNumberTags(postDomain.getNumberTags());
+
             return postResponse;
         }
     }
+
+    public PostDomain requestToDomain(PostRequest postRequest){
+        PostDomain postDomain = new PostDomain();
+        postDomain.setId(postRequest.getId());
+        postDomain.setUserId(SecurityUtil.getCurrentUserId());
+        postDomain.setContent(postRequest.getContent());
+        postDomain.setTagDomains(postRequest.getTagUsers().stream().map(tagRequest -> tagMapper.requestToDomain(tagRequest, postDomain.getId())).toList());
+
+        postDomain.setPhotoLists(postRequest.getPhotoLists());
+        postDomain.setVisibility(postRequest.getVisibility());
+        postDomain.setCreatedAt(Instant.now());
+        postDomain.setUpdatedAt(Instant.now());
+
+        return postDomain;
+    }
+
 
     public List<PostResponse> listDomainToResponse(List<PostDomain> postDomains) {
         if (postDomains == null) {

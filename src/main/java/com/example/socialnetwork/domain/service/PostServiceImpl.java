@@ -5,14 +5,13 @@ import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
+import com.example.socialnetwork.common.mapper.TagMapper;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
+import com.example.socialnetwork.domain.model.TagDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
-import com.example.socialnetwork.domain.port.spi.CloseRelationshipDatabasePort;
-import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
-import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
-import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
+import com.example.socialnetwork.domain.port.spi.*;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import lombok.RequiredArgsConstructor;
@@ -31,36 +30,47 @@ public class PostServiceImpl implements PostServicePort {
     private final CloseRelationshipDatabasePort closeRelationshipDatabasePort;
     private final UserDatabasePort userDatabasePort;
     private final PostMapper postMapper;
+    private final TagMapper tagMapper;
+
+    public void checkTagUser(PostDomain postDomain){
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        List<Long> listBlockFriend = relationshipDatabasePort.getListBlock(currentUserId).stream().map(UserDomain::getId).toList();
+        List<TagDomain> tagDomains = postDomain.getTagDomains();
+        for (TagDomain tagDomain : tagDomains) {
+            if(listBlockFriend.contains(tagDomain.getUserIdTagged())) {
+                throw new ClientErrorException("User with id " + tagDomain.getUserIdTagged() + " is blocked.");
+            }
+            if(relationshipDatabasePort.getRelationship(currentUserId, tagDomain.getUserIdTagged()) == null){
+                throw new ClientErrorException("User with id " + tagDomain.getUserIdTagged() + " is not friend.");
+            }
+        }
+    }
 
     @Override
-    public PostDomain createPost(PostRequest postRequest) {
-        PostDomain postDomain = new PostDomain();
-        postDomain.setUserId(postRequest.getUserId());
-        postDomain.setContent(postRequest.getContent());
-        postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
-        postDomain.setPhotoLists(postRequest.getPhotoLists());
-        postDomain.setLastComment(Instant.now());
-        postDomain.setCreatedAt(Instant.now());
-        postDomain.setUpdatedAt(Instant.now());
+    public PostDomain createPost(PostDomain postDomain) {
+        checkTagUser(postDomain);
         return postDatabasePort.createPost(postDomain);
     }
 
     @Override
-    public PostDomain updatePost(PostRequest postRequest) {
-        PostDomain postDomain = postDatabasePort.findById(postRequest.getId());
-        if (postRequest.getContent().isEmpty()) {
+    public PostDomain updatePost(PostDomain postDomain) {
+        PostDomain postDomainExist = postDatabasePort.findById(postDomain.getId());
+        if (postDomain.getContent().isEmpty()) {
             throw new ClientErrorException("Content is empty");
         } else {
-            postDomain.setContent(postRequest.getContent());
+            postDomainExist.setContent(postDomain.getContent());
         }
-        postDomain.setVisibility(Visibility.valueOf(postRequest.getVisibility()));
-        if (postRequest.getPhotoLists().isEmpty()) {
-            postDomain.setPhotoLists(null);
+        postDomainExist.setVisibility(postDomain.getVisibility());
+        if (postDomain.getPhotoLists().isEmpty()) {
+            postDomainExist.setPhotoLists(null);
         }else{
-            postDomain.setPhotoLists(postRequest.getPhotoLists());
+            postDomainExist.setPhotoLists(postDomain.getPhotoLists());
         }
-        postDomain.setUpdatedAt(Instant.now());
-        return postDatabasePort.updatePost(postDomain);
+
+        checkTagUser(postDomain);
+        postDomainExist.setTagDomains(postDomain.getTagDomains());
+        postDomainExist.setUpdatedAt(Instant.now());
+        return postDatabasePort.updatePost(postDomainExist);
     }
 
     @Override

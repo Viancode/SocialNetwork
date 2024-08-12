@@ -14,7 +14,7 @@ public class TagDomain {
 
     private Long userIdTag;
 
-    private Long postId;
+    private Long postId = null;
 
     private Long userIdTagged;
 

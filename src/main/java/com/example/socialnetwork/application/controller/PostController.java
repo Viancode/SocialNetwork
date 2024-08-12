@@ -38,19 +38,9 @@ public class PostController extends BaseController {
 
     @PostMapping("")
     public ResponseEntity<?> createPost(
-            @RequestParam("content") String content,
-            @RequestParam(value = "visibility", defaultValue = "PUBLIC") String visibility,
-            @RequestParam(value = "photo_lists", required = false) String photoLists
+            @RequestBody PostRequest postRequest
     ) {
-        PostRequest postRequest = new PostRequest();
-        postRequest.setUserId(SecurityUtil.getCurrentUserId());
-        postRequest.setContent(content);
-        postRequest.setVisibility(visibility);
-        if(photoLists != null) {
-            postRequest.setPhotoLists(photoLists);
-        }
-
-        PostDomain postDomain = postServicePort.createPost(postRequest);
+        PostDomain postDomain = postServicePort.createPost(postMapper.requestToDomain(postRequest));
         return buildResponse("Create post successfully", postMapper.domainToResponse(postDomain));
     }
 
@@ -62,20 +52,9 @@ public class PostController extends BaseController {
 
     @PutMapping("")
     public ResponseEntity<?> updatePost(
-            @RequestParam("post_id") Long postId,
-            @RequestParam("content") String content,
-            @RequestParam("visibility") String visibility,
-            @RequestParam(value = "photo_lists", required = false) String photoLists
+            @RequestBody PostRequest postRequest
     ){
-        PostRequest postRequest = new PostRequest();
-        postRequest.setId(postId);
-        postRequest.setUserId(SecurityUtil.getCurrentUserId());
-        postRequest.setContent(content);
-        postRequest.setVisibility(visibility);
-        if(photoLists != null) {
-            postRequest.setPhotoLists(photoLists);
-        }
-        PostDomain postDomain = postServicePort.updatePost(postRequest);
+        PostDomain postDomain = postServicePort.updatePost(postMapper.requestToDomain(postRequest));
         return buildResponse("Update post successfully", postMapper.domainToResponse(postDomain));
     }
 

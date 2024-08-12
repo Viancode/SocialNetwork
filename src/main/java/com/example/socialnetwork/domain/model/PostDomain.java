@@ -28,7 +28,7 @@ public class PostDomain {
 
     private Instant updatedAt;
 
-    private Instant lastComment;
+    private Instant lastComment = null;
 
     private String photoLists;
 
@@ -36,5 +36,5 @@ public class PostDomain {
 
     private Long numberOfReacts;
 
-    private Long numberTags;
+    private List<TagDomain> tagDomains;
 }

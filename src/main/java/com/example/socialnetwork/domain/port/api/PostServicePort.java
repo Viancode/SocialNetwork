@@ -6,8 +6,8 @@ import com.example.socialnetwork.domain.model.PostDomain;
 import org.springframework.data.domain.Page;
 
 public interface PostServicePort {
-    PostDomain createPost(PostRequest postRequest);
-    PostDomain updatePost(PostRequest postRequest);
+    PostDomain createPost(PostDomain postDomain);
+    PostDomain updatePost(PostDomain postDomain);
     void deletePost(Long postId);
     Page<PostResponse> getAllPosts(int page, int pageSize, String sortBy, String sortDirection, Long userId, Long targetUserId);
 

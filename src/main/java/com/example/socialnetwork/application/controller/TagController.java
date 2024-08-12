@@ -24,7 +24,7 @@ public class TagController extends BaseController{
 
     @PostMapping
     public ResponseEntity<?> createTag(@RequestBody TagRequest tagRequest) {
-        TagDomain tagDomain = tagServicePort.createTag(tagMapper.requestToDomain(tagRequest));
+        TagDomain tagDomain = tagServicePort.createTag(tagMapper.requestToDomain(tagRequest, null));
         return buildResponse("Create tag successfully", tagMapper.domainToResponse(tagDomain));
     }
 

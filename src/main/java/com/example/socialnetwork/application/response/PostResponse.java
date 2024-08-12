@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -40,5 +37,5 @@ public class PostResponse {
 
     private Long numberOfReacts;
 
-    private Long numberTags;
+    private List<TagUserResponse> tagUsers = null;
 }
