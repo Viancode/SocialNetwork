@@ -28,7 +28,7 @@ public class PostController extends BaseController {
                                                    @RequestParam(value = "page_size",defaultValue = "5") int pageSize,
                                                    @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
                                                    @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
-                                                   @RequestParam(value = "target_user_id") Long targetUserId,
+                                                   @RequestParam(required = false, value = "target_user_id") Long targetUserId,
                                                    Authentication authentication) {
 
         User user = (User) authentication.getPrincipal();
