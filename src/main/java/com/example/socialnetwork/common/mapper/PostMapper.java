@@ -1,11 +1,16 @@
 package com.example.socialnetwork.common.mapper;
+import com.example.socialnetwork.application.response.PhotoResponse;
 import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.port.api.UserServicePort;
 import com.example.socialnetwork.infrastructure.entity.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.example.socialnetwork.infrastructure.repository.CommentRepository;
@@ -81,7 +86,9 @@ public class PostMapper {
             postResponse.setNumberOfComments(postDomain.getNumberOfComments());
             postResponse.setNumberOfReacts(postDomain.getNumberOfReacts());
             if(postDomain.getPhotoLists() != null) {
-                postResponse.setPhotoLists(this.photoToList(postDomain.getPhotoLists()));
+//                postResponse.setPhotoLists(this.photoToList(postDomain.getPhotoLists()));
+//                postResponse.setPhotoMaps(this.photoToMap(postDomain.getPhotoLists()));
+                postResponse.setPhotoResponses(this.photoListToPhotoResponse(postDomain.getPhotoLists()));
             }
             postResponse.setId(postDomain.getId());
             postResponse.setUserId(postDomain.getUserId());
@@ -153,10 +160,47 @@ public class PostMapper {
 //        return (long) reactions.size();
 //    }
 
-    public List<String> photoToList(String photo) {
+//    public List<String> photoToList(String photo) {
+//        String[] split = photo.split(",");
+//        return new ArrayList<>(List.of(split));
+//    }
+//
+//    public Map<String, String> photoToMap(String photo) {
+//        String[] split = photo.split(",");
+//        Map<String, String> map = new HashMap<>();
+//        String regex = ".*/([^/]+)\\.png$";
+//        Pattern pattern = Pattern.compile(regex);
+//
+//        for (String url : split) {
+//            Matcher matcher = pattern.matcher(url);
+//            if (matcher.find()) {
+//                String result = matcher.group(1);
+//                map.put(result, url);
+//            } else {
+//                System.out.println("No match found for URL: " + url);
+//            }
+//        }
+//        return map;
+//    }
+
+    public List<PhotoResponse> photoListToPhotoResponse(String photo) {
         String[] split = photo.split(",");
-        return new ArrayList<>(List.of(split));
+        List<PhotoResponse> photoResponses = new ArrayList<>();
+        String regex = ".*/([^/]+)\\.png$";
+        Pattern pattern = Pattern.compile(regex);
+
+        for (String url : split) {
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                String result = matcher.group(1);
+                photoResponses.add(new PhotoResponse(result, url));
+            } else {
+                System.out.println("No match found for URL: " + url);
+            }
+        }
+        return photoResponses;
     }
+
 
 //    public List<Long> postReactionsToIds(List<PostReaction> reactions) {
 //        return reactions != null ? reactions.stream().map(PostReaction::getId).collect(Collectors.toList()) : null;

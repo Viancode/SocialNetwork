@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -30,6 +31,9 @@ public class PostResponse {
     private Instant updatedAt;
 
     private List<String> photoLists;
+
+    private Map<String, String> photoMaps = null;
+    private List<PhotoResponse> photoResponses = null;
 
     private  Long numberOfComments;
 

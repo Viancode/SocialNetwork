@@ -79,7 +79,7 @@ public class PostController extends BaseController {
         return buildResponse("Update post successfully", postMapper.domainToResponse(postDomain));
     }
 
-    @GetMapping("/numberPost")
+    @GetMapping("/number-post")
     public ResponseEntity<?> getNumberPost(){
         Long numberPost = postServicePort.countPostByUserId();
         return buildResponse("Get number post successfully", numberPost);
