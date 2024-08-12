@@ -184,8 +184,11 @@ VALUES (
            SUBSTRING_INDEX(SUBSTRING_INDEX(education_list, ',', FLOOR(1 + (RAND() * 5))), ',', -1),
            NOW(),
            NOW(),
-           'avatar.jpg',
-           'background.jpg',
+           CASE
+               WHEN RAND() < 0.40 THEN 'https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png'
+               ELSE null
+               END,
+           null,
            DATE_ADD('1990-01-01', INTERVAL FLOOR(RAND() * 10000) DAY),
            TRUE
        );
