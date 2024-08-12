@@ -28,6 +28,7 @@ public interface SuggestionMapper {
             UserDomain user = suggestionDomain.getUser();
             if (user.getId() == SecurityUtil.getCurrentUserId()) user = suggestionDomain.getFriend();
             response.setId(user.getId());
+            response.setAvatar(user.getAvatar());
             response.setUsername(user.getUsername());
             response.setEmail(user.getEmail());
             response.setMutualFriends(suggestionDomain.getMutualFriends());
