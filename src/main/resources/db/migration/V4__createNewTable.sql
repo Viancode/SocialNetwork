@@ -66,9 +66,8 @@ BEGIN
                         -- Insert into suggestions table
                         INSERT INTO suggestions (user_id, friend_id, suggest_point, mutual_friends, status)
                         VALUES (user_id_1, user_id_2, suggest_point, 0, 'NONE');
-
-                        SET j = j + 1;
                     END IF;
+                    SET j = j + 1;
                 END WHILE;
 
             SET i = i + 1;
