@@ -25,10 +25,10 @@ public class PostController extends BaseController {
 
     @GetMapping("")
     public ResponseEntity<ResultResponse> getPosts(@RequestParam(defaultValue = "1") int page,
-                                                   @RequestParam(defaultValue = "5") int pageSize,
-                                                   @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                   @RequestParam(defaultValue = "desc") String sortDirection,
-                                                   @RequestParam Long targetUserId,
+                                                   @RequestParam(value = "page_size",defaultValue = "5") int pageSize,
+                                                   @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
+                                                   @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
+                                                   @RequestParam(value = "target_user_id") Long targetUserId,
                                                    Authentication authentication) {
 
         User user = (User) authentication.getPrincipal();
@@ -40,7 +40,7 @@ public class PostController extends BaseController {
     public ResponseEntity<?> createPost(
             @RequestParam("content") String content,
             @RequestParam(value = "visibility", defaultValue = "PUBLIC") String visibility,
-            @RequestParam(value = "photoLists", required = false) String photoLists
+            @RequestParam(value = "photo_lists", required = false) String photoLists
     ) {
         PostRequest postRequest = new PostRequest();
         postRequest.setUserId(SecurityUtil.getCurrentUserId());
@@ -55,17 +55,17 @@ public class PostController extends BaseController {
     }
 
     @DeleteMapping("")
-    public ResponseEntity<?> deletePost(@RequestParam Long postId){
+    public ResponseEntity<?> deletePost(@RequestParam(value = "post_id") Long postId){
         postServicePort.deletePost(postId);
         return buildResponse("Delete post successfully", HttpStatus.ACCEPTED);
     }
 
     @PutMapping("")
     public ResponseEntity<?> updatePost(
-            @RequestParam("postId") Long postId,
+            @RequestParam("post_id") Long postId,
             @RequestParam("content") String content,
             @RequestParam("visibility") String visibility,
-            @RequestParam(value = "photoLists", required = false) String photoLists
+            @RequestParam(value = "photo_lists", required = false) String photoLists
     ){
         PostRequest postRequest = new PostRequest();
         postRequest.setId(postId);
@@ -79,7 +79,7 @@ public class PostController extends BaseController {
         return buildResponse("Update post successfully", postMapper.domainToResponse(postDomain));
     }
 
-    @GetMapping("/number-post")
+    @GetMapping("/number_post")
     public ResponseEntity<?> getNumberPost(){
         Long numberPost = postServicePort.countPostByUserId();
         return buildResponse("Get number post successfully", numberPost);

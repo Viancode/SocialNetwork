@@ -30,9 +30,10 @@ public class PostResponse {
 
     private Instant updatedAt;
 
-    private List<String> photoLists;
+//    private List<String> photoLists;
+//
+//    private Map<String, String> photoMaps = null;
 
-    private Map<String, String> photoMaps = null;
     private List<PhotoResponse> photoResponses = null;
 
     private  Long numberOfComments;

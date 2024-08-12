@@ -39,7 +39,7 @@ public class AuthController extends BaseController {
         return buildResponse("Token is valid");
     }
 
-    @PostMapping("/forgot-pass")
+    @PostMapping("/forgot_pass")
     public ResponseEntity<?> forgotPassword(
             @Email(message = "Email should be valid", regexp = ValidationRegex.EMAIL_REGEX)
             @RequestParam("email") String email
@@ -48,23 +48,23 @@ public class AuthController extends BaseController {
         return buildResponse("Reset password request has been sent to your email");
     }
 
-    @PostMapping("/reset-pass")
+    @PostMapping("/reset_pass")
     public ResponseEntity<?> resetPassword(
             @RequestParam("token") String token,
             @NotBlank(message = "New password cannot be blank")
             @Pattern(message = "Password should be valid", regexp = ValidationRegex.PASSWORD_REGEX)
-            @RequestParam("newPassword") String newPassword
+            @RequestParam(value = "new_password") String newPassword
     ) {
         authService.resetPasswordWithToken(token, newPassword);
         return buildResponse("Password has been reset");
     }
 
-    @PostMapping("/change-pass") ///
+    @PostMapping("/change_pass") ///
     public ResponseEntity<?> changePassword(
             @NotBlank(message = "New password cannot be blank")
             @Pattern(message = "Password should be valid", regexp = ValidationRegex.PASSWORD_REGEX)
-            @RequestParam("newPassword") String newPassword,
-            @RequestParam("oldPassword") String oldPassword
+            @RequestParam(value = "new_password") String newPassword,
+            @RequestParam(value = "old_password") String oldPassword
     ) {
         authService.changePassword(newPassword, oldPassword);
         return buildResponse("Change password successfully");
@@ -80,7 +80,7 @@ public class AuthController extends BaseController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(
-            @RequestParam("refreshToken") String refreshToken
+            @RequestParam("refresh_token") String refreshToken
     ) {
         AuthResponse authResponse = authService.refreshToken(refreshToken);
         return buildResponse("Successfully refreshed token", authResponse);
@@ -88,7 +88,7 @@ public class AuthController extends BaseController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
-            @RequestParam("refreshToken") String refreshToken
+            @RequestParam("refresh_token") String refreshToken
     ) {
         authService.logout(refreshToken);
         return buildResponse("Logout successfully");

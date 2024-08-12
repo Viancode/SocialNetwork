@@ -29,16 +29,16 @@ public class TagController extends BaseController{
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteTag(@RequestParam Long tagId) {
+    public ResponseEntity<?> deleteTag(@RequestParam(value = "tag_id") Long tagId) {
         tagServicePort.deleteTag(tagId);
         return buildResponse("Delete tag successfully", HttpStatus.ACCEPTED);
     }
 
     @GetMapping
     public ResponseEntity<?> getAllTags(@RequestParam(defaultValue = "1") int page,
-                                        @RequestParam(defaultValue = "5") int pageSize,
-                                        @RequestParam(defaultValue = "createdAt") String sortBy,
-                                        @RequestParam(defaultValue = "desc") String sortDirection,
+                                        @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                        @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
+                                        @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
                                         @RequestParam(required = false) Long postId) {
         Page<TagDomain> tagDomainPage = tagServicePort.getAllTags(page,pageSize,sortBy,sortDirection,postId);
         Page<TagResponse> tagResponsePage = tagDomainPage.map(tagMapper::domainToResponse);

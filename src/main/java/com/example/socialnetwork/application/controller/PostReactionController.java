@@ -31,7 +31,7 @@ public class PostReactionController extends BaseController {
 
     @DeleteMapping("")
     public ResponseEntity<?> deletePostReaction(
-            @RequestParam Long postReactionId
+            @RequestParam(value = "post_reaction_id") Long postReactionId
     ){
         postReactionService.deletePostReaction(postReactionId);
         return buildResponse("Delete post reaction successfully");
@@ -39,12 +39,12 @@ public class PostReactionController extends BaseController {
 
 
     @GetMapping("")
-    public ResponseEntity<ResultResponse> getPosts(@RequestParam(defaultValue = "1") int page,
-                                                   @RequestParam(defaultValue = "5") int pageSize,
-                                                   @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                   @RequestParam(defaultValue = "desc") String sortDirection,
-                                                   @RequestParam(required = false) Long postId,
-                                                   @RequestParam(required = false) String postReactionType
+    public ResponseEntity<ResultResponse> getPostReactions(@RequestParam(defaultValue = "1") int page,
+                                                           @RequestParam(value = "page_size",defaultValue = "5") int pageSize,
+                                                           @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
+                                                           @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
+                                                           @RequestParam(value = "post_id", required = false) Long postId,
+                                                           @RequestParam(value = "post_reaction_type",required = false) String postReactionType
                                                     ) {
 
         Page<PostReactionDomain> postReactionDomainPage = postReactionService.getAllPostReactions(page,pageSize,sortBy,sortDirection,postId,postReactionType);

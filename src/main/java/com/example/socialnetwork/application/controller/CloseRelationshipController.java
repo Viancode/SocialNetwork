@@ -35,10 +35,10 @@ public class CloseRelationshipController extends BaseController {
 
     @GetMapping("")
     public ResponseEntity<ResultResponse> getCloseRelationships(@RequestParam(defaultValue = "1") int page,
-                                                              @RequestParam(defaultValue = "5") int pageSize,
-                                                              @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                              @RequestParam(defaultValue = "desc") String sortDirection,
-                                                              @RequestParam Long userId
+                                                              @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                                              @RequestParam(value = "sort_by",defaultValue = "createdAt") String sortBy,
+                                                              @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
+                                                              @RequestParam(value = "user_id") Long userId
     ) {
         Page<CloseRelationshipDomain> closeRelationshipDomains = closeRelationshipServicePort.getAllCloseRelationship(page, pageSize, sortBy, sortDirection, userId);
 
@@ -49,7 +49,7 @@ public class CloseRelationshipController extends BaseController {
 
     @DeleteMapping("")
     public ResponseEntity<?> deleteCloseRelationship(
-            @RequestParam Long targetUserId
+            @RequestParam(value = "target_user_id") Long targetUserId
     ){
         closeRelationshipServicePort.deleteCloseRelationship(targetUserId);
         return buildResponse("Delete close relationship successfully");
