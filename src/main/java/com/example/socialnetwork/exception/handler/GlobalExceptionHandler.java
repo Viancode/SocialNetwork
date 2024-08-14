@@ -5,6 +5,7 @@ import com.example.socialnetwork.exception.custom.ConflictException;
 import com.example.socialnetwork.exception.custom.NotAllowException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -56,14 +57,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(Exception e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         List<String> errors = new ArrayList<>();
@@ -80,7 +79,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         List<String> errors = e.getConstraintViolations()
@@ -114,7 +112,6 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException.class,
             ClientErrorException.class
     })
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFileException(Exception e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
@@ -125,14 +122,12 @@ public class GlobalExceptionHandler {
             NoResourceFoundException.class,
             NotFoundException.class
     })
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(Exception e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ConflictException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictException(Exception e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.CONFLICT);
@@ -142,7 +137,6 @@ public class GlobalExceptionHandler {
             InsufficientAuthenticationException.class,
             AccessDeniedException.class,
     })
-    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbiddenException(Exception e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.FORBIDDEN);
@@ -152,7 +146,6 @@ public class GlobalExceptionHandler {
             AuthenticationException.class,
             InvalidBearerTokenException.class,
     })
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnauthorizedException(Exception e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         return buildErrorResponse(e, request, HttpStatus.UNAUTHORIZED);

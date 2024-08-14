@@ -65,7 +65,15 @@ BEGIN
 
                         -- Insert into suggestions table
                         INSERT INTO suggestions (user_id, friend_id, suggest_point, mutual_friends, status)
-                        VALUES (user_id_1, user_id_2, suggest_point, 0, 'NONE');
+                        VALUES (user_id_1,
+                                user_id_2,
+                                suggest_point,
+                                0,
+                                CASE
+                                    WHEN RAND() < 0.25 THEN 'FRIEND'
+                                    WHEN RAND() < 0.15 THEN 'BLOCK'
+                                    ELSE 'NONE'
+                                END);
                     END IF;
                     SET j = j + 1;
                 END WHILE;

@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/forgot-pass").permitAll()
                 .requestMatchers("/api/v1/auth/reset-pass").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/v3/**").permitAll()
                 .anyRequest().authenticated()
         );
         http.authenticationProvider(authenticationProvider());
