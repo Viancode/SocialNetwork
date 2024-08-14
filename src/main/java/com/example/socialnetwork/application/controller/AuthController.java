@@ -48,6 +48,14 @@ public class AuthController extends BaseController {
         return buildResponse("Reset password request has been sent to your email");
     }
 
+    @PostMapping("/verify_forgot_pass")
+    public ResponseEntity<?> verifyForgotPasswordToken(
+            @RequestParam("token") String token
+    ) {
+        authService.verifyForgetPassToken(token);
+        return buildResponse("Token is valid");
+    }
+
     @PostMapping("/reset_pass")
     public ResponseEntity<?> resetPassword(
             @RequestParam("token") String token,

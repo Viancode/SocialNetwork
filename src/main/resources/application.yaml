@@ -60,6 +60,6 @@ cloud:
       bucket-name: ${AWS_BUCKET_NAME}
 link:
   front-end-domain: ${FRONT_END_DOMAIN}
-  forgot-password-verify: /forgot-password/verify?token=
+  forgot-password-verify: /forgot_password/verify?token=
   confirm-email-verify: /register/verify?token=
 

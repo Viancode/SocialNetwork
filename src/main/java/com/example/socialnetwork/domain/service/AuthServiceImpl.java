@@ -13,6 +13,7 @@ import com.example.socialnetwork.domain.port.api.TokenServicePort;
 import com.example.socialnetwork.domain.port.api.UserServicePort;
 import com.example.socialnetwork.domain.port.spi.UserDatabasePort;
 import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
+import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.DuplicateException;
 import com.example.socialnetwork.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -113,7 +114,7 @@ public class AuthServiceImpl implements AuthServicePort {
 
         // Check if the old password matches the one in the database
         if (!encoder.matches(oldPassword, currentUser.getPassword())) {
-            throw new IllegalArgumentException("Old password does not match");
+            throw new ClientErrorException("Old password does not match");
         }
 
         tokenService.revokeAllUserTokens(String.valueOf(currentUserId), TokenType.REFRESH);
