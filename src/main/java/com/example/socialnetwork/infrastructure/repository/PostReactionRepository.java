@@ -8,12 +8,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
 public interface PostReactionRepository extends JpaRepository<PostReaction, Long> {
     @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+//    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     PostReaction save(PostReaction postReaction);
 
     Page<PostReaction> findAll(Specification<PostReaction> spec, Pageable pageable);

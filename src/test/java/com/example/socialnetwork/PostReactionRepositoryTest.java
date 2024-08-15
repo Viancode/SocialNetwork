@@ -1,41 +1,79 @@
 package com.example.socialnetwork;
 
+import com.example.socialnetwork.domain.port.api.PostReactionServicePort;
+import com.example.socialnetwork.domain.port.spi.PostReactionDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.PostReaction;
 import com.example.socialnetwork.infrastructure.repository.PostReactionRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ThreadDemo extends Thread{
+    private Thread t;
+    private String threadName;
+    private Long postReactionId;
+    private PostReactionDatabasePort postReactionDatabasePort;
+
+
+    ThreadDemo(String name, Long postReactionId, PostReactionDatabasePort  postReactionDatabasePort) {
+        threadName = name;
+        System.out.println("Creating " + threadName);
+        this.postReactionId = postReactionId;
+        this.postReactionDatabasePort = postReactionDatabasePort;
+    }
+
+
+    @Override
+    public void run() {
+        System.out.println("Running " + threadName);
+        try {
+            postReactionDatabasePort.updateReaction(postReactionId, "WOW");
+            System.out.println("Thread " + threadName + " successes");
+        } catch (Exception e) {
+            System.out.println("Thread " + threadName + " interrupted: " + e.getMessage());
+        }
+        System.out.println("Thread " + threadName + " exiting.");
+    }
+
+    public void start() {
+        System.out.println("Starting " + threadName);
+        if (t == null) {
+            t = new Thread(this, threadName);
+            t.start();
+        }
+    }
+}
+
 
 @SpringBootTest
 public class PostReactionRepositoryTest {
     @Autowired
     private PostReactionRepository postReactionRepository;
 
+    @Autowired
+    private PostReactionDatabasePort postReactionDatabasePort;
+
     @Test
-    public void testOptimisticLock() {
-        // Tạo một PostReaction và lưu vào database
+    public void testOptimisticLock() throws InterruptedException {
         PostReaction reaction = new PostReaction();
-        reaction.setReactionType("like");
-        postReactionRepository.save(reaction);
+        reaction.setReactionType("LIKE");
+        postReactionRepository.saveAndFlush(reaction);
 
-        // Lấy ra cùng một PostReaction ở 2 transaction khác nhau
-        PostReaction reaction1 = postReactionRepository.findById(reaction.getId()).orElseThrow();
-        PostReaction reaction2 = postReactionRepository.findById(reaction.getId()).orElseThrow();
+        ThreadDemo threadDemo1 = new ThreadDemo("Thread1", reaction.getId(),postReactionDatabasePort);
+        ThreadDemo threadDemo2 = new ThreadDemo("Thread2", reaction.getId(),postReactionDatabasePort);
+        threadDemo1.start();
+        threadDemo2.start();
 
-        // Thay đổi dữ liệu của reaction1 và lưu
-        reaction1.setReactionType("dislike");
-        postReactionRepository.save(reaction1);
+        // Wait for both threads to complete
+        threadDemo1.join();
+        threadDemo2.join();
 
-        // Thử thay đổi và lưu reaction2, lúc này phiên bản sẽ không khớp
-        reaction2.setReactionType("love");
-
-        Assertions.assertThrows(OptimisticLockingFailureException.class, () -> {
-            postReactionRepository.save(reaction2);
-        });
+        // Verify the final state
+        PostReaction updatedReaction = postReactionRepository.findById(reaction.getId()).orElseThrow();
+        assertEquals("WOW", updatedReaction.getReactionType());
     }
 }

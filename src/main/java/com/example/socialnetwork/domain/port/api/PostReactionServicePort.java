@@ -8,5 +8,4 @@ public interface PostReactionServicePort {
     Boolean deletePostReaction(Long postReactionId);
     PostReactionDomain getPostReaction(Long postReactionId);
     Page<PostReactionDomain> getAllPostReactions(int page, int pageSize, String sortBy, String sortDirection, Long postReactionId, String postReactionType);
-
 }

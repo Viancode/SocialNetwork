@@ -16,4 +16,9 @@ public interface PostReactionDatabasePort {
     PostReactionDomain findByUserIdAndPostIdAndReactionType(Long userId, Long postId, String reactionType);
     PostReactionDomain findByUserIdAndPostId(Long userId, Long postId);
     PostReactionDomain updatePostReaction(PostReactionDomain postReactionDomain);
+
+    void updateReaction(Long postReactionId, String reactionType);
+    PostReactionDomain findById(Long postReactionId);
+
+    void saveAndFlush(PostReactionDomain reaction);
 }

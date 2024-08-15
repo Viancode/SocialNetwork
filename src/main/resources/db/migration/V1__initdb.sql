@@ -74,6 +74,7 @@ CREATE TABLE post_reactions (
                                 post_reaction_id BIGINT PRIMARY KEY AUTO_INCREMENT,
                                 user_id BIGINT,
                                 post_id BIGINT,
+                                version BIGINT,
                                 reaction_type ENUM('LIKE', 'WOW', 'LOVE', 'SAD','ANGRY'),
                                 created_at DATETIME,
                                 CONSTRAINT fk_post_reaction_user FOREIGN KEY (user_id) REFERENCES users(user_id),

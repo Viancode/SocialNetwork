@@ -6,10 +6,12 @@ import com.example.socialnetwork.domain.port.spi.PostReactionDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.PostReaction;
 import com.example.socialnetwork.infrastructure.repository.PostReactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -69,6 +71,33 @@ public class PostReactionDatabaseAdapter implements PostReactionDatabasePort {
         postReactionRepository.findById(postReactionDomain.getId()).ifPresent(postReactionRepository::save);
         return null;
 
+    }
+
+    @Transactional
+    @Override
+    public void updateReaction(Long postReactionId, String reactionType) {
+        boolean updated = false;
+        while (!updated) {
+            try {
+                PostReaction reaction = postReactionRepository.findById(postReactionId).orElseThrow();
+                reaction.setReactionType(reactionType);
+                postReactionRepository.saveAndFlush(reaction);
+                updated = true;
+            } catch (OptimisticLockingFailureException e) {
+                // Log and retry
+                System.out.println("Failed to update due to concurrent modification. Retrying...");
+            }
+        }
+    }
+
+    @Override
+    public PostReactionDomain findById(Long postReactionId) {
+        return postReactionRepository.findById(postReactionId).map(PostReactionMapper.INSTANCE::entityToDomain).orElse(null);
+    }
+
+    @Override
+    public void saveAndFlush(PostReactionDomain reaction) {
+        postReactionRepository.saveAndFlush(PostReactionMapper.INSTANCE.domainToEntity(reaction));
     }
 
     private Specification<PostReaction> getSpec(Long postId, String postReactionType, List<Long> listBlockFriend) {
