@@ -112,8 +112,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CommentMapper commentMapper) {
-        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, relationshipDatabasePort, commentMapper);
+    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CommentMapper commentMapper,StorageServicePort storageServicePort) {
+        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, relationshipDatabasePort, commentMapper, storageServicePort);
     }
 
     @Bean

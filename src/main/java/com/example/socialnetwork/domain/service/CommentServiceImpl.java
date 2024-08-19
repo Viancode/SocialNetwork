@@ -5,12 +5,14 @@ import com.example.socialnetwork.application.response.CommentResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.CommentMapper;
+import com.example.socialnetwork.common.util.HandleFile;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CommentDomain;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.CommentServicePort;
+import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
@@ -25,6 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -39,6 +42,7 @@ public class CommentServiceImpl implements CommentServicePort {
     private final PostDatabasePort postDatabasePort;
     private final RelationshipDatabasePort relationshipDatabasePort;
     private final CommentMapper commentMapper;
+    private final StorageServicePort storageServicePort;
     private Model model;
     private static final double SPAM_THRESHOLD = 0.6;
 
@@ -128,9 +132,9 @@ public class CommentServiceImpl implements CommentServicePort {
     @Override
     public CommentDomain createComment(CommentRequest commentRequest) {
         Long userId = SecurityUtil.getCurrentUserId();
-        if(!checkNumberImage(commentRequest.getImage())){
-            throw new ClientErrorException("The number of photos exceeds the limit");
-        }
+//        if(!checkNumberImage(commentRequest.getImage())){
+//            throw new ClientErrorException("The number of photos exceeds the limit");
+//        }
         checkUserCommentAndUserPost(userId, commentRequest.getPostId());
         checkParentComment(userId, commentRequest.getParentCommentId(), commentRequest.getPostId());
         isSpam(commentRequest.getContent());
@@ -143,11 +147,12 @@ public class CommentServiceImpl implements CommentServicePort {
 
     @Override
     @Transactional
-    public CommentDomain updateComment(Long commentId, String content, String image) {
+    public CommentDomain updateComment(Long commentId, String content, MultipartFile[] images) {
+        String image = HandleFile.loadFileImage(images, storageServicePort,1);
         Long userId = SecurityUtil.getCurrentUserId();
-        if(!checkNumberImage(image)){
-            throw new ClientErrorException("The number of photos exceeds the limit");
-        }
+//        if(!checkNumberImage(image)){
+//            throw new ClientErrorException("The number of photos exceeds the limit");
+//        }
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
 
         checkUserCommentAndUserPost(userId, currentComment.getPost().getId());

@@ -39,13 +39,13 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     public PostDomain createPost(PostDomain postDomain) {
         Post post = postRepository.save(postMapper.domainToEntity(postDomain));
         List<Tag> tags = postDomain.getTagDomains().stream().map(tagDomain -> {
+            tagDomain.setPostId(post.getId());
             Tag tag = tagMapper.domainToEntity(tagDomain);
             tag.setPost(post); // gán postId (thực chất là gán đối tượng Post)
             return tag;
         }).toList();
         tagRepository.saveAll(tags);
         post.setTags(tags);
-
         return postMapper.entityToDomain(post);
     }
 
@@ -59,7 +59,11 @@ public class PostDatabaseAdapter implements PostDatabasePort {
             post.setVisibility(postDomain.getVisibility());
             post.setUpdatedAt(postDomain.getUpdatedAt());
             post.setPhotoLists(postDomain.getPhotoLists());
-            post.setTags(postDomain.getTagDomains().stream().map(tagMapper::domainToEntity).collect(Collectors.toList()));
+            if(postDomain.getTagDomains() != null){
+                post.setTags(postDomain.getTagDomains().stream().map(tagMapper::domainToEntity).collect(Collectors.toList()));
+            }else{
+                post.setTags(null);
+            }
             return postMapper.entityToDomain(postRepository.save(post));
         }
     }

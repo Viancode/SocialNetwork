@@ -33,15 +33,17 @@ public class PostServiceImpl implements PostServicePort {
     private final TagMapper tagMapper;
 
     public void checkTagUser(PostDomain postDomain){
-        Long currentUserId = SecurityUtil.getCurrentUserId();
-        List<Long> listBlockFriend = relationshipDatabasePort.getListBlock(currentUserId).stream().map(UserDomain::getId).toList();
-        List<TagDomain> tagDomains = postDomain.getTagDomains();
-        for (TagDomain tagDomain : tagDomains) {
-            if(listBlockFriend.contains(tagDomain.getUserIdTagged())) {
-                throw new ClientErrorException("User with id " + tagDomain.getUserIdTagged() + " is blocked.");
-            }
-            if(relationshipDatabasePort.getRelationship(currentUserId, tagDomain.getUserIdTagged()) == null){
-                throw new ClientErrorException("User with id " + tagDomain.getUserIdTagged() + " is not friend.");
+        if (postDomain.getTagDomains() != null){
+            long currentUserId = SecurityUtil.getCurrentUserId();
+            List<Long> listBlockFriend = relationshipDatabasePort.getListBlock(currentUserId).stream().map(UserDomain::getId).toList();
+            List<TagDomain> tagDomains = postDomain.getTagDomains();
+            for (TagDomain tagDomain : tagDomains) {
+                if(listBlockFriend.contains(tagDomain.getUserIdTagged())) {
+                    throw new ClientErrorException("User with id " + tagDomain.getUserIdTagged() + " is blocked.");
+                }
+                if(relationshipDatabasePort.getRelationship(currentUserId, tagDomain.getUserIdTagged()) == null){
+                    throw new ClientErrorException("User with id " + tagDomain.getUserIdTagged() + " is not friend.");
+                }
             }
         }
     }
