@@ -53,7 +53,7 @@ SET post_id_var = LAST_INSERT_ID();
         -- Tạo 10 bình luận cho mỗi bài đăng
         SET j = 0;
         SET parent_comment_id = NULL;
-        WHILE j < 10 DO
+        WHILE j < 20 DO
             -- Quyết định xem comment này có phải là reply hay không
             IF j > 0 AND RAND() < 0.4 THEN  -- 40% cơ hội là reply
                 SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
