@@ -43,19 +43,19 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/get_list_receive_requests")
     public ResponseEntity<?> getListReceiveRequest(@RequestParam(value = "page", defaultValue = "1") int page,
-                                                   @RequestParam(value = "page_size", defaultValue = "5") int pageSize){
+                                                   @RequestParam(value = "page_size", defaultValue = "10") int pageSize){
         return buildResponse("Get list receive requests successfully", relationshipService.getListReceiveRequest(page, pageSize).map(userMapper::toFriendResponse));
     }
 
     @GetMapping("/get_list_send_requests")
     public ResponseEntity<?> getListSendRequest(@RequestParam(value = "page", defaultValue = "1") int page,
-                                                @RequestParam(value = "page_size", defaultValue = "5") int pageSize){
+                                                @RequestParam(value = "page_size", defaultValue = "10") int pageSize){
         return buildResponse("Get list receive requests successfully", relationshipService.getListSendRequest(page, pageSize).map(userMapper::toFriendResponse));
     }
 
     @GetMapping("/get_list_friends")
     public ResponseEntity<?> getListFriend(@RequestParam(value = "page", defaultValue = "1") int page,
-                                           @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                           @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                            @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
                                            @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
                                            @RequestParam(value = "user_id") long userId){
@@ -64,7 +64,7 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/get_list_block")
     public ResponseEntity<?> getListBlock(@RequestParam(value = "page", defaultValue = "1") int page,
-                                          @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                          @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                           @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
                                           @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy){
         return buildResponse("Get list users blocked successfully", relationshipService.getListBlock(page, pageSize, sortDirection, sortBy).map(UserMapper.INSTANCE::toFriendResponse));
@@ -97,7 +97,7 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/find_friend")
     public ResponseEntity<?> findFriend(@RequestParam(value = "page", defaultValue = "1") int page,
-                                        @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                        @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                         @RequestParam("keyword") String keyWord){
         return buildResponse("Find friend successfully", relationshipService.findFriend(page, pageSize, keyWord).map(userMapper::toFriendResponse));
     }

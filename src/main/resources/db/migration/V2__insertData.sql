@@ -3,11 +3,11 @@ USE socialnetwork;
 INSERT INTO roles (name) VALUES ('USER');
 
 -- Tạo 3 người dùng
-INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, location, work, education, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
+INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, bio, location, work, education, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
 VALUES
-    ('user1', 'user1@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First1', 'Last1', 'MALE', 'PUBLIC', 1, 'Ha Noi', 'Ha Noi', 'HUST', NOW(), NOW(), null, null, '1990-01-01', true),
-    ('user2', 'user2@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First2', 'Last2', 'FEMALE', 'PUBLIC', 1, 'Ha Noi', 'HCM', 'NEU', NOW(), NOW(), null, null, '1992-01-01', true),
-    ('user3', 'user3@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First3', 'Last3', 'OTHERS', 'PUBLIC', 1, 'Bac Giang', 'Ha Noi', 'NEU', NOW(), NOW(), null, null, '1991-01-01', true);
+    ('user1', 'user1@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First1', 'Last1', 'MALE', 'PUBLIC', 1, "Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.", 'Ha Noi', 'Ha Noi', 'HUST', NOW(), NOW(), null, null, '1990-01-01', true),
+    ('user2', 'user2@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First2', 'Last2', 'FEMALE', 'PUBLIC', 1, "Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.", 'Ha Noi', 'HCM', 'NEU', NOW(), NOW(), null, null, '1992-01-01', true),
+    ('user3', 'user3@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First3', 'Last3', 'OTHERS', 'PUBLIC', 1, "Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.", 'Bac Giang', 'Ha Noi', 'NEU', NOW(), NOW(), null, null, '1991-01-01', true);
 
 -- Tạo 50 bản ghi ngẫu nhiên cho bảng users
 DELIMITER //
@@ -55,7 +55,7 @@ VALUES (
                ELSE 'FRIEND'
                END,
            1,
-           'This is a bio.',
+           'Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.',
            SUBSTRING_INDEX(SUBSTRING_INDEX(location_list, ',', FLOOR(1 + (RAND() * 10))), ',', -1),
            SUBSTRING_INDEX(SUBSTRING_INDEX(work_list, ',', FLOOR(1 + (RAND() * 7))), ',', -1),
            SUBSTRING_INDEX(SUBSTRING_INDEX(education_list, ',', FLOOR(1 + (RAND() * 5))), ',', -1),
@@ -96,7 +96,7 @@ BEGIN
     DECLARE tag_user_id INT;
     DECLARE comment_image VARCHAR(255);
 
-    WHILE i < 600 DO
+    WHILE i < 1200 DO
         SET post_user_id = FLOOR(1 + RAND() * 53);
         -- Tạo thời gian ngẫu nhiên trong khoảng 1 năm trở lại
         SET post_created_at = DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 365) DAY);
@@ -120,9 +120,9 @@ VALUES (
 
 SET post_id_var = LAST_INSERT_ID();
 
-        -- Tạo 10 bình luận cho mỗi bài đăng
+        -- Tạo 20 bình luận cho mỗi bài đăng
         SET j = 0;
-        WHILE j < 10 DO
+        WHILE j < 20 DO
             -- Quyết định xem comment này có phải là reply hay không (40% cơ hội là reply)
             IF j > 0 AND RAND() < 0.4 THEN
                 SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
