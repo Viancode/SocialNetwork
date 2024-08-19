@@ -30,6 +30,9 @@ public class CommentReactionController extends BaseController {
             @RequestBody CommentReactionRequest commentReactionRequest
     ) {
         CommentReactionDomain commentReactionDomain = commentReactionServicePort.createCommentReaction(CommentReactionMapper.INSTANCE.requestToDomain(commentReactionRequest));
+        if(commentReactionDomain == null) {
+            return buildResponse("unreactive comment successfully");
+        }
         UserDomain userDomain = userServicePort.findUserById(commentReactionDomain.getUser().getId());
         return buildResponse("Create comment reaction successfully", CommentReactionMapper.INSTANCE.domainToResponse(commentReactionDomain, userDomain));
     }
