@@ -38,4 +38,6 @@ public class PostResponse {
     private Long numberOfReacts;
 
     private List<TagUserResponse> tagUsers = null;
+
+    private Boolean isReacted = false;
 }

@@ -8,6 +8,7 @@ import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.Comment;
+import com.example.socialnetwork.infrastructure.entity.CommentReaction;
 import com.example.socialnetwork.infrastructure.entity.Post;
 import com.example.socialnetwork.infrastructure.entity.User;
 import com.example.socialnetwork.infrastructure.repository.CommentReactionRepository;
@@ -66,6 +67,12 @@ public class CommentMapper {
     }
 
     public CommentResponse commentDomainToCommentResponse(CommentDomain domain) {
+        boolean reacted = false;
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        CommentReaction commentReaction = commentReactionRepository.findByUserIdAndCommentId(currentUserId, domain.getCommentId()).orElse(null);
+        if(commentReaction != null) {
+            reacted = true;
+        }
         return CommentResponse.builder()
                 .commentId(domain.getCommentId())
                 .userId(domain.getUser().getId())
@@ -79,6 +86,7 @@ public class CommentMapper {
                 .updatedAt(domain.getUpdatedAt())
                 .image(domain.getImage())
                 .reactCount(domain.getReactCount())
+                .isReacted(reacted)
                 .build();
     }
 }
