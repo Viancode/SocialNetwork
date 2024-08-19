@@ -1,5 +1,6 @@
 package com.example.socialnetwork.infrastructure.repository;
 
+import com.example.socialnetwork.common.constant.ECloseRelationship;
 import com.example.socialnetwork.infrastructure.entity.CloseRelationship;
 import com.example.socialnetwork.infrastructure.entity.User;
 import org.springframework.data.domain.Page;
@@ -22,4 +23,9 @@ public interface CloseRelationshipRepository extends JpaRepository<CloseRelation
             "WHERE (r.user.id = :userId OR r.targetUser.id = :userId) " +
             "AND u.id <> :userId")
     List<User> findCloseRelationshipByUser(@Param("userId") long userId);
+
+    @Query("SELECT u.closeRelationshipName FROM CloseRelationship u " +
+            "WHERE (u.user.id = :userId AND u.targetUser.id = :friendId) " +
+            "OR (u.user.id = :friendId AND u.targetUser.id = :userId)")
+    ECloseRelationship findCloseRelationship(@Param("userId") long userId, @Param("friendId") long friendId);
 }

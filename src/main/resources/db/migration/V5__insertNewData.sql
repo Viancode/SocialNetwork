@@ -126,3 +126,44 @@ CALL update_mutual_friends_and_suggest_points();
 
 -- Xóa procedure sau khi sử dụng
 DROP PROCEDURE update_mutual_friends_and_suggest_points;
+
+DELIMITER //
+CREATE PROCEDURE generate_close_relationships()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE rel_user_id BIGINT;
+    DECLARE rel_friend_id BIGINT;
+    DECLARE rel_created_at DATETIME;
+    DECLARE rel_cursor CURSOR FOR
+SELECT user_id, friend_id, created_at FROM relationships WHERE relation = 'FRIEND';
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+OPEN rel_cursor;
+
+rel_loop: LOOP
+        FETCH rel_cursor INTO rel_user_id, rel_friend_id, rel_created_at;
+        IF done THEN
+            LEAVE rel_loop;
+END IF;
+
+        -- 50% chance to create a close relationship
+        IF RAND() < 0.5 THEN
+            INSERT INTO close_relationships (user_id, target_user_id, close_relationship_name, created_at)
+            VALUES (
+                rel_user_id,
+                rel_friend_id,
+                ELT(FLOOR(1 + RAND() * 5), 'FATHER', 'MOTHER', 'BROTHER', 'SISTER', 'DATING'),
+                rel_created_at
+            );
+END IF;
+END LOOP;
+
+CLOSE rel_cursor;
+END //
+DELIMITER ;
+
+-- Gọi thủ tục để tạo dữ liệu
+CALL generate_close_relationships();
+
+-- Xóa procedure sau khi sử dụng
+DROP PROCEDURE generate_close_relationships;

@@ -95,6 +95,7 @@ BEGIN
     DECLARE can_tag BOOLEAN;
     DECLARE tag_user_id INT;
     DECLARE comment_image VARCHAR(255);
+    DECLARE is_parent_comment BOOLEAN;
 
     WHILE i < 600 DO
         SET post_user_id = FLOOR(1 + RAND() * 53);
@@ -115,7 +116,7 @@ VALUES (
            CASE
                WHEN RAND() < 0.33 THEN 'https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png'
                ELSE null
-            END
+               END
        );
 
 SET post_id_var = LAST_INSERT_ID();
@@ -123,9 +124,23 @@ SET post_id_var = LAST_INSERT_ID();
         -- Tạo 10 bình luận cho mỗi bài đăng
         SET j = 0;
         WHILE j < 10 DO
-            -- Quyết định xem comment này có phải là reply hay không (40% cơ hội là reply)
+            -- Kiểm tra nếu comment là một reply và đảm bảo không vượt quá 2 lớp
             IF j > 0 AND RAND() < 0.4 THEN
-                SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
+SELECT COUNT(*) INTO is_parent_comment
+FROM comments
+WHERE comment_id = (
+    SELECT parent_comment_id
+    FROM comments
+    WHERE post_id = post_id_var
+    ORDER BY RAND() LIMIT 1
+    );
+
+-- Nếu là comment cha (có thể nhận reply) thì cho phép reply
+IF is_parent_comment = 0 THEN
+                    SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
+ELSE
+                    SET parent_comment_id = NULL;
+END IF;
 ELSE
                 SET parent_comment_id = NULL;
 END IF;
@@ -206,4 +221,5 @@ CALL create_posts_comments_reactions();
 
 -- Xóa procedure sau khi sử dụng
 DROP PROCEDURE create_posts_comments_reactions;
+
 
