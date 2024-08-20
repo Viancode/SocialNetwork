@@ -16,19 +16,13 @@ public interface RelationshipDatabasePort {
 
     ERelationship getRelationship(long senderId, long receiverId);
 
-    Page<UserDomain> getListSendRequest(int page, int pageSize, long userId);
+    List<UserDomain> getListSendRequest(long userId);
 
-    Page<UserDomain> getListReceiveRequest(int page, int pageSize, long userId);
-
-    Page<UserDomain> getListFriend(int page, int pageSize, long userId, Sort sort);
+    List<UserDomain> getListReceiveRequest(long userId);
 
     List<UserDomain> getListFriend(long userId);
 
-    Page<UserDomain> getListBlock(int page, int pageSize, long userId, Sort sort);
-
     List<UserDomain> getListBlock(long userId);
-
-    Page<UserDomain> findFriendByKeyWord(int page, int pageSize, long userId, String keyWord);
 
     List<UserDomain> findFriendByKeyWord(long userId, String keyWord);
 

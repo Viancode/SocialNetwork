@@ -27,12 +27,12 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
     @Query("SELECT r.user FROM Relationship r " +
             "WHERE r.relation = :relation " +
             "AND r.friend.id = :userId ")
-    Page<User> findByFriend_IdAndRelation(@Param("userId") long userId, @Param("relation") ERelationship relation, Pageable pageable);
+    List<User> findByFriend_IdAndRelation(@Param("userId") long userId, @Param("relation") ERelationship relation);
 
     @Query("SELECT r.friend FROM Relationship r " +
             "WHERE r.relation = :relation " +
             "AND r.user.id = :userId ")
-    Page<User> findByUser_IdAndRelation(@Param("userId") long userId, @Param("relation") ERelationship relation, Pageable pageable);
+    List<User> findByUser_IdAndRelation(@Param("userId") long userId, @Param("relation") ERelationship relation);
 
     @EntityGraph(attributePaths = {"user"})
     @Query("SELECT u FROM User u " +

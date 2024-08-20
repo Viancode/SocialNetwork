@@ -1,5 +1,7 @@
 package com.example.socialnetwork.application.response;
 
+import com.example.socialnetwork.common.constant.ECloseRelationship;
+import com.example.socialnetwork.common.constant.ERelationship;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,4 +17,7 @@ public class FriendResponse {
     String avatar;
     String username;
     String email;
+    int mutualFriends;
+    ERelationship status;
+    ECloseRelationship closeRelationship;
 }

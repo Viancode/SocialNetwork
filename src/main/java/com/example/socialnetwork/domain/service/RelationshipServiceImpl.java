@@ -1,13 +1,8 @@
 package com.example.socialnetwork.domain.service;
 
-import com.example.socialnetwork.application.response.CloseFriendResponse;
-import com.example.socialnetwork.application.response.FriendSuggestionResponse;
-import com.example.socialnetwork.application.response.SearchFriendResponse;
+import com.example.socialnetwork.application.response.FriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
-import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.CustomSuggestionMapper;
-import com.example.socialnetwork.common.mapper.CustomUserMapper;
-import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
@@ -30,8 +25,6 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     private final UserDatabasePort userDatabasePort;
     private final CloseRelationshipDatabasePort closeRelationshipDatabasePort;
     private final CustomEventPublisher customEventPublisher;
-    private final SuggestionMapper suggestionMapper;
-    private final CustomUserMapper customUserMapper;
     private final CustomSuggestionMapper customSuggestionMapper;
 
     @Override
@@ -145,58 +138,65 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
-    public Page<UserDomain> findFriend(int page, int pageSize, String keyWord) {
+    public Page<FriendResponse> findFriend(int page, int pageSize, String keyWord) {
         long userId = SecurityUtil.getCurrentUserId();
-        return relationshipDatabasePort.findFriendByKeyWord(page, pageSize, userId, keyWord);
+        Sort sort = Sort.by("username");
+        List<FriendResponse> findFriendResponse = customSuggestionMapper.userDomainsToSearchFriendResponses(relationshipDatabasePort.findFriendByKeyWord(userId, keyWord));
+        return getPage(page, pageSize, findFriendResponse, sort);
     }
 
     @Override
-    public Page<UserDomain> getListReceiveRequest(int page, int pageSize) {
+    public Page<FriendResponse> getListReceiveRequest(int page, int pageSize) {
         long userId = SecurityUtil.getCurrentUserId();
-        return relationshipDatabasePort.getListReceiveRequest(page, pageSize, userId);
+        Sort sort = Sort.by("friend.createdAt");
+        List<FriendResponse> getListReceiveResponse = customSuggestionMapper.userDomainsToSearchFriendResponses(relationshipDatabasePort.getListReceiveRequest(userId));
+        return getPage(page, pageSize, getListReceiveResponse, sort);
     }
 
     @Override
-    public Page<UserDomain> getListSendRequest(int page, int pageSize) {
+    public Page<FriendResponse> getListSendRequest(int page, int pageSize) {
         long userId = SecurityUtil.getCurrentUserId();
-        return relationshipDatabasePort.getListSendRequest(page, pageSize, userId);
+        Sort sort = Sort.by("friend.createdAt");
+        List<FriendResponse> getListSendResponse = customSuggestionMapper.userDomainsToSearchFriendResponses(relationshipDatabasePort.getListSendRequest(userId));
+        return getPage(page, pageSize, getListSendResponse, sort);
     }
 
     @Override
-    public Page<CloseFriendResponse> getListFriend(int page, int pageSize, String sortDirection, String sortBy) {
+    public Page<FriendResponse> getListFriend(int page, int pageSize, String sortDirection, String sortBy) {
         long currentUserId = SecurityUtil.getCurrentUserId();
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         List<UserDomain> userDomains = relationshipDatabasePort.getListFriend(currentUserId);
-        List<CloseFriendResponse> closeFriendResponses = new ArrayList<>();
+        List<FriendResponse> getListFriendResponse = new ArrayList<>();
         for (UserDomain userDomain : userDomains) {
-            closeFriendResponses.add(customUserMapper.toCloseFriendResponse(userDomain));
+            getListFriendResponse.add(customSuggestionMapper.toSearchFriendResponse(userDomain));
         }
-        return getPage(page, pageSize, closeFriendResponses, sort);
+        return getPage(page, pageSize, getListFriendResponse, sort);
     }
 
     @Override
-    public Page<UserDomain> getListBlock(int page, int pageSize, String sortDirection, String sortBy) {
+    public Page<FriendResponse> getListBlock(int page, int pageSize, String sortDirection, String sortBy) {
         long currentUserId = SecurityUtil.getCurrentUserId();
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
-        return relationshipDatabasePort.getListBlock(page, pageSize, currentUserId, sort);
+        List<FriendResponse> getListBlockResponse = customSuggestionMapper.userDomainsToSearchFriendResponses(relationshipDatabasePort.getListBlock(currentUserId));
+        return getPage(page, pageSize, getListBlockResponse, sort);
     }
 
     @Override
-    public Page<FriendSuggestionResponse> getFriendSuggestions(int page, int pageSize) {
+    public Page<FriendResponse> getFriendSuggestions(int page, int pageSize) {
         long userId = SecurityUtil.getCurrentUserId();
         List<SuggestionDomain> suggestionDomains = relationshipDatabasePort.getListSuggestionUser(userId);
-        List<FriendSuggestionResponse> friendSuggestions = suggestionMapper.toFriendSuggestionResponses(suggestionDomains);
+        List<FriendResponse> friendSuggestions = customSuggestionMapper.toSearchFriendResponses(suggestionDomains);
         return getPage(page, pageSize, friendSuggestions);
     }
 
     @Override
-    public Page<SearchFriendResponse> searchUser(int page, int pageSize, String keyWord) {
+    public Page<FriendResponse> searchUser(int page, int pageSize, String keyWord) {
         long userId = SecurityUtil.getCurrentUserId();
         List<SuggestionDomain> suggestionDomains = relationshipDatabasePort.searchUserByKeyWord(userId, keyWord);
-        List<SearchFriendResponse> searchFriendResponses = customSuggestionMapper.toSearchFriendResponses(suggestionDomains);
-        return getPage(page, pageSize, searchFriendResponses);
+        List<FriendResponse> friendRespons = customSuggestionMapper.toSearchFriendResponses(suggestionDomains);
+        return getPage(page, pageSize, friendRespons);
     }
 
     private void checkFriend(long friendId) {
