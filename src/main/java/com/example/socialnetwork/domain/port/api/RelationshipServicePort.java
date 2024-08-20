@@ -1,15 +1,7 @@
 package com.example.socialnetwork.domain.port.api;
 
-import com.example.socialnetwork.application.response.CloseFriendResponse;
-import com.example.socialnetwork.application.response.FriendSuggestionResponse;
-import com.example.socialnetwork.application.response.SearchFriendResponse;
-import com.example.socialnetwork.common.constant.ERelationship;
-import com.example.socialnetwork.domain.model.SuggestionDomain;
-import com.example.socialnetwork.domain.model.UserDomain;
+import com.example.socialnetwork.application.response.FriendResponse;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface RelationshipServicePort {
     void deleteRelationship(long friendId);
@@ -28,17 +20,17 @@ public interface RelationshipServicePort {
 
     int getNumberOfFriend();
 
-    Page<UserDomain> findFriend(int page, int pageSize, String keyWord);
+    Page<FriendResponse> findFriend(int page, int pageSize, String keyWord);
 
-    Page<UserDomain> getListReceiveRequest(int page, int pageSize);
+    Page<FriendResponse> getListReceiveRequest(int page, int pageSize);
 
-    Page<UserDomain> getListSendRequest(int page, int pageSize);
+    Page<FriendResponse> getListSendRequest(int page, int pageSize);
 
-    Page<CloseFriendResponse> getListFriend(int page, int pageSize, String sortDirection, String sortBy);
+    Page<FriendResponse> getListFriend(int page, int pageSize, String sortDirection, String sortBy);
 
-    Page<UserDomain> getListBlock(int page, int pageSize, String sortDirection, String sortBy);
+    Page<FriendResponse> getListBlock(int page, int pageSize, String sortDirection, String sortBy);
 
-    Page<FriendSuggestionResponse> getFriendSuggestions(int page, int pageSize);
+    Page<FriendResponse> getFriendSuggestions(int page, int pageSize);
 
-    Page<SearchFriendResponse> searchUser(int page, int pageSize, String keyWord);
+    Page<FriendResponse> searchUser(int page, int pageSize, String keyWord);
 }

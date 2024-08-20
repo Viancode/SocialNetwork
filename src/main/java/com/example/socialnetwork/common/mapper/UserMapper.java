@@ -1,7 +1,5 @@
 package com.example.socialnetwork.common.mapper;
 
-import com.example.socialnetwork.application.response.CloseFriendResponse;
-import com.example.socialnetwork.application.response.FriendResponse;
 import com.example.socialnetwork.application.response.ProfileResponse;
 import com.example.socialnetwork.common.constant.ERole;
 import com.example.socialnetwork.domain.model.UserDomain;
@@ -44,10 +42,6 @@ public interface UserMapper {
     UserDomain toUserDomain(User user);
 
     List<UserDomain> toUserDomains(List<User> users);
-
-    FriendResponse toFriendResponse(UserDomain userDomain);
-
-    List<FriendResponse> toFriendResponses(List<UserDomain> userDomains);
 
     default Role toRole(ERole ERole){
         Role role = new Role();
