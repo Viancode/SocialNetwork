@@ -1,7 +1,6 @@
 package com.example.socialnetwork.application.response;
 
 import com.example.socialnetwork.common.constant.ECloseRelationship;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,13 +11,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class SearchFriendResponse {
+public class CloseFriendResponse {
     Long id;
     String avatar;
     String username;
     String email;
-    int mutualFriends;
-    String status;
     ECloseRelationship closeRelationship;
 }

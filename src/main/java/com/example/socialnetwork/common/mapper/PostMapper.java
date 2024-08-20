@@ -95,6 +95,7 @@ public class PostMapper {
     }
 
     public PostResponse domainToResponse(PostDomain postDomain) {
+
         if (postDomain == null) {
             return null;
         } else {
@@ -124,6 +125,11 @@ public class PostMapper {
 
             postResponse.setCreatedAt(postDomain.getCreatedAt());
             postResponse.setUpdatedAt(postDomain.getUpdatedAt());
+            Long currentUserId = SecurityUtil.getCurrentUserId();
+            PostReaction postReaction = postReactionRepository.findByUserIdAndPostId(currentUserId,postDomain.getId()).orElse(null);
+            if(postReaction != null) {
+                postResponse.setIsReacted(true);
+            }
 
             return postResponse;
         }

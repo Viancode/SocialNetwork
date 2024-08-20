@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -170,7 +171,7 @@ public class PostServiceImpl implements PostServicePort {
         List<Visibility> list = List.of(Visibility.PUBLIC, Visibility.FRIEND);
         Page<PostDomain> postOfFriends = postDatabasePort.getAllPostByFriends(pageable1, friendIds, list);
         List<PostDomain> newsFeed = postOfFriends.getContent().stream()
-                .sorted(Comparator.comparing((PostDomain post) -> closedFriends.contains(userDatabasePort.findById(post.getUserId())) && LocalDate.from(post.getCreatedAt()).equals(LocalDate.now())).reversed())
+                .sorted(Comparator.comparing((PostDomain post) -> closedFriends.contains(userDatabasePort.findById(post.getUserId())) && LocalDate.ofInstant(post.getCreatedAt(), ZoneId.of("Asia/Ho_Chi_Minh")).equals(LocalDate.now())).reversed())
                 .collect(Collectors.toList());
         List<PostResponse> postResponses = postMapper.listDomainToResponse(newsFeed);
         Pageable pageable2 = PageRequest.of(page - 1, pageSize);

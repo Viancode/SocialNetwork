@@ -21,4 +21,5 @@ public class CommentResponse {
     private Instant updatedAt;
     private String image;
     private Long reactCount;
+    private Boolean isReacted = false;
 }
