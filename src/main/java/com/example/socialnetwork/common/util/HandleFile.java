@@ -14,7 +14,7 @@ public class HandleFile {
     public static String loadFileImage(PostRequest postRequest, StorageServicePort storageServicePort, int numberFile) {
         StringBuilder photoPaths = new StringBuilder();
         if (postRequest.getPhotoLists() != null) {
-            if (postRequest.getPhotoLists().length < numberFile) {
+            if (postRequest.getPhotoLists().length <= numberFile) {
                 for (MultipartFile photo : postRequest.getPhotoLists()) {
                     String filePath = storageServicePort.store(FileType.IMAGE, photo);
                     String photoUrl = storageServicePort.getUrl(filePath);

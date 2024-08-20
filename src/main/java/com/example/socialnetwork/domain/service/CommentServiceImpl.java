@@ -165,7 +165,10 @@ public class CommentServiceImpl implements CommentServicePort {
         isSpam(content);
         currentComment.setContent(content);
         currentComment.setUpdatedAt(Instant.now());
-        currentComment.setImage(image);
+
+        if(!image.isEmpty()){
+            currentComment.setImage(image);
+        }
         return commentDatabasePort.updateComment(currentComment);
     }
 

@@ -81,8 +81,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort, UserDatabasePort userDatabasePort, PostMapper postMapper, TagMapper tagMapper) {
-        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort, closeRelationshipDatabasePort, userDatabasePort, postMapper, tagMapper);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort, UserDatabasePort userDatabasePort, PostMapper postMapper, TagMapper tagMapper, StorageServicePort storageServicePort) {
+        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort, closeRelationshipDatabasePort, userDatabasePort, postMapper, tagMapper, storageServicePort);
     }
 
 

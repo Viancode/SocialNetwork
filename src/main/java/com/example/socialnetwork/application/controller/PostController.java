@@ -1,6 +1,7 @@
 package com.example.socialnetwork.application.controller;
 
 import com.example.socialnetwork.application.request.PostRequest;
+import com.example.socialnetwork.application.request.PostUpdate;
 import com.example.socialnetwork.application.request.TagRequest;
 import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.application.response.ResultResponse;
@@ -57,9 +58,9 @@ public class PostController extends BaseController {
 
     @PutMapping("")
     public ResponseEntity<?> updatePost(
-            @ModelAttribute PostRequest postRequest
+            @ModelAttribute PostUpdate postUpdate
     ){
-        PostDomain postDomain = postServicePort.updatePost(postMapper.requestToDomain(postRequest));
+        PostDomain postDomain = postServicePort.updatePost(postUpdate);
         return buildResponse("Update post successfully", postMapper.domainToResponse(postDomain));
     }
 

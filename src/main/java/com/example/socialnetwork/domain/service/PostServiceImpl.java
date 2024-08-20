@@ -1,16 +1,20 @@
 package com.example.socialnetwork.domain.service;
 
 import com.example.socialnetwork.application.request.PostRequest;
+import com.example.socialnetwork.application.request.PostUpdate;
+import com.example.socialnetwork.application.request.TagRequest;
 import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.PostMapper;
 import com.example.socialnetwork.common.mapper.TagMapper;
+import com.example.socialnetwork.common.util.HandleFile;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.TagDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
+import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.spi.*;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.exception.custom.NotAllowException;
@@ -19,6 +23,8 @@ import org.springframework.data.domain.*;
 
 import java.time.LocalDate;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,12 +37,13 @@ public class PostServiceImpl implements PostServicePort {
     private final UserDatabasePort userDatabasePort;
     private final PostMapper postMapper;
     private final TagMapper tagMapper;
+    private final StorageServicePort storageServicePort;
+    private final static int NUMBER_FILE = 4;
 
-    public void checkTagUser(PostDomain postDomain){
-        if (postDomain.getTagDomains() != null){
+    public void checkTagUser(List<TagDomain> tagDomains){
+        if (tagDomains != null){
             long currentUserId = SecurityUtil.getCurrentUserId();
             List<Long> listBlockFriend = relationshipDatabasePort.getListBlock(currentUserId).stream().map(UserDomain::getId).toList();
-            List<TagDomain> tagDomains = postDomain.getTagDomains();
             for (TagDomain tagDomain : tagDomains) {
                 if(listBlockFriend.contains(tagDomain.getUserIdTagged())) {
                     throw new ClientErrorException("User with id " + tagDomain.getUserIdTagged() + " is blocked.");
@@ -50,29 +57,71 @@ public class PostServiceImpl implements PostServicePort {
 
     @Override
     public PostDomain createPost(PostDomain postDomain) {
-        checkTagUser(postDomain);
+        checkTagUser(postDomain.getTagDomains());
         return postDatabasePort.createPost(postDomain);
     }
 
     @Override
-    public PostDomain updatePost(PostDomain postDomain) {
-        PostDomain postDomainExist = postDatabasePort.findById(postDomain.getId());
-        if (postDomain.getContent().isEmpty()) {
+    public PostDomain updatePost(PostUpdate postUpdate) {
+        PostDomain postDomainExist = postDatabasePort.findById(postUpdate.getId());
+
+        if (postUpdate.getContent().isEmpty()) {
             throw new ClientErrorException("Content is empty");
-        } else {
-            postDomainExist.setContent(postDomain.getContent());
-        }
-        postDomainExist.setVisibility(postDomain.getVisibility());
-        if (postDomain.getPhotoLists().isEmpty()) {
-            postDomainExist.setPhotoLists(null);
-        }else{
-            postDomainExist.setPhotoLists(postDomain.getPhotoLists());
         }
 
-        checkTagUser(postDomain);
-        postDomainExist.setTagDomains(postDomain.getTagDomains());
-        postDomainExist.setUpdatedAt(Instant.now());
+        postDomainExist.setContent(postUpdate.getContent());
+        postDomainExist.setVisibility(postUpdate.getVisibility());
+
+        updatePhotos(postDomainExist, postUpdate);
+        updateTags(postDomainExist, postUpdate);
+
         return postDatabasePort.updatePost(postDomainExist);
+    }
+
+    private void updatePhotos(PostDomain postDomain, PostUpdate postUpdate) {
+        List<String> photoList = new ArrayList<>(Arrays.asList(postDomain.getPhotoLists().split(",")));
+
+        if (postUpdate.getIsDelete() && postUpdate.getPhotoDelete() != null && !postUpdate.getPhotoDelete().isEmpty()) {
+            photoList.removeAll(Arrays.asList(postUpdate.getPhotoDelete().split(",")));
+        }
+
+        String newPhotos = handleUploadFile(photoList, postUpdate);
+        if (!newPhotos.isEmpty()) {
+            postDomain.setPhotoLists(newPhotos);
+        }
+    }
+
+    private void updateTags(PostDomain postDomain, PostUpdate postUpdate) {
+        if (postUpdate.getTagUsers().isEmpty()) {
+            postDomain.setTagDomains(null);
+        } else {
+            List<TagRequest> tagRequests = Arrays.stream(postUpdate.getTagUsers().split(","))
+                    .map(tag -> new TagRequest(Long.parseLong(tag)))
+                    .toList();
+
+            List<TagDomain> tagDomains = tagRequests.stream()
+                    .map(tagRequest -> tagMapper.requestToDomain(tagRequest, postDomain.getId()))
+                    .toList();
+
+            checkTagUser(tagDomains);
+            postDomain.setTagDomains(tagDomains);
+        }
+    }
+
+    public String handleUploadFile(List<String> photoList, PostUpdate postUpdate) {
+        if (photoList.size() >= NUMBER_FILE || postUpdate.getPhotoLists() == null) {
+            return "";
+        }
+
+        String newFile = HandleFile.loadFileImage(postUpdate.getPhotoLists(), storageServicePort, NUMBER_FILE);
+        List<String> newPhotoList = Arrays.asList(newFile.split(","));
+        photoList.addAll(newPhotoList);
+
+        if (photoList.size() > NUMBER_FILE) {
+            throw new ClientErrorException("Too many files.");
+        }
+
+        return String.join(",", photoList);
     }
 
     @Override
