@@ -1,13 +1,8 @@
 package com.example.socialnetwork.application.controller;
 
-import com.example.socialnetwork.common.mapper.CustomUserMapper;
-import com.example.socialnetwork.common.mapper.RelationshipMapper;
-import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
-import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,19 +39,19 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/get_list_receive_requests")
     public ResponseEntity<?> getListReceiveRequest(@RequestParam(value = "page", defaultValue = "1") int page,
-                                                   @RequestParam(value = "page_size", defaultValue = "5") int pageSize){
-        return buildResponse("Get list receive requests successfully", relationshipService.getListReceiveRequest(page, pageSize).map(userMapper::toFriendResponse));
+                                                   @RequestParam(value = "page_size", defaultValue = "10") int pageSize){
+        return buildResponse("Get list receive requests successfully", relationshipService.getListReceiveRequest(page, pageSize));
     }
 
     @GetMapping("/get_list_send_requests")
     public ResponseEntity<?> getListSendRequest(@RequestParam(value = "page", defaultValue = "1") int page,
-                                                @RequestParam(value = "page_size", defaultValue = "5") int pageSize){
-        return buildResponse("Get list receive requests successfully", relationshipService.getListSendRequest(page, pageSize).map(userMapper::toFriendResponse));
+                                                @RequestParam(value = "page_size", defaultValue = "10") int pageSize){
+        return buildResponse("Get list receive requests successfully", relationshipService.getListSendRequest(page, pageSize));
     }
 
     @GetMapping("/get_list_friends")
     public ResponseEntity<?> getListFriend(@RequestParam(value = "page", defaultValue = "1") int page,
-                                           @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                           @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                            @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
                                            @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection){
         return buildResponse("Get list friends successfully", relationshipService.getListFriend(page, pageSize, sortDirection, sortBy));
@@ -64,10 +59,10 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/get_list_block")
     public ResponseEntity<?> getListBlock(@RequestParam(value = "page", defaultValue = "1") int page,
-                                          @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                          @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                           @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
                                           @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy){
-        return buildResponse("Get list users blocked successfully", relationshipService.getListBlock(page, pageSize, sortDirection, sortBy).map(UserMapper.INSTANCE::toFriendResponse));
+        return buildResponse("Get list users blocked successfully", relationshipService.getListBlock(page, pageSize, sortDirection, sortBy));
     }
 
     @DeleteMapping("/delete_friend")
@@ -90,16 +85,16 @@ public class RelationshipController  extends BaseController{
 
     @GetMapping("/view_suggest")
     public ResponseEntity<?> viewSuggest(@RequestParam(value = "page", defaultValue = "1") int page,
-                                         @RequestParam(value = "page_size", defaultValue = "5") int pageSize
+                                         @RequestParam(value = "page_size", defaultValue = "10") int pageSize
     ){
         return buildResponse("Get friend suggestions successfully", relationshipService.getFriendSuggestions(page, pageSize));
     }
 
     @GetMapping("/find_friend")
     public ResponseEntity<?> findFriend(@RequestParam(value = "page", defaultValue = "1") int page,
-                                        @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                        @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                         @RequestParam("keyword") String keyWord){
-        return buildResponse("Find friend successfully", relationshipService.findFriend(page, pageSize, keyWord).map(userMapper::toFriendResponse));
+        return buildResponse("Find friend successfully", relationshipService.findFriend(page, pageSize, keyWord));
     }
 
     @GetMapping("/number_of_friends")

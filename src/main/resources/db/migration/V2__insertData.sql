@@ -3,11 +3,11 @@ USE socialnetwork;
 INSERT INTO roles (name) VALUES ('USER');
 
 -- Tạo 3 người dùng
-INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, location, work, education, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
+INSERT INTO users (username, email, password, first_name, last_name, gender, visibility, role_id, bio, location, work, education, created_at, updated_at, avatar, background_image, date_of_birth, is_email_verified)
 VALUES
-    ('user1', 'user1@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First1', 'Last1', 'MALE', 'PUBLIC', 1, 'Ha Noi', 'Ha Noi', 'HUST', NOW(), NOW(), null, null, '1990-01-01', true),
-    ('user2', 'user2@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First2', 'Last2', 'FEMALE', 'PUBLIC', 1, 'Ha Noi', 'HCM', 'NEU', NOW(), NOW(), null, null, '1992-01-01', true),
-    ('user3', 'user3@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First3', 'Last3', 'OTHERS', 'PUBLIC', 1, 'Bac Giang', 'Ha Noi', 'NEU', NOW(), NOW(), null, null, '1991-01-01', true);
+    ('user1', 'user1@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First1', 'Last1', 'MALE', 'PUBLIC', 1, "Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.", 'Ha Noi', 'Ha Noi', 'HUST', NOW(), NOW(), null, null, '1990-01-01', true),
+    ('user2', 'user2@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First2', 'Last2', 'FEMALE', 'PUBLIC', 1, "Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.", 'Ha Noi', 'HCM', 'NEU', NOW(), NOW(), null, null, '1992-01-01', true),
+    ('user3', 'user3@gmail.com', '$2a$10$63fedCD/3qKGqcEjrb7RxeNzMaI8bXFNwXlzXWwPDw8mw77LNjIc6', 'First3', 'Last3', 'OTHERS', 'PUBLIC', 1, "Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.", 'Bac Giang', 'Ha Noi', 'NEU', NOW(), NOW(), null, null, '1991-01-01', true);
 
 -- Tạo 50 bản ghi ngẫu nhiên cho bảng users
 DELIMITER //

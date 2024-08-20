@@ -65,8 +65,8 @@ public class BeanConfig {
     }
 
     @Bean
-    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort,CustomEventPublisher customEventPublisher, SuggestionMapper suggestionMapper, CustomUserMapper customUserMapper, CustomSuggestionMapper customSuggestionMapper) {
-        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, closeRelationshipDatabasePort, customEventPublisher, suggestionMapper, customUserMapper, customSuggestionMapper);
+    RelationshipServicePort relationshipServicePort(RelationshipDatabasePort relationshipDatabasePort, UserDatabasePort userDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort,CustomEventPublisher customEventPublisher, CustomSuggestionMapper customSuggestionMapper) {
+        return new RelationshipServiceImpl(relationshipDatabasePort, userDatabasePort, closeRelationshipDatabasePort, customEventPublisher, customSuggestionMapper);
     }
 
     @Bean

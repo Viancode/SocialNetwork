@@ -68,54 +68,54 @@ BEGIN
 
     -- Cursor for looping through suggestions
     DECLARE cur_suggestions CURSOR FOR
-        SELECT suggestion_id, user_id, friend_id, suggest_point
-        FROM suggestions;
+SELECT suggestion_id, user_id, friend_id, suggest_point
+FROM suggestions;
 
-    -- Continue handler for cursor
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+-- Continue handler for cursor
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     -- Open cursor
-    OPEN cur_suggestions;
+OPEN cur_suggestions;
 
-    read_loop: LOOP
+read_loop: LOOP
         FETCH cur_suggestions INTO sug_id, sug_user_id, sug_friend_id, new_suggest_point;
         IF done THEN
             LEAVE read_loop;
-        END IF;
+END IF;
 
         -- Calculate mutual friends between sug_user_id and sug_friend_id
-        SELECT COUNT(*)
-        INTO mutual_count
-        FROM relationships r1
-                 JOIN relationships r2 ON r1.friend_id = r2.friend_id
-        WHERE r1.user_id = sug_user_id
-          AND r2.user_id = sug_friend_id
-          AND r1.relation = 'FRIEND'
-          AND r2.relation = 'FRIEND';
+SELECT COUNT(*)
+INTO mutual_count
+FROM relationships r1
+         JOIN relationships r2 ON r1.friend_id = r2.friend_id
+WHERE r1.user_id = sug_user_id
+  AND r2.user_id = sug_friend_id
+  AND r1.relation = 'FRIEND'
+  AND r2.relation = 'FRIEND';
 
-        -- Update suggest_point based on number of mutual friends
-        CASE
+-- Update suggest_point based on number of mutual friends
+CASE
             WHEN mutual_count BETWEEN 1 AND 10 THEN
                 SET new_suggest_point = new_suggest_point + 10;
-            WHEN mutual_count BETWEEN 11 AND 20 THEN
+WHEN mutual_count BETWEEN 11 AND 20 THEN
                 SET new_suggest_point = new_suggest_point + 20;
-            WHEN mutual_count > 20 THEN
+WHEN mutual_count > 20 THEN
                 SET new_suggest_point = new_suggest_point + 30;
-            ELSE
+ELSE
                 -- Không thay đổi điểm nếu mutual_count = 0 hoặc không thuộc các trường hợp trên
                 SET new_suggest_point = new_suggest_point;
-        END CASE;
+END CASE;
 
         -- Update suggestions table with mutual friends count and new suggest_point
-        UPDATE suggestions
-        SET mutual_friends = mutual_count,
-            suggest_point = new_suggest_point
-        WHERE suggestion_id = sug_id;
+UPDATE suggestions
+SET mutual_friends = mutual_count,
+    suggest_point = new_suggest_point
+WHERE suggestion_id = sug_id;
 
-    END LOOP;
+END LOOP;
 
     -- Close cursor
-    CLOSE cur_suggestions;
+CLOSE cur_suggestions;
 
 END//
 
