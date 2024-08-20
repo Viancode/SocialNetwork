@@ -55,7 +55,7 @@ VALUES (
                ELSE 'FRIEND'
                END,
            1,
-           'Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.',
+           'This is a bio.',
            SUBSTRING_INDEX(SUBSTRING_INDEX(location_list, ',', FLOOR(1 + (RAND() * 10))), ',', -1),
            SUBSTRING_INDEX(SUBSTRING_INDEX(work_list, ',', FLOOR(1 + (RAND() * 7))), ',', -1),
            SUBSTRING_INDEX(SUBSTRING_INDEX(education_list, ',', FLOOR(1 + (RAND() * 5))), ',', -1),
@@ -95,6 +95,7 @@ BEGIN
     DECLARE can_tag BOOLEAN;
     DECLARE tag_user_id INT;
     DECLARE comment_image VARCHAR(255);
+    DECLARE is_parent_comment BOOLEAN;
 
     WHILE i < 1200 DO
         SET post_user_id = FLOOR(1 + RAND() * 53);
@@ -120,12 +121,26 @@ VALUES (
 
 SET post_id_var = LAST_INSERT_ID();
 
-        -- Tạo 20 bình luận cho mỗi bài đăng
+        -- Tạo 10 bình luận cho mỗi bài đăng
         SET j = 0;
-        WHILE j < 20 DO
-            -- Quyết định xem comment này có phải là reply hay không (40% cơ hội là reply)
+        WHILE j < 10 DO
+            -- Kiểm tra nếu comment là một reply và đảm bảo không vượt quá 2 lớp
             IF j > 0 AND RAND() < 0.4 THEN
-                SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
+SELECT COUNT(*) INTO is_parent_comment
+FROM comments
+WHERE comment_id = (
+    SELECT parent_comment_id
+    FROM comments
+    WHERE post_id = post_id_var
+    ORDER BY RAND() LIMIT 1
+    );
+
+-- Nếu là comment cha (có thể nhận reply) thì cho phép reply
+IF is_parent_comment = 0 THEN
+                    SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
+ELSE
+                    SET parent_comment_id = NULL;
+END IF;
 ELSE
                 SET parent_comment_id = NULL;
 END IF;
@@ -206,3 +221,5 @@ CALL create_posts_comments_reactions();
 
 -- Xóa procedure sau khi sử dụng
 DROP PROCEDURE create_posts_comments_reactions;
+
+

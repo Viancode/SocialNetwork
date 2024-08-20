@@ -1,5 +1,6 @@
 package com.example.socialnetwork.domain.port.api;
 
+import com.example.socialnetwork.application.response.CloseFriendResponse;
 import com.example.socialnetwork.application.response.FriendSuggestionResponse;
 import com.example.socialnetwork.application.response.SearchFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
@@ -33,7 +34,7 @@ public interface RelationshipServicePort {
 
     Page<UserDomain> getListSendRequest(int page, int pageSize);
 
-    Page<UserDomain> getListFriend(int page, int pageSize, long userId, String sortDirection, String sortBy);
+    Page<CloseFriendResponse> getListFriend(int page, int pageSize, String sortDirection, String sortBy);
 
     Page<UserDomain> getListBlock(int page, int pageSize, String sortDirection, String sortBy);
 

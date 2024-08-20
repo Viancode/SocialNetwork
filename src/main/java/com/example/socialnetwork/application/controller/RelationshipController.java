@@ -1,10 +1,13 @@
 package com.example.socialnetwork.application.controller;
 
+import com.example.socialnetwork.common.mapper.CustomUserMapper;
 import com.example.socialnetwork.common.mapper.RelationshipMapper;
 import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.mapper.UserMapper;
+import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.RelationshipServicePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class RelationshipController  extends BaseController{
     private final RelationshipServicePort relationshipService;
     private final UserMapper userMapper;
-    private final RelationshipMapper relationshipMapper;
-    private final SuggestionMapper suggestionMapper;
 
     @PostMapping("/send_request")
     public ResponseEntity<?> createRequest(@RequestParam(value = "user_id") long userId){
@@ -57,9 +58,8 @@ public class RelationshipController  extends BaseController{
     public ResponseEntity<?> getListFriend(@RequestParam(value = "page", defaultValue = "1") int page,
                                            @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                            @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
-                                           @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection,
-                                           @RequestParam(value = "user_id") long userId){
-        return buildResponse("Get list friends successfully", relationshipService.getListFriend(page, pageSize, userId, sortDirection, sortBy).map(UserMapper.INSTANCE::toFriendResponse));
+                                           @RequestParam(value = "sort_direction", defaultValue = "desc") String sortDirection){
+        return buildResponse("Get list friends successfully", relationshipService.getListFriend(page, pageSize, sortDirection, sortBy));
     }
 
     @GetMapping("/get_list_block")

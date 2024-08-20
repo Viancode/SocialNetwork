@@ -1,9 +1,11 @@
 package com.example.socialnetwork.domain.service;
 
+import com.example.socialnetwork.application.response.CloseFriendResponse;
 import com.example.socialnetwork.application.response.FriendSuggestionResponse;
 import com.example.socialnetwork.application.response.SearchFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
+import com.example.socialnetwork.common.mapper.CustomUserMapper;
 import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
@@ -28,6 +30,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     private final CloseRelationshipDatabasePort closeRelationshipDatabasePort;
     private final CustomEventPublisher customEventPublisher;
     private final SuggestionMapper suggestionMapper;
+    private final CustomUserMapper customUserMapper;
 
     @Override
     public void deleteRelationship(long friendId) {
@@ -114,7 +117,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
                 relationshipDatabasePort.updateRelation(userId, friendId, ERelationship.BLOCK);
             }
             closeRelationshipDatabasePort.deleteCloseRelationship(friendId);
-        }else {
+        } else {
             throw new RelationshipException("Cannot block yourself");
         }
     }
@@ -158,26 +161,16 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     }
 
     @Override
-    public Page<UserDomain> getListFriend(int page, int pageSize, long userId, String sortDirection, String sortBy) {
+    public Page<CloseFriendResponse> getListFriend(int page, int pageSize, String sortDirection, String sortBy) {
         long currentUserId = SecurityUtil.getCurrentUserId();
-        UserDomain friend = userDatabasePort.findById(userId);
-        if (friend == null)
-            throw new NotFoundException("Not found user");
-        if (userId == currentUserId) {
-            Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-            Sort sort = Sort.by(direction, sortBy);
-            return relationshipDatabasePort.getListFriend(page, pageSize, userId, sort);
-        } else {
-            Visibility visibility = friend.getVisibility();
-            RelationshipDomain relationshipDomain = relationshipDatabasePort.find(userId, currentUserId).orElse(null);
-            if (visibility == Visibility.PRIVATE || (relationshipDomain != null && relationshipDomain.getRelation() != ERelationship.FRIEND && visibility == Visibility.FRIEND)) {
-                List<UserDomain> mutualFriends = getListMutualFriends(userId, currentUserId);
-                return getPage(page, pageSize, mutualFriends);
-            } else {
-                Sort sort = Sort.by(Sort.Direction.ASC, "username");
-                return relationshipDatabasePort.getListFriend(page, pageSize, userId, sort);
-            }
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        List<UserDomain> userDomains = relationshipDatabasePort.getListFriend(currentUserId);
+        List<CloseFriendResponse> closeFriendResponses = new ArrayList<>();
+        for (UserDomain userDomain : userDomains) {
+            closeFriendResponses.add(customUserMapper.toCloseFriendResponse(userDomain));
         }
+        return getPage(page, pageSize, closeFriendResponses, sort);
     }
 
     @Override
@@ -220,6 +213,14 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
 
     private <T> PageImpl<T> getPage(int page, int pageSize, List<T> list) {
         var pageable = PageRequest.of(page - 1, pageSize);
+        int start = Math.min((int) pageable.getOffset(), list.size());
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        List<T> paged = list.subList(start, end);
+        return new PageImpl<>(paged, pageable, list.size());
+    }
+
+    private <T> PageImpl<T> getPage(int page, int pageSize, List<T> list, Sort sort) {
+        var pageable = PageRequest.of(page - 1, pageSize, sort);
         int start = Math.min((int) pageable.getOffset(), list.size());
         int end = Math.min((start + pageable.getPageSize()), list.size());
         List<T> paged = list.subList(start, end);

@@ -1,5 +1,6 @@
 package com.example.socialnetwork.common.mapper;
 
+import com.example.socialnetwork.application.response.CloseFriendResponse;
 import com.example.socialnetwork.application.response.FriendResponse;
 import com.example.socialnetwork.application.response.ProfileResponse;
 import com.example.socialnetwork.common.constant.ERole;
