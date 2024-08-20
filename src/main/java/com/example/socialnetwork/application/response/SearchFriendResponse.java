@@ -1,5 +1,6 @@
 package com.example.socialnetwork.application.response;
 
+import com.example.socialnetwork.common.constant.ECloseRelationship;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,4 +20,5 @@ public class SearchFriendResponse {
     String email;
     int mutualFriends;
     String status;
+    ECloseRelationship closeRelationship;
 }

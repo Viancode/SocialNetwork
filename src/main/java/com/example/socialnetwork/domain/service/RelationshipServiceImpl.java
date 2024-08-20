@@ -5,6 +5,7 @@ import com.example.socialnetwork.application.response.FriendSuggestionResponse;
 import com.example.socialnetwork.application.response.SearchFriendResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
+import com.example.socialnetwork.common.mapper.CustomSuggestionMapper;
 import com.example.socialnetwork.common.mapper.CustomUserMapper;
 import com.example.socialnetwork.common.mapper.SuggestionMapper;
 import com.example.socialnetwork.common.util.SecurityUtil;
@@ -31,6 +32,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     private final CustomEventPublisher customEventPublisher;
     private final SuggestionMapper suggestionMapper;
     private final CustomUserMapper customUserMapper;
+    private final CustomSuggestionMapper customSuggestionMapper;
 
     @Override
     public void deleteRelationship(long friendId) {
@@ -193,7 +195,7 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     public Page<SearchFriendResponse> searchUser(int page, int pageSize, String keyWord) {
         long userId = SecurityUtil.getCurrentUserId();
         List<SuggestionDomain> suggestionDomains = relationshipDatabasePort.searchUserByKeyWord(userId, keyWord);
-        List<SearchFriendResponse> searchFriendResponses = suggestionMapper.toSearchFriendResponses(suggestionDomains);
+        List<SearchFriendResponse> searchFriendResponses = customSuggestionMapper.toSearchFriendResponses(suggestionDomains);
         return getPage(page, pageSize, searchFriendResponses);
     }
 

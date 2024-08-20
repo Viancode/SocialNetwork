@@ -55,7 +55,7 @@ VALUES (
                ELSE 'FRIEND'
                END,
            1,
-           'This is a bio.',
+           'Passionate about technology and programming, always eager to learn about the latest trends in the tech world. Beyond work, I enjoy reading, listening to music, and engaging in outdoor activities like hiking and running.',
            SUBSTRING_INDEX(SUBSTRING_INDEX(location_list, ',', FLOOR(1 + (RAND() * 10))), ',', -1),
            SUBSTRING_INDEX(SUBSTRING_INDEX(work_list, ',', FLOOR(1 + (RAND() * 7))), ',', -1),
            SUBSTRING_INDEX(SUBSTRING_INDEX(education_list, ',', FLOOR(1 + (RAND() * 5))), ',', -1),
@@ -97,7 +97,7 @@ BEGIN
     DECLARE comment_image VARCHAR(255);
     DECLARE is_parent_comment BOOLEAN;
 
-    WHILE i < 600 DO
+    WHILE i < 1200 DO
         SET post_user_id = FLOOR(1 + RAND() * 53);
         -- Tạo thời gian ngẫu nhiên trong khoảng 1 năm trở lại
         SET post_created_at = DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 365) DAY);
@@ -106,8 +106,8 @@ BEGIN
         SET post_created_at = DATE_SUB(post_created_at, INTERVAL FLOOR(RAND() * 60) SECOND);
 
         -- Tạo bài đăng
-INSERT INTO posts (user_id, content, visibility, created_at, updated_at, photo_lists)
-VALUES (
+        INSERT INTO posts (user_id, content, visibility, created_at, updated_at, photo_lists)
+        VALUES (
            post_user_id,
            CONCAT('Post content ', i),
            ELT(FLOOR(1 + RAND() * 3), 'PUBLIC', 'FRIEND', 'PRIVATE'),
@@ -119,54 +119,54 @@ VALUES (
                END
        );
 
-SET post_id_var = LAST_INSERT_ID();
+        SET post_id_var = LAST_INSERT_ID();
 
-        -- Tạo 10 bình luận cho mỗi bài đăng
+        -- Tạo 20 bình luận cho mỗi bài đăng
         SET j = 0;
-        WHILE j < 10 DO
+        WHILE j < 20 DO
             -- Kiểm tra nếu comment là một reply và đảm bảo không vượt quá 2 lớp
             IF j > 0 AND RAND() < 0.4 THEN
-SELECT COUNT(*) INTO is_parent_comment
-FROM comments
-WHERE comment_id = (
-    SELECT parent_comment_id
-    FROM comments
-    WHERE post_id = post_id_var
-    ORDER BY RAND() LIMIT 1
-    );
+                SELECT COUNT(*) INTO is_parent_comment
+                FROM comments
+                WHERE comment_id = (
+                SELECT parent_comment_id
+                FROM comments
+                WHERE post_id = post_id_var
+                ORDER BY RAND() LIMIT 1
+                );
 
--- Nếu là comment cha (có thể nhận reply) thì cho phép reply
-IF is_parent_comment = 0 THEN
-                    SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
-ELSE
-                    SET parent_comment_id = NULL;
-END IF;
-ELSE
+                -- Nếu là comment cha (có thể nhận reply) thì cho phép reply
+                IF is_parent_comment = 0 THEN
+                        SET parent_comment_id = (SELECT comment_id FROM comments WHERE post_id = post_id_var ORDER BY RAND() LIMIT 1);
+                ELSE
+                        SET parent_comment_id = NULL;
+                END IF;
+            ELSE
                 SET parent_comment_id = NULL;
-END IF;
+            END IF;
 
             -- Quyết định xem comment có ảnh hay không (40% cơ hội có ảnh)
             IF RAND() < 0.4 THEN
                 SET comment_image = 'https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png';
-ELSE
+            ELSE
                 SET comment_image = NULL;
-END IF;
+            END IF;
 
-INSERT INTO comments (user_id, post_id, parent_comment_id, content, created_at, updated_at, image)
-VALUES (
-           FLOOR(1 + RAND() * 53),
-           post_id_var,
-           parent_comment_id,
-           CASE
-               WHEN parent_comment_id IS NULL THEN CONCAT('Comment ', j, ' on post ', i)
-               ELSE CONCAT('Reply to comment ', parent_comment_id, ' on post ', i)
-               END,
-           DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
-           DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
-           comment_image
-       );
+            INSERT INTO comments (user_id, post_id, parent_comment_id, content, created_at, updated_at, image)
+            VALUES (
+                       FLOOR(1 + RAND() * 53),
+                       post_id_var,
+                       parent_comment_id,
+                       CASE
+                           WHEN parent_comment_id IS NULL THEN CONCAT('Comment ', j, ' on post ', i)
+                           ELSE CONCAT('Reply to comment ', parent_comment_id, ' on post ', i)
+                           END,
+                       DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
+                       DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE),
+                       comment_image
+                   );
 
-SET comment_id_var = LAST_INSERT_ID();
+            SET comment_id_var = LAST_INSERT_ID();
 
             -- Thêm phản ứng "LIKE" cho bình luận (từ 0 đến 10)
             SET k = 0;
@@ -179,10 +179,10 @@ SET comment_id_var = LAST_INSERT_ID();
                     DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE)
                 );
                 SET k = k + 1;
-END WHILE;
+            END WHILE;
 
             SET j = j + 1;
-END WHILE;
+        END WHILE;
 
         -- Thêm phản ứng "LIKE" cho bài đăng (từ 0 đến 10)
         SET k = 0;
@@ -195,24 +195,24 @@ END WHILE;
                 DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE)
             );
             SET k = k + 1;
-END WHILE;
+        END WHILE;
 
-        -- Gắn thẻ người dùng khác (chỉ khi là bạn bè)
-        SET can_tag = FALSE;
+        -- Tag another user (only if they are friends)
+        SET can_tag = 0;
         SET tag_user_id = FLOOR(1 + RAND() * 53);
 
-        -- Kiểm tra mối quan hệ
-SELECT COUNT(*) INTO can_tag
-FROM relationships
-WHERE user_id = post_user_id AND friend_id = tag_user_id AND relation = 'FRIEND';
+        -- Check if the selected user is a friend
+        SELECT COUNT(*) INTO can_tag
+        FROM relationships
+        WHERE user_id = post_user_id AND friend_id = tag_user_id AND relation = 'FRIEND';
 
-IF can_tag AND tag_user_id != post_user_id THEN
-            INSERT INTO tags (tagged_user_id, post_id, tagged_by_user_id, created_at)
-            VALUES (tag_user_id, post_id_var, post_user_id, DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE));
-END IF;
+        IF can_tag > 0 AND tag_user_id != post_user_id THEN
+                    INSERT INTO tags (tagged_user_id, post_id, tagged_by_user_id, created_at)
+                    VALUES (tag_user_id, post_id_var, post_user_id, DATE_ADD(post_created_at, INTERVAL FLOOR(RAND() * 24 * 60) MINUTE));
+        END IF;
 
         SET i = i + 1;
-END WHILE;
+    END WHILE;
 END //
 DELIMITER ;
 

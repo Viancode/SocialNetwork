@@ -38,23 +38,4 @@ public interface SuggestionMapper {
 
     List<FriendSuggestionResponse> toFriendSuggestionResponses(List<SuggestionDomain> suggestionDomains);
 
-    default SearchFriendResponse toSearchFriendResponse(SuggestionDomain suggestionDomain) {
-        if (suggestionDomain == null) {
-            return null;
-        }else {
-            SearchFriendResponse searchFriendResponse = new SearchFriendResponse();
-            UserDomain user = suggestionDomain.getUser();
-            if (user.getId() == SecurityUtil.getCurrentUserId()) user = suggestionDomain.getFriend();
-            searchFriendResponse.setId(user.getId());
-            searchFriendResponse.setUsername(user.getUsername());
-            searchFriendResponse.setEmail(user.getEmail());
-            searchFriendResponse.setMutualFriends(suggestionDomain.getMutualFriends());
-            if(suggestionDomain.getStatus() == Status.FRIEND)
-                searchFriendResponse.setStatus("Friend");
-            else searchFriendResponse.setStatus(null);
-            return searchFriendResponse;
-        }
-    }
-
-    List<SearchFriendResponse> toSearchFriendResponses(List<SuggestionDomain> suggestionDomains);
 }
