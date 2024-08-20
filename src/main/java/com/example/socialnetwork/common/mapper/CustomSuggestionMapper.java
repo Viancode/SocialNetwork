@@ -1,6 +1,7 @@
 package com.example.socialnetwork.common.mapper;
 
 import com.example.socialnetwork.application.response.FriendResponse;
+import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.SuggestionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
@@ -35,10 +36,20 @@ public class CustomSuggestionMapper {
             friendResponse.setMutualFriends(suggestionDomain.getMutualFriends());
             Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(suggestionDomain.getUser().getId(), suggestionDomain.getFriend().getId());
             if(relationship != null) {
-                friendResponse.setStatus(relationship.getRelation());
+                if(relationship.getRelation() == ERelationship.PENDING) friendResponse.setStatus(ERelationship.RECEIVED);
+                else
+                    friendResponse.setStatus(relationship.getRelation());
             }else {
-                friendResponse.setStatus(null);
-            }            friendResponse.setCloseRelationship(closeRelationshipRepository.findCloseRelationship(suggestionDomain.getUser().getId(), suggestionDomain.getFriend().getId()));
+                relationship = relationshipRepository.getRelationship(suggestionDomain.getFriend().getId(), suggestionDomain.getUser().getId());
+                if (relationship != null) {
+                    if(relationship.getRelation() == ERelationship.PENDING) friendResponse.setStatus(ERelationship.REQUESTING);
+                    else
+                        friendResponse.setStatus(relationship.getRelation());
+                }else {
+                    friendResponse.setStatus(null);
+                }
+            }
+            friendResponse.setCloseRelationship(closeRelationshipRepository.findCloseRelationship(suggestionDomain.getUser().getId(), suggestionDomain.getFriend().getId()));
             return friendResponse;
         }
     }
@@ -53,11 +64,20 @@ public class CustomSuggestionMapper {
             friendResponse.setEmail(userDomain.getEmail());
             friendResponse.setAvatar(userDomain.getAvatar());
             friendResponse.setMutualFriends(suggestionRepository.findByUserAndFriend(userDomain.getId(), SecurityUtil.getCurrentUserId()).getMutualFriends());
-            Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(userDomain.getId(), SecurityUtil.getCurrentUserId());
+            Relationship relationship = relationshipRepository.getRelationship(userDomain.getId(), SecurityUtil.getCurrentUserId());
             if(relationship != null) {
-                friendResponse.setStatus(relationship.getRelation());
+                if(relationship.getRelation() == ERelationship.PENDING) friendResponse.setStatus(ERelationship.RECEIVED);
+                else
+                    friendResponse.setStatus(relationship.getRelation());
             }else {
-                friendResponse.setStatus(null);
+                relationship = relationshipRepository.getRelationship(SecurityUtil.getCurrentUserId(), userDomain.getId());
+                if (relationship != null) {
+                    if(relationship.getRelation() == ERelationship.PENDING) friendResponse.setStatus(ERelationship.REQUESTING);
+                    else
+                        friendResponse.setStatus(relationship.getRelation());
+                }else {
+                    friendResponse.setStatus(null);
+                }
             }
             friendResponse.setCloseRelationship(closeRelationshipRepository.findCloseRelationship(userDomain.getId(), SecurityUtil.getCurrentUserId()));
             return friendResponse;
