@@ -5,8 +5,6 @@ import com.example.socialnetwork.infrastructure.entity.Suggestion;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface SuggestionMapper {
     SuggestionMapper INSTANCE = Mappers.getMapper(SuggestionMapper.class);
