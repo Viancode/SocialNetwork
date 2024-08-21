@@ -28,9 +28,9 @@ public class ProfileRequest {
     private String work;
     private String education;
     private LocalDate dateOfBirth;
-    @Builder.Default
-    private MultipartFile[] avatar = null;
-    @Builder.Default
-    private MultipartFile[] background = null;
+
+    private MultipartFile[] avatar;
+
+    private MultipartFile[] background;
 
 }
