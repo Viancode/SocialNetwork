@@ -171,18 +171,26 @@ public class CommentServiceImpl implements CommentServicePort {
         currentComment.setUpdatedAt(Instant.now());
 
         //
-        if(!isDelete){
+//        if(!isDelete){
+//            String image = HandleFile.loadFileImage(images, storageServicePort, 1);
+//            if(image != null){
+//                if(currentComment.getImage() != null){
+//                    s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
+//                }
+//                currentComment.setImage(image);
+//            }
+//        }else{
+//            if(currentComment.getImage() != null){
+//                s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
+//                currentComment.setImage(null);
+//            }
+//        }
+
+        if(isDelete){
             String image = HandleFile.loadFileImage(images, storageServicePort, 1);
-            if(image != null){
-                if(currentComment.getImage() != null){
-                    s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
-                }
-                currentComment.setImage(image);
-            }
-        }else{
             if(currentComment.getImage() != null){
                 s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
-                currentComment.setImage(null);
+                currentComment.setImage(image);
             }
         }
 
