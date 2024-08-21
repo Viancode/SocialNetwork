@@ -144,12 +144,14 @@ public class UserServiceImpl implements UserServicePort {
 //                user.setAvatar(null);
 //            }
 
+        String avt = HandleFile.loadFileImage(profileRequest.getAvatar(), storageServicePort, 1);
         if(isDeleteAvt){
-            String avt = HandleFile.loadFileImage(profileRequest.getAvatar(), storageServicePort, 1);
             if(user.getAvatar() != null && !user.getAvatar().isEmpty()){
                 s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
                 user.setAvatar(avt);
-            }else{
+            }
+        }else{
+            if(avt != null && !avt.isEmpty()) {
                 user.setAvatar(avt);
             }
         }
@@ -170,12 +172,14 @@ public class UserServiceImpl implements UserServicePort {
 //            }
 //        }
 
+        String background = HandleFile.loadFileImage(profileRequest.getBackground(), storageServicePort, 1);
         if(isDeleteBackground){
-            String background = HandleFile.loadFileImage(profileRequest.getBackground(), storageServicePort, 1);
             if(user.getBackgroundImage() != null && !user.getBackgroundImage().isEmpty()){
                 s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
                 user.setBackgroundImage(background);
-            }else{
+            }
+        }else{
+            if(background != null && !background.isEmpty()) {
                 user.setBackgroundImage(background);
             }
         }
