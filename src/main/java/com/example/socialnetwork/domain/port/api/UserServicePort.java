@@ -12,6 +12,6 @@ public interface UserServicePort {
     void deleteProfile(Long userId);
     void sendVerificationEmail(UserDomain user, String confirmToken);
     void sendEmailResetPassword(UserDomain user, String resetToken);
-    void updateProfile(Long userId, ProfileRequest profileRequest);
+    void updateProfile(Long userId, ProfileRequest profileRequest, Boolean isDeleteAvt, Boolean isDeleteBackground);
     UserDomain findUserById(Long userId);
 }

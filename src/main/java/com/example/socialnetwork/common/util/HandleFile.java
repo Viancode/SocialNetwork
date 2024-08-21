@@ -8,6 +8,9 @@ import com.example.socialnetwork.exception.custom.ClientErrorException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Component
 public class HandleFile {
 
@@ -36,6 +39,9 @@ public class HandleFile {
         if (images != null) {
             if (images.length <= numberFile) {
                 for (MultipartFile photo : images) {
+                    if (photo.isEmpty()) {
+                        return null;
+                    }
                     String filePath = storageServicePort.store(FileType.IMAGE, photo);
                     String photoUrl = storageServicePort.getUrl(filePath);
                     photoPaths.append(photoUrl).append(",");
@@ -51,5 +57,18 @@ public class HandleFile {
             return "";
         }
         return photoPaths.toString();
+    }
+
+    public static String getFilePath(String photo){
+        String regex = ".*(images/[^/]+\\.png)$";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(photo);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return "";
+        }
     }
 }

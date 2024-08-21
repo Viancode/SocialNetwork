@@ -4,6 +4,7 @@ import com.example.socialnetwork.application.request.ProfileRequest;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Gender;
 import com.example.socialnetwork.common.constant.Visibility;
+import com.example.socialnetwork.common.util.HandleFile;
 import com.example.socialnetwork.domain.publisher.CustomEventPublisher;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.*;
@@ -19,6 +20,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class UserServiceImpl implements UserServicePort {
     private final S3ServicePort s3Service;
     private final StorageServicePort storageService;
     private final CustomEventPublisher customEventPublisher;
+    private final StorageServicePort storageServicePort;
     @Value("${link.front-end-domain}")
     private String domain;
     @Value("${link.confirm-email-verify}")
@@ -108,7 +112,7 @@ public class UserServiceImpl implements UserServicePort {
     }
 
     @Override
-    public void updateProfile(Long userId, ProfileRequest profileRequest) {
+    public void updateProfile(Long userId, ProfileRequest profileRequest, Boolean isDeleteAvt, Boolean isDeleteBackground) {
         UserDomain user = userDatabase.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
@@ -125,12 +129,41 @@ public class UserServiceImpl implements UserServicePort {
         user.setEducation(profileRequest.getEducation());
         user.setUpdatedAt(Instant.now());
         user.setDateOfBirth(profileRequest.getDateOfBirth());
-        user.setAvatar(profileRequest.getAvatar());
-        user.setBackgroundImage(profileRequest.getBackground());
+        if(!isDeleteAvt){
+            String avt = HandleFile.loadFileImage(profileRequest.getAvatar(), storageServicePort, 1);
+            if(avt != null){
+                if(user.getAvatar() != null){
+                    s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
+                }
+                user.setAvatar(avt);
+            }
+        }else{
+            if(user.getAvatar() != null){
+                s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
+                user.setAvatar(null);
+            }
+        }
+
+        if(!isDeleteBackground){
+            String background = HandleFile.loadFileImage(profileRequest.getBackground(), storageServicePort, 1);
+            if(background != null){
+                if(user.getBackgroundImage() != null){
+                    s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
+                }
+                user.setBackgroundImage(background);
+            }
+        }else{
+            if(user.getBackgroundImage() != null){
+                s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
+                user.setBackgroundImage(null);
+            }
+        }
 
         userDatabase.save(user);
         customEventPublisher.publishProfileUpdatedEvent(userId);
     }
+
+
 
     @Override
     public UserDomain findUserById(Long userId) {

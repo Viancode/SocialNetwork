@@ -55,12 +55,13 @@ public class CommentController extends BaseController {
     public ResponseEntity<?> updateComment(
             @RequestParam(value = "comment_id") Long commentId,
             @RequestParam("content") String content,
-            @RequestParam("image") MultipartFile[] image
+            @RequestParam("image") MultipartFile[] image,
+            @RequestParam(value = "is_delete", defaultValue = "false") Boolean isDelete
 //            @RequestParam("postId") Long postId
 //            @RequestParam(value = "parent_comment_id", required = false) Long parentComment,
             ) {
 
-        CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image);
+        CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image, isDelete);
         return buildResponse("Update comment successfully", commentMapper.commentDomainToCommentResponse(commentDomain));
     }
 

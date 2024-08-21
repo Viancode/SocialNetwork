@@ -14,6 +14,7 @@ import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.TagDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.PostServicePort;
+import com.example.socialnetwork.domain.port.api.S3ServicePort;
 import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.spi.*;
 import com.example.socialnetwork.exception.custom.ClientErrorException;
@@ -28,6 +29,8 @@ import java.util.Arrays;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class PostServiceImpl implements PostServicePort {
     private final PostMapper postMapper;
     private final TagMapper tagMapper;
     private final StorageServicePort storageServicePort;
+    private final S3ServicePort s3ServicePort;
     private final static int NUMBER_FILE = 4;
 
     public void checkTagUser(List<TagDomain> tagDomains){
@@ -83,14 +87,18 @@ public class PostServiceImpl implements PostServicePort {
         List<String> photoList = new ArrayList<>(Arrays.asList(postDomain.getPhotoLists().split(",")));
 
         if (postUpdate.getIsDelete() && postUpdate.getPhotoDelete() != null && !postUpdate.getPhotoDelete().isEmpty()) {
-            photoList.removeAll(Arrays.asList(postUpdate.getPhotoDelete().split(",")));
+            List<String> photos = Arrays.asList(postUpdate.getPhotoDelete().split(","));
+            photoList.removeAll(photos);
+            for (String photo : photos) {
+                s3ServicePort.deleteFile(HandleFile.getFilePath(photo));
+            }
         }
-
         String newPhotos = handleUploadFile(photoList, postUpdate);
         if (!newPhotos.isEmpty()) {
             postDomain.setPhotoLists(newPhotos);
         }
     }
+
 
     private void updateTags(PostDomain postDomain, PostUpdate postUpdate) {
         if (postUpdate.getTagUsers().isEmpty()) {

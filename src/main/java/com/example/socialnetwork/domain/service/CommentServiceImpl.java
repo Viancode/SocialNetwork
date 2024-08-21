@@ -12,6 +12,7 @@ import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.CommentServicePort;
+import com.example.socialnetwork.domain.port.api.S3ServicePort;
 import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
@@ -34,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServicePort {
@@ -43,6 +46,7 @@ public class CommentServiceImpl implements CommentServicePort {
     private final RelationshipDatabasePort relationshipDatabasePort;
     private final CommentMapper commentMapper;
     private final StorageServicePort storageServicePort;
+    private final S3ServicePort s3ServicePort;
     private Model model;
     private static final double SPAM_THRESHOLD = 0.6;
 
@@ -147,8 +151,8 @@ public class CommentServiceImpl implements CommentServicePort {
 
     @Override
     @Transactional
-    public CommentDomain updateComment(Long commentId, String content, MultipartFile[] images) {
-        String image = HandleFile.loadFileImage(images, storageServicePort,1);
+    public CommentDomain updateComment(Long commentId, String content, MultipartFile[] images, Boolean isDelete) {
+
         Long userId = SecurityUtil.getCurrentUserId();
 //        if(!checkNumberImage(image)){
 //            throw new ClientErrorException("The number of photos exceeds the limit");
@@ -166,11 +170,25 @@ public class CommentServiceImpl implements CommentServicePort {
         currentComment.setContent(content);
         currentComment.setUpdatedAt(Instant.now());
 
-        if(!image.isEmpty()){
-            currentComment.setImage(image);
+        //
+        if(!isDelete){
+            String image = HandleFile.loadFileImage(images, storageServicePort, 1);
+            if(image != null){
+                if(currentComment.getImage() != null){
+                    s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
+                }
+                currentComment.setImage(image);
+            }
+        }else{
+            if(currentComment.getImage() != null){
+                s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
+                currentComment.setImage(null);
+            }
         }
+
         return commentDatabasePort.updateComment(currentComment);
     }
+
 
     @Override
     @Transactional

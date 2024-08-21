@@ -55,8 +55,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public UserServicePort userServicePort(EmailServicePort emailService, UserDatabasePort userDatabase, RelationshipDatabasePort relationshipDatabasePort, S3ServicePort s3Service, StorageServicePort storageService, CustomEventPublisher customEventPublisher) {
-        return new UserServiceImpl(emailService, userDatabase, relationshipDatabasePort, s3Service, storageService, customEventPublisher);
+    public UserServicePort userServicePort(EmailServicePort emailService, UserDatabasePort userDatabase, RelationshipDatabasePort relationshipDatabasePort, S3ServicePort s3Service, StorageServicePort storageService, CustomEventPublisher customEventPublisher, StorageServicePort storageServicePort) {
+        return new UserServiceImpl(emailService, userDatabase, relationshipDatabasePort, s3Service, storageService, customEventPublisher, storageServicePort);
     }
 
     @Bean
@@ -81,8 +81,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort, UserDatabasePort userDatabasePort, PostMapper postMapper, TagMapper tagMapper, StorageServicePort storageServicePort) {
-        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort, closeRelationshipDatabasePort, userDatabasePort, postMapper, tagMapper, storageServicePort);
+    public PostServicePort postServicePort(PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CloseRelationshipDatabasePort closeRelationshipDatabasePort, UserDatabasePort userDatabasePort, PostMapper postMapper, TagMapper tagMapper, StorageServicePort storageServicePort, S3ServicePort s3ServicePort) {
+        return new PostServiceImpl(postDatabasePort,relationshipDatabasePort, closeRelationshipDatabasePort, userDatabasePort, postMapper, tagMapper, storageServicePort, s3ServicePort);
     }
 
 
@@ -112,8 +112,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CommentMapper commentMapper,StorageServicePort storageServicePort) {
-        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, relationshipDatabasePort, commentMapper, storageServicePort);
+    public CommentServicePort commentServicePort(CommentDatabasePort commentDatabasePort, UserDatabasePort userDatabase, PostDatabasePort postDatabasePort, RelationshipDatabasePort relationshipDatabasePort, CommentMapper commentMapper,StorageServicePort storageServicePort, S3ServicePort s3ServicePort) {
+        return new CommentServiceImpl(commentDatabasePort, userDatabase, postDatabasePort, relationshipDatabasePort, commentMapper, storageServicePort, s3ServicePort);
     }
 
     @Bean
