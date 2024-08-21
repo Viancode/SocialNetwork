@@ -38,14 +38,16 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     @Override
     public PostDomain createPost(PostDomain postDomain) {
         Post post = postRepository.save(postMapper.domainToEntity(postDomain));
-        List<Tag> tags = postDomain.getTagDomains().stream().map(tagDomain -> {
-            tagDomain.setPostId(post.getId());
-            Tag tag = tagMapper.domainToEntity(tagDomain);
-            tag.setPost(post); // gán postId (thực chất là gán đối tượng Post)
-            return tag;
-        }).toList();
-        tagRepository.saveAll(tags);
-        post.setTags(tags);
+        if(postDomain.getTagDomains() != null && postDomain.getTagDomains().size() > 0) {
+            List<Tag> tags = postDomain.getTagDomains().stream().map(tagDomain -> {
+                tagDomain.setPostId(post.getId());
+                Tag tag = tagMapper.domainToEntity(tagDomain);
+                tag.setPost(post); // gán postId (thực chất là gán đối tượng Post)
+                return tag;
+            }).toList();
+            tagRepository.saveAll(tags);
+            post.setTags(tags);
+        }
         return postMapper.entityToDomain(post);
     }
 

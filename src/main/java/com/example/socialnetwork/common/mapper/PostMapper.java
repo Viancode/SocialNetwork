@@ -142,7 +142,7 @@ public class PostMapper {
         postDomain.setContent(postRequest.getContent());
 //        postDomain.setTagDomains(postRequest.getTagUsers().stream().map(tagRequest -> tagMapper.requestToDomain(tagRequest, postDomain.getId())).toList());
 
-        if (postRequest.getTagUsers().isEmpty()){
+        if (postRequest.getTagUsers() == null || postRequest.getTagUsers().isEmpty()){
             postDomain.setTagDomains(null);
         }else{
             String [] tags = postRequest.getTagUsers().split(",");
