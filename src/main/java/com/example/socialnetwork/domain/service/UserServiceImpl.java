@@ -149,6 +149,8 @@ public class UserServiceImpl implements UserServicePort {
             if(user.getAvatar() != null && !user.getAvatar().isEmpty()){
                 s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
                 user.setAvatar(avt);
+            }else{
+                user.setAvatar(avt);
             }
         }
 
@@ -172,6 +174,8 @@ public class UserServiceImpl implements UserServicePort {
             String background = HandleFile.loadFileImage(profileRequest.getBackground(), storageServicePort, 1);
             if(user.getBackgroundImage() != null && !user.getBackgroundImage().isEmpty()){
                 s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
+                user.setBackgroundImage(background);
+            }else{
                 user.setBackgroundImage(background);
             }
         }
