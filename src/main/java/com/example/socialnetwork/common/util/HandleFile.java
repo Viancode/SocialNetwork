@@ -31,6 +31,9 @@ public class HandleFile {
                 throw new ClientErrorException("Exceeded number of allowed files");
             }
         }
+        if(photoPaths.isEmpty()){
+            return null;
+        }
         return photoPaths.toString();
     }
 
