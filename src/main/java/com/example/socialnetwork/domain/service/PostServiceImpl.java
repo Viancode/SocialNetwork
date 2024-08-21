@@ -69,6 +69,15 @@ public class PostServiceImpl implements PostServicePort {
     @Override
     public PostDomain updatePost(PostUpdate postUpdate) {
         PostDomain postDomainExist = postDatabasePort.findById(postUpdate.getId());
+        List<String> listFromDB = List.of(postDomainExist.getPhotoLists().split(","));
+
+        List<String> listHold = List.of(postUpdate.getPhotoListString().split(","));
+
+        List<String> resultDelete = new ArrayList<>(listFromDB);
+        resultDelete.removeAll(listHold);
+
+        postDomainExist.setPhotoLists(String.join(",", listHold));
+
 
         if (postUpdate.getContent().isEmpty()) {
             throw new ClientErrorException("Content is empty");
@@ -77,22 +86,21 @@ public class PostServiceImpl implements PostServicePort {
         postDomainExist.setContent(postUpdate.getContent());
         postDomainExist.setVisibility(postUpdate.getVisibility());
 
-        updatePhotos(postDomainExist, postUpdate);
+        updatePhotos(postDomainExist, postUpdate, resultDelete);
         updateTags(postDomainExist, postUpdate);
 
         return postDatabasePort.updatePost(postDomainExist);
     }
 
-    private void updatePhotos(PostDomain postDomain, PostUpdate postUpdate) {
+    // Sua not
+    private void updatePhotos(PostDomain postDomain, PostUpdate postUpdate, List<String> resultDelete) {
         List<String> photoList = new ArrayList<>(Arrays.asList(postDomain.getPhotoLists().split(",")));
 
-        if (postUpdate.getIsDelete() && postUpdate.getPhotoDelete() != null && !postUpdate.getPhotoDelete().isEmpty()) {
-            List<String> photos = Arrays.asList(postUpdate.getPhotoDelete().split(","));
-            photoList.removeAll(photos);
-            for (String photo : photos) {
-                s3ServicePort.deleteFile(HandleFile.getFilePath(photo));
-            }
+//            List<String> photos = Arrays.asList(postUpdate.getPhotoLists().split(","));
+        for (String photo : resultDelete) {
+            s3ServicePort.deleteFile(HandleFile.getFilePath(photo));
         }
+
         String newPhotos = handleUploadFile(photoList, postUpdate);
         if (!newPhotos.isEmpty()) {
             postDomain.setPhotoLists(newPhotos);

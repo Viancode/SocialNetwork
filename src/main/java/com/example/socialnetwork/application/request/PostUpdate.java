@@ -21,7 +21,7 @@ public class PostUpdate {
 
     private String tagUsers;
 
-    private String photoDelete;
+    // Bien nay luu DS cac anh giu lai
+    private String photoListString;
 
-    private Boolean isDelete;
 }
