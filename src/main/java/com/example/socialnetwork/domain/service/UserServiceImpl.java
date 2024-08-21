@@ -129,33 +129,50 @@ public class UserServiceImpl implements UserServicePort {
         user.setEducation(profileRequest.getEducation());
         user.setUpdatedAt(Instant.now());
         user.setDateOfBirth(profileRequest.getDateOfBirth());
-        if(!isDeleteAvt){
+//        if(!isDeleteAvt){
+//            String avt = HandleFile.loadFileImage(profileRequest.getAvatar(), storageServicePort, 1);
+//            if(avt != null){
+//                if(user.getAvatar() != null && !user.getAvatar().isEmpty()){
+//                    s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
+//                }
+//                user.setAvatar(avt);
+//            }
+//        }else{
+//            if(user.getAvatar() != null && !user.getAvatar().isEmpty()){
+//                s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
+//
+//                user.setAvatar(null);
+//            }
+
+        if(isDeleteAvt){
             String avt = HandleFile.loadFileImage(profileRequest.getAvatar(), storageServicePort, 1);
-            if(avt != null){
-                if(user.getAvatar() != null && !user.getAvatar().isEmpty()){
-                    s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
-                }
-                user.setAvatar(avt);
-            }
-        }else{
             if(user.getAvatar() != null && !user.getAvatar().isEmpty()){
                 s3Service.deleteFile(HandleFile.getFilePath(user.getAvatar()));
-                user.setAvatar(null);
+                user.setAvatar(avt);
             }
         }
 
-        if(!isDeleteBackground){
+
+//        if(!isDeleteBackground){
+//            String background = HandleFile.loadFileImage(profileRequest.getBackground(), storageServicePort, 1);
+//            if(background != null){
+//                if(user.getBackgroundImage() != null && !user.getBackgroundImage().isEmpty()){
+//                    s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
+//                }
+//                user.setBackgroundImage(background);
+//            }
+//        }else{
+//            if(user.getBackgroundImage() != null && !user.getBackgroundImage().isEmpty()){
+//                s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
+//                user.setBackgroundImage(null);
+//            }
+//        }
+
+        if(isDeleteBackground){
             String background = HandleFile.loadFileImage(profileRequest.getBackground(), storageServicePort, 1);
-            if(background != null){
-                if(user.getBackgroundImage() != null && !user.getBackgroundImage().isEmpty()){
-                    s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
-                }
-                user.setBackgroundImage(background);
-            }
-        }else{
             if(user.getBackgroundImage() != null && !user.getBackgroundImage().isEmpty()){
                 s3Service.deleteFile(HandleFile.getFilePath(user.getBackgroundImage()));
-                user.setBackgroundImage(null);
+                user.setBackgroundImage(background);
             }
         }
 
