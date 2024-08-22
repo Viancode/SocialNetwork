@@ -30,6 +30,13 @@ services:
 #      - RD_HOST=${RD_HOST}
 #      - RD_PORT=${RD_PORT}
 #      - JWT_SECRET=${JWT_SECRET}
+#      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+#      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+#      - AWS_REGION=${AWS_REGION}
+#      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+#      - GM_USERNAME=${GM_USERNAME}
+#      - GM_PASSWORD=${GM_PASSWORD}
+#      - FRONT_END_DOMAIN=${FRONT_END_DOMAIN}
 #    depends_on:
 #      - mysql
 #      - redis

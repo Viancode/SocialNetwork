@@ -55,7 +55,7 @@ public class CommentController extends BaseController {
     public ResponseEntity<?> updateComment(
             @RequestParam(value = "comment_id") Long commentId,
             @RequestParam("content") String content,
-            @RequestParam("image") MultipartFile[] image,
+            @RequestParam(value = "image", required = false) MultipartFile[] image,
             @RequestParam(value = "is_delete", defaultValue = "false") Boolean isDelete
 //            @RequestParam("postId") Long postId
 //            @RequestParam(value = "parent_comment_id", required = false) Long parentComment,

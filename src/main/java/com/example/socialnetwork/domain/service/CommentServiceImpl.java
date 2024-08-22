@@ -238,9 +238,9 @@ public class CommentServiceImpl implements CommentServicePort {
                 .toList();
 
         Page<CommentDomain> comments = commentDatabasePort.getAllComments(page, pageSize, sort, userId, postId, blockedUserIds);
-        if (comments == null || comments.isEmpty()) {
-            throw new NotFoundException("This post has no comment");
-        }
+//        if (comments == null || comments.isEmpty()) {
+//            throw new NotFoundException("This post has no comment");
+//        }
 
 
         return comments.map(commentMapper::commentDomainToCommentResponse);
