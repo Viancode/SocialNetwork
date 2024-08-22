@@ -22,37 +22,6 @@ public class CustomSuggestionMapper {
     private final CloseRelationshipRepository closeRelationshipRepository;
     private final RelationshipRepository relationshipRepository;
     private final SuggestionRepository suggestionRepository;
-    public FriendResponse toSearchFriendResponse(SuggestionDomain suggestionDomain) {
-        if (suggestionDomain == null) {
-            return null;
-        }else {
-            FriendResponse friendResponse = new FriendResponse();
-            UserDomain user = suggestionDomain.getUser();
-            if (user.getId() == SecurityUtil.getCurrentUserId()) user = suggestionDomain.getFriend();
-            friendResponse.setId(user.getId());
-            friendResponse.setUsername(user.getUsername());
-            friendResponse.setEmail(user.getEmail());
-            friendResponse.setAvatar(user.getAvatar());
-            friendResponse.setMutualFriends(suggestionDomain.getMutualFriends());
-            Relationship relationship = relationshipRepository.findByUser_IdAndFriend_Id(suggestionDomain.getUser().getId(), suggestionDomain.getFriend().getId());
-            if(relationship != null) {
-                if(relationship.getRelation() == ERelationship.PENDING) friendResponse.setStatus(ERelationship.RECEIVED);
-                else
-                    friendResponse.setStatus(relationship.getRelation());
-            }else {
-                relationship = relationshipRepository.getRelationship(suggestionDomain.getFriend().getId(), suggestionDomain.getUser().getId());
-                if (relationship != null) {
-                    if(relationship.getRelation() == ERelationship.PENDING) friendResponse.setStatus(ERelationship.REQUESTING);
-                    else
-                        friendResponse.setStatus(relationship.getRelation());
-                }else {
-                    friendResponse.setStatus(null);
-                }
-            }
-            friendResponse.setCloseRelationship(closeRelationshipRepository.findCloseRelationship(suggestionDomain.getUser().getId(), suggestionDomain.getFriend().getId()));
-            return friendResponse;
-        }
-    }
 
     public FriendResponse toSearchFriendResponse(UserDomain userDomain) {
         if (userDomain == null) {
@@ -81,22 +50,6 @@ public class CustomSuggestionMapper {
             }
             friendResponse.setCloseRelationship(closeRelationshipRepository.findCloseRelationship(userDomain.getId(), SecurityUtil.getCurrentUserId()));
             return friendResponse;
-        }
-    }
-
-    public List<FriendResponse> toSearchFriendResponses(List<SuggestionDomain> suggestionDomains){
-        if (suggestionDomains == null) {
-            return null;
-        } else {
-            List<FriendResponse> list = new ArrayList(suggestionDomains.size());
-            Iterator var3 = suggestionDomains.iterator();
-
-            while(var3.hasNext()) {
-                SuggestionDomain suggestionDomain = (SuggestionDomain)var3.next();
-                list.add(this.toSearchFriendResponse(suggestionDomain));
-            }
-
-            return list;
         }
     }
 

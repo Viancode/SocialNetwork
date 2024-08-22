@@ -26,9 +26,9 @@ public interface RelationshipDatabasePort {
 
     List<UserDomain> findFriendByKeyWord(long userId, String keyWord);
 
-    List<SuggestionDomain> getListSuggestionUser(long userId);
+    List<UserDomain> getListSuggestionUser(long userId);
 
-    List<SuggestionDomain> searchUserByKeyWord(long userId, String keyWord);
+    List<UserDomain> searchUserByKeyWord(long userId, String keyWord);
 
     void deleteFriend(long userId, long friendId);
 
