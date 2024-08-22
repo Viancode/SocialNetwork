@@ -101,9 +101,18 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public List<SuggestionDomain> getListSuggestionUser(long userId) {
+    public List<UserDomain> getListSuggestionUser(long userId) {
         List<Suggestion> suggestions = suggestionRepository.findByUserOrFriend(userId);
-        return suggestions.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+        List<SuggestionDomain> suggestionDomains = suggestions.stream().map(suggestionMapper::toSuggestionDomain).toList();
+        List<UserDomain> userDomains = new ArrayList<>();
+        for (SuggestionDomain suggestionDomain : suggestionDomains) {
+            if(suggestionDomain.getUser().getId()==userId) {
+                userDomains.add(suggestionDomain.getFriend());
+            }else {
+                userDomains.add(suggestionDomain.getUser());
+            }
+        }
+        return userDomains;
     }
 
     @Override
@@ -121,7 +130,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public List<SuggestionDomain> searchUserByKeyWord(long userId, String keyWord) {
+    public List<UserDomain> searchUserByKeyWord(long userId, String keyWord) {
 //        User user1 = userRepository.findById(userId).orElseThrow();
         List<Suggestion> searchUsers = suggestionRepository.searchUser(userId);
         List<Suggestion> unsuitableSearchUsers = new ArrayList<>();
@@ -133,7 +142,16 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
             }
         }
         searchUsers.removeAll(unsuitableSearchUsers);
-        return searchUsers.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+        List<SuggestionDomain> suggestionDomains = searchUsers.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+        List<UserDomain> userDomains = new ArrayList<>();
+        for (SuggestionDomain suggestionDomain : suggestionDomains) {
+            if(suggestionDomain.getUser().getId()==userId) {
+                userDomains.add(suggestionDomain.getFriend());
+            }else {
+                userDomains.add(suggestionDomain.getUser());
+            }
+        }
+        return userDomains;
     }
 
 
