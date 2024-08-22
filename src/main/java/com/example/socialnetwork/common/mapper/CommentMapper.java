@@ -2,10 +2,12 @@ package com.example.socialnetwork.common.mapper;
 
 import com.example.socialnetwork.application.request.CommentRequest;
 import com.example.socialnetwork.application.response.CommentResponse;
+import com.example.socialnetwork.common.util.HandleFile;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CommentDomain;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
+import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.infrastructure.entity.Comment;
 import com.example.socialnetwork.infrastructure.entity.CommentReaction;
@@ -23,13 +25,15 @@ import java.time.Instant;
 public class CommentMapper {
     private final CommentRepository commentRepository;
     private final CommentReactionRepository commentReactionRepository;
+    private final StorageServicePort storageService;
     public CommentDomain commentRequestToCommentDomain(CommentRequest request) {
+        String image = HandleFile.loadFileImage(request.getImage(),storageService,1);
         return CommentDomain.builder()
                 .user(UserDomain.builder().id(SecurityUtil.getCurrentUserId()).build())
                 .post(PostDomain.builder().id(request.getPostId()).build())
                 .parentCommentId(request.getParentCommentId())
                 .content(request.getContent())
-                .image(request.getImage())
+                .image(image)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();

@@ -44,7 +44,8 @@ public class StorageServiceImpl implements StorageServicePort {
     @SneakyThrows
     private String checkInvalidFile(MultipartFile file, FileType type) {
         if (file == null || file.isEmpty()) {
-            throw new ClientErrorException("Failed to storeFile empty file.");
+            return "";
+//            throw new ClientErrorException("Failed to storeFile empty file.");
         }
         String fileName = file.getName();
         if (fileName.isEmpty()) {

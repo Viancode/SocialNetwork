@@ -31,10 +31,13 @@ public class ProfileController extends BaseController {
     }
 
     @PutMapping("")
-    public ResponseEntity<ResultResponse> updateProfile(@ModelAttribute ProfileRequest profileRequest, Authentication authentication) {
+    public ResponseEntity<ResultResponse> updateProfile(@ModelAttribute ProfileRequest profileRequest,
+                                                        @RequestParam(value = "is_delete_avt", defaultValue = "false") Boolean isDeleteAvt,
+                                                        @RequestParam(value = "is_delete_background", defaultValue = "false") Boolean isDeleteBackground,
+                                                        Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Long userId = Long.parseLong(user.getUsername());
-        userService.updateProfile(userId, profileRequest);
+        userService.updateProfile(userId, profileRequest, isDeleteAvt, isDeleteBackground);
         return buildResponse("Update profile successfully");
     }
 
