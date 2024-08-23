@@ -26,12 +26,14 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
 
     @Query("SELECT r.user FROM Relationship r " +
             "WHERE r.relation = :relation " +
-            "AND r.friend.id = :userId ")
+            "AND r.friend.id = :userId " +
+            "ORDER BY r.createdAt DESC ")
     List<User> findByFriend_IdAndRelation(@Param("userId") long userId, @Param("relation") ERelationship relation);
 
     @Query("SELECT r.friend FROM Relationship r " +
             "WHERE r.relation = :relation " +
-            "AND r.user.id = :userId ")
+            "AND r.user.id = :userId " +
+            "ORDER BY r.createdAt DESC ")
     List<User> findByUser_IdAndRelation(@Param("userId") long userId, @Param("relation") ERelationship relation);
 
     @EntityGraph(attributePaths = {"user"})
@@ -47,15 +49,17 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
             "INNER JOIN Relationship r ON r.user.id = u.id OR r.friend.id = u.id " +
             "WHERE r.relation = :relation " +
             "AND (r.friend.id = :userId OR r.user.id = :userId) " +
-            "AND u.id <> :userId")
+            "AND u.id <> :userId " +
+            "ORDER BY r.createdAt DESC ")
     List<User> getListUserWithRelation(@Param("userId") long userId, @Param("relation") ERelationship relation);
 
 
     @EntityGraph(attributePaths = {"user"})
     @Query("SELECT r.friend FROM Relationship r " +
             "WHERE r.relation = 'BLOCK' " +
-            "AND r.user.id = :userId ")
-    Page<User> getListBlock(@Param("userId") long userId, Pageable pageable);
+            "AND r.user.id = :userId " +
+            "ORDER BY r.createdAt DESC ")
+    List<User> getListBlock(@Param("userId") long userId);
 
     @EntityGraph(attributePaths = {"user"})
     @Query("SELECT u FROM User u " +

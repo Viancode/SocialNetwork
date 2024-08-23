@@ -33,9 +33,9 @@ BEGIN
 
         -- Generate username
             SET @username = CONCAT_WS(' ',@first_name,@last_name);
-
+            SET @random_number = FLOOR(RAND() * 9999);
         -- Generate email from username (replace spaces with periods)
-            SET @email = CONCAT(LOWER(REPLACE(@username,' ','.')),'@example.com');
+            SET @email = CONCAT(LOWER(REPLACE(@username,' ','.')),@random_number,'@example.com');
 
 INSERT INTO users (username,email,password,first_name,last_name,gender,visibility,role_id,bio,location,work,education,created_at,updated_at,avatar,background_image,date_of_birth,is_email_verified)
 VALUES (

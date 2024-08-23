@@ -148,30 +148,26 @@ public class RelationshipServiceImpl implements RelationshipServicePort {
     @Override
     public Page<FriendResponse> getListReceiveRequest(int page, int pageSize) {
         long userId = SecurityUtil.getCurrentUserId();
-        Sort sort = Sort.by("friend.createdAt");
         List<FriendResponse> getListReceiveResponse = customSuggestionMapper.userDomainsToSearchFriendResponses(relationshipDatabasePort.getListReceiveRequest(userId));
-        return getPage(page, pageSize, getListReceiveResponse, sort);
+        return getPage(page, pageSize, getListReceiveResponse);
     }
 
     @Override
     public Page<FriendResponse> getListSendRequest(int page, int pageSize) {
         long userId = SecurityUtil.getCurrentUserId();
-        Sort sort = Sort.by("friend.createdAt");
         List<FriendResponse> getListSendResponse = customSuggestionMapper.userDomainsToSearchFriendResponses(relationshipDatabasePort.getListSendRequest(userId));
-        return getPage(page, pageSize, getListSendResponse, sort);
+        return getPage(page, pageSize, getListSendResponse);
     }
 
     @Override
     public Page<FriendResponse> getListFriend(int page, int pageSize, String sortDirection, String sortBy) {
         long currentUserId = SecurityUtil.getCurrentUserId();
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortBy);
         List<UserDomain> userDomains = relationshipDatabasePort.getListFriend(currentUserId);
         List<FriendResponse> getListFriendResponse = new ArrayList<>();
         for (UserDomain userDomain : userDomains) {
             getListFriendResponse.add(customSuggestionMapper.toSearchFriendResponse(userDomain));
         }
-        return getPage(page, pageSize, getListFriendResponse, sort);
+        return getPage(page, pageSize, getListFriendResponse);
     }
 
     @Override

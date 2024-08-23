@@ -18,6 +18,7 @@ import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,7 +91,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     public List<UserDomain> getListBlock(long userId) {
-        return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.BLOCK));
+        return userMapper.toUserDomains(relationshipRepository.getListBlock(userId));
     }
 
     @Override

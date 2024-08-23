@@ -21,6 +21,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ public class PostDatabaseAdapter implements PostDatabasePort {
     @Transactional
     @Override
     public PostDomain createPost(PostDomain postDomain) {
+        postDomain.setLastComment(Instant.now());
         Post post = postRepository.save(postMapper.domainToEntity(postDomain));
         if(postDomain.getTagDomains() != null && postDomain.getTagDomains().size() > 0) {
             List<Tag> tags = postDomain.getTagDomains().stream().map(tagDomain -> {
@@ -57,6 +59,7 @@ public class PostDatabaseAdapter implements PostDatabasePort {
         if (post == null) {
             throw new NotFoundException("Post not found");
         }else{
+            post.setLastComment(Instant.now());
             post.setContent(postDomain.getContent());
             post.setVisibility(postDomain.getVisibility());
             post.setUpdatedAt(postDomain.getUpdatedAt());
