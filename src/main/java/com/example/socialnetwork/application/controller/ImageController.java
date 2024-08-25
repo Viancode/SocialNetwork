@@ -43,11 +43,13 @@ public class ImageController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Upload successfully",
                                                             "result": {
-                                                              
+                                                                "data": [
+                                                                    "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/dbd54df2-a3e5-4037-af75-76aae7fb37f8.png"
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:52:07.399942100Z"
                                                         }
                                                     """
                                     )

@@ -1,6 +1,7 @@
 package com.example.socialnetwork.application.request;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Builder
 @Getter
@@ -13,5 +14,5 @@ public class CommentRequest {
     private Long parentCommentId = null;
     private String content;
     @Builder.Default
-    private String image = null;
+    private MultipartFile[] image = null;
 }

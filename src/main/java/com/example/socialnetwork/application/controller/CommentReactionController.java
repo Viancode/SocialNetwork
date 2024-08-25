@@ -47,11 +47,19 @@ public class CommentReactionController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Create comment reaction successfully",
                                                             "result": {
-                                                              
+                                                                "data": {
+                                                                    "id": 68770,
+                                                                    "userId": 1,
+                                                                    "username": "user1",
+                                                                    "avatar": null,
+                                                                    "commentId": 1,
+                                                                    "reactionType": "WOW",
+                                                                    "createdAt": "2024-08-25T21:49:57.000940900Z"
+                                                                }
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:49:57.101391400Z"
                                                         }
                                                     """
                                     )
@@ -68,6 +76,9 @@ public class CommentReactionController extends BaseController {
             @RequestBody CommentReactionRequest commentReactionRequest
     ) {
         CommentReactionDomain commentReactionDomain = commentReactionServicePort.createCommentReaction(CommentReactionMapper.INSTANCE.requestToDomain(commentReactionRequest));
+        if(commentReactionDomain == null) {
+            return buildResponse("unreactive comment successfully");
+        }
         UserDomain userDomain = userServicePort.findUserById(commentReactionDomain.getUser().getId());
         return buildResponse("Create comment reaction successfully", CommentReactionMapper.INSTANCE.domainToResponse(commentReactionDomain, userDomain));
     }
@@ -85,10 +96,8 @@ public class CommentReactionController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
-                                                            "result": {
-                                                              
-                                                            },
+                                                            "message": "Delete comment reaction successfully",
+                                                            "result": {},
                                                             "timestamp": "2024-08-13T00:41:22.073430290Z"
                                                         }
                                                     """
@@ -122,11 +131,38 @@ public class CommentReactionController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Get post successfully",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 5,
+                                                                    "totalElements": 2,
+                                                                    "totalPages": 1,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": false
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "id": 68770,
+                                                                        "userId": 1,
+                                                                        "username": "user1",
+                                                                        "avatar": null,
+                                                                        "commentId": 1,
+                                                                        "reactionType": "WOW",
+                                                                        "createdAt": "2024-08-25T21:49:57Z"
+                                                                    },
+                                                                    {
+                                                                        "id": 1,
+                                                                        "userId": 20,
+                                                                        "username": "Chi Phan",
+                                                                        "avatar": null,
+                                                                        "commentId": 1,
+                                                                        "reactionType": "LIKE",
+                                                                        "createdAt": "2024-04-14T19:04:56Z"
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:50:44.136567500Z"
                                                         }
                                                     """
                                     )

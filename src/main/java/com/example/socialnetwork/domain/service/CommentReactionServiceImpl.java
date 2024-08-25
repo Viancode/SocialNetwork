@@ -62,7 +62,9 @@ public class CommentReactionServiceImpl implements CommentReactionServicePort {
                 commentReactionDomain.setId(commentReactionDomainExist.getId());
                 return commentReactionDatabasePort.updateCommentReaction(commentReactionDomain);
             }else{
-                throw new  ClientErrorException("Comment reaction already exist");
+                this.deleteCommentReaction(commentReactionDomainExist.getId());
+                return null;
+//                throw new  ClientErrorException("Comment reaction already exist");
             }
         }else{
             RelationshipDomain relationshipDomainWithComment = relationshipDatabasePort.find(currentUserId, commentDomain.getUser().getId()).orElse(null);
@@ -74,6 +76,7 @@ public class CommentReactionServiceImpl implements CommentReactionServicePort {
             }
             throw new NotAllowException("User does not have permission to post reaction");
         }
+
     }
 
     private boolean canCreateReactionComment( RelationshipDomain relationshipDomain) {

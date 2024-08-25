@@ -1,6 +1,8 @@
 package com.example.socialnetwork.application.controller;
 
 import com.example.socialnetwork.application.request.PostRequest;
+import com.example.socialnetwork.application.request.PostUpdate;
+import com.example.socialnetwork.application.request.TagRequest;
 import com.example.socialnetwork.application.response.PostResponse;
 import com.example.socialnetwork.application.response.ResultResponse;
 import com.example.socialnetwork.common.mapper.PostMapper;
@@ -21,6 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
 
 
 @RestController
@@ -175,8 +180,7 @@ public class PostController extends BaseController {
     )
     @PostMapping("")
     public ResponseEntity<?> createPost(
-            @RequestBody PostRequest postRequest
-    ) {
+            @ModelAttribute PostRequest postRequest){
         PostDomain postDomain = postServicePort.createPost(postMapper.requestToDomain(postRequest));
         return buildResponse("Create post successfully", postMapper.domainToResponse(postDomain));
     }
@@ -270,9 +274,9 @@ public class PostController extends BaseController {
     )
     @PutMapping("")
     public ResponseEntity<?> updatePost(
-            @RequestBody PostRequest postRequest
+            @ModelAttribute PostUpdate postUpdate
     ){
-        PostDomain postDomain = postServicePort.updatePost(postMapper.requestToDomain(postRequest));
+        PostDomain postDomain = postServicePort.updatePost(postUpdate);
         return buildResponse("Update post successfully", postMapper.domainToResponse(postDomain));
     }
 

@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-focal as build
+FROM jelastic/maven:3.9.8-zulujdk-21.0.4-almalinux-9 as build
 
 WORKDIR /build
 
@@ -11,7 +11,7 @@ COPY . .
 RUN chmod +x mvnw
 RUN ./mvnw package -DskipTests
 
-FROM eclipse-temurin:21-jdk-alpine
+FROM alpine/java:21-jdk
 WORKDIR /app
 COPY --from=build /build/target/*.jar run.jar
 ENTRYPOINT ["java", "-jar", "/app/run.jar"]

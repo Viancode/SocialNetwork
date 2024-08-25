@@ -1,18 +1,16 @@
 package com.example.socialnetwork.application.request;
 
-
 import com.example.socialnetwork.common.constant.Visibility;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class PostRequest {
+@NoArgsConstructor
+public class PostUpdate {
     private Long id = null;
 
     private String content;
@@ -23,5 +21,7 @@ public class PostRequest {
 
     private String tagUsers;
 
+    // Bien nay luu DS cac anh giu lai
+    private String photoListString;
 
 }

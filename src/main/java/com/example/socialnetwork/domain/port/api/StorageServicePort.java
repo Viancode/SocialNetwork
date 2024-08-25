@@ -7,4 +7,6 @@ public interface StorageServicePort {
     String store(FileType type, MultipartFile file);
 
     String getUrl(String filePath);
+
+
 }

@@ -5,6 +5,7 @@ import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.SuggestionDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -16,25 +17,19 @@ public interface RelationshipDatabasePort {
 
     ERelationship getRelationship(long senderId, long receiverId);
 
-    Page<UserDomain> getListSendRequest(int page, int pageSize, long userId);
+    List<UserDomain> getListSendRequest(long userId);
 
-    Page<UserDomain> getListReceiveRequest(int page, int pageSize, long userId);
-
-    Page<UserDomain> getListFriend(int page, int pageSize, long userId, Sort sort);
+    List<UserDomain> getListReceiveRequest(long userId);
 
     List<UserDomain> getListFriend(long userId);
 
-    Page<UserDomain> getListBlock(int page, int pageSize, long userId, Sort sort);
-
     List<UserDomain> getListBlock(long userId);
-
-    Page<UserDomain> findFriendByKeyWord(int page, int pageSize, long userId, String keyWord);
 
     List<UserDomain> findFriendByKeyWord(long userId, String keyWord);
 
-    List<SuggestionDomain> getListSuggestionUser(long userId);
+    List<UserDomain> getListSuggestionUser(long userId);
 
-    List<SuggestionDomain> searchUserByKeyWord(long userId, String keyWord);
+    List<UserDomain> searchUserByKeyWord(long userId, String keyWord);
 
     void deleteFriend(long userId, long friendId);
 

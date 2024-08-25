@@ -70,8 +70,8 @@ BEGIN
                                 suggest_point,
                                 0,
                                 CASE
-                                    WHEN RAND() < 0.25 THEN 'FRIEND'
-                                    WHEN RAND() < 0.15 THEN 'BLOCK'
+                                    WHEN RAND() < 0.33 THEN 'FRIEND'
+                                    WHEN RAND() < 0.66 THEN 'BLOCK'
                                     ELSE 'NONE'
                                 END);
                     END IF;

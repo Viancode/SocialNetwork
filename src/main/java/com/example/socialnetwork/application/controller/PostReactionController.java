@@ -42,11 +42,19 @@ public class PostReactionController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Create post reaction successfully",
                                                             "result": {
-                                                              
+                                                                "data": {
+                                                                    "id": 3416,
+                                                                    "userId": 1,
+                                                                    "username": "user1",
+                                                                    "avatar": null,
+                                                                    "postId": 177,
+                                                                    "reactionType": "LIKE",
+                                                                    "createdAt": "2024-08-25T21:55:17.186958500Z"
+                                                                }
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:55:17.222126Z"
                                                         }
                                                     """
                                     )
@@ -63,6 +71,9 @@ public class PostReactionController extends BaseController {
             @RequestBody PostReactionRequest postReactionRequest
     ) {
         PostReactionDomain postReactionDomain = postReactionService.createPostReaction(PostReactionMapper.INSTANCE.requestToDomain(postReactionRequest));
+        if(postReactionDomain == null) {
+            return buildResponse("unreactive post successfully");
+        }
         UserDomain userDomain = userServicePort.findUserById(postReactionDomain.getUserId());
         return buildResponse("Create post reaction successfully", PostReactionMapper.INSTANCE.domainToResponseWithUser(postReactionDomain, userDomain));
     }
@@ -80,10 +91,8 @@ public class PostReactionController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
-                                                            "result": {
-                                                              
-                                                            },
+                                                            "message": "Delete post reaction successfully",
+                                                            "result": {},
                                                             "timestamp": "2024-08-13T00:41:22.073430290Z"
                                                         }
                                                     """
@@ -117,11 +126,47 @@ public class PostReactionController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Get post successfully",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 5,
+                                                                    "totalElements": 3,
+                                                                    "totalPages": 1,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": false
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "id": 3416,
+                                                                        "userId": 1,
+                                                                        "username": "user1",
+                                                                        "avatar": null,
+                                                                        "postId": 177,
+                                                                        "reactionType": "LIKE",
+                                                                        "createdAt": "2024-08-25T21:55:17Z"
+                                                                    },
+                                                                    {
+                                                                        "id": 475,
+                                                                        "userId": 7,
+                                                                        "username": "Hằng Lý",
+                                                                        "avatar": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png",
+                                                                        "postId": 177,
+                                                                        "reactionType": "LIKE",
+                                                                        "createdAt": "2023-11-07T18:02:22Z"
+                                                                    },
+                                                                    {
+                                                                        "id": 474,
+                                                                        "userId": 37,
+                                                                        "username": "Châu Vũ",
+                                                                        "avatar": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png",
+                                                                        "postId": 177,
+                                                                        "reactionType": "LIKE",
+                                                                        "createdAt": "2023-11-07T14:51:22Z"
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:55:52.471185300Z"
                                                         }
                                                     """
                                     )

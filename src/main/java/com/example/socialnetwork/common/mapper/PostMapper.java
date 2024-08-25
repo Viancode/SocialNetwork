@@ -1,15 +1,21 @@
 package com.example.socialnetwork.common.mapper;
 import com.example.socialnetwork.application.request.PostRequest;
+import com.example.socialnetwork.application.request.TagRequest;
 import com.example.socialnetwork.application.response.PhotoResponse;
 import com.example.socialnetwork.application.response.PostResponse;
+import com.example.socialnetwork.common.constant.FileType;
+import com.example.socialnetwork.common.util.HandleFile;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.TagDomain;
+import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.api.UserServicePort;
+import com.example.socialnetwork.exception.custom.ClientErrorException;
 import com.example.socialnetwork.infrastructure.entity.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +26,7 @@ import com.example.socialnetwork.infrastructure.repository.PostReactionRepositor
 import com.example.socialnetwork.infrastructure.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -28,8 +35,9 @@ public class PostMapper {
     private final UserServicePort userServicePort;
     private final PostReactionRepository postReactionRepository;
     private final CommentRepository commentRepository;
-    private final TagRepository tagRepository;
     private final TagMapper tagMapper;
+    private final StorageServicePort storageServicePort;
+
 
     public PostDomain entityToDomain(Post post) {
         if (post == null) {
@@ -46,7 +54,11 @@ public class PostMapper {
             postDomain.setUpdatedAt(post.getUpdatedAt());
             postDomain.setLastComment(post.getLastComment());
             postDomain.setPhotoLists(post.getPhotoLists());
-            postDomain.setTagDomains(post.getTags().stream().map(tagMapper::entityToDomain).toList());
+            if(post.getTags() != null) {
+                postDomain.setTagDomains(post.getTags().stream().map(tagMapper::entityToDomain).toList());
+            }else{
+                postDomain.setTagDomains(null);
+            }
             return postDomain;
         }
     }
@@ -83,6 +95,7 @@ public class PostMapper {
     }
 
     public PostResponse domainToResponse(PostDomain postDomain) {
+
         if (postDomain == null) {
             return null;
         } else {
@@ -104,10 +117,19 @@ public class PostMapper {
             postResponse.setUsername(getUsername(postDomain.getUserId()));
             postResponse.setAvatar(getAvatar(postDomain.getUserId()));
 
-            postResponse.setTagUsers(postDomain.getTagDomains().stream().map(tagMapper::domainToUserResponse).collect(Collectors.toList()));
+            if(postDomain.getTagDomains() != null) {
+                postResponse.setTagUsers(postDomain.getTagDomains().stream().map(tagMapper::domainToUserResponse).collect(Collectors.toList()));
+            }else {
+                postResponse.setTagUsers(null);
+            }
 
             postResponse.setCreatedAt(postDomain.getCreatedAt());
             postResponse.setUpdatedAt(postDomain.getUpdatedAt());
+            Long currentUserId = SecurityUtil.getCurrentUserId();
+            PostReaction postReaction = postReactionRepository.findByUserIdAndPostId(currentUserId,postDomain.getId()).orElse(null);
+            if(postReaction != null) {
+                postResponse.setIsReacted(true);
+            }
 
             return postResponse;
         }
@@ -118,9 +140,19 @@ public class PostMapper {
         postDomain.setId(postRequest.getId());
         postDomain.setUserId(SecurityUtil.getCurrentUserId());
         postDomain.setContent(postRequest.getContent());
-        postDomain.setTagDomains(postRequest.getTagUsers().stream().map(tagRequest -> tagMapper.requestToDomain(tagRequest, postDomain.getId())).toList());
+//        postDomain.setTagDomains(postRequest.getTagUsers().stream().map(tagRequest -> tagMapper.requestToDomain(tagRequest, postDomain.getId())).toList());
 
-        postDomain.setPhotoLists(postRequest.getPhotoLists());
+        if (postRequest.getTagUsers() == null || postRequest.getTagUsers().isEmpty()){
+            postDomain.setTagDomains(null);
+        }else{
+            String [] tags = postRequest.getTagUsers().split(",");
+            List<TagRequest> tagRequests = new ArrayList<>();
+            tagRequests = Arrays.stream(tags).map(tag -> new TagRequest(Long.parseLong(tag))).toList();
+            postDomain.setTagDomains(tagRequests.stream().map(tagRequest -> tagMapper.requestToDomain(tagRequest, postDomain.getId())).toList());
+        }
+
+        String photoPaths = HandleFile.loadFileImage(postRequest, storageServicePort, 4);
+        postDomain.setPhotoLists(photoPaths);
         postDomain.setVisibility(postRequest.getVisibility());
         postDomain.setCreatedAt(Instant.now());
         postDomain.setUpdatedAt(Instant.now());

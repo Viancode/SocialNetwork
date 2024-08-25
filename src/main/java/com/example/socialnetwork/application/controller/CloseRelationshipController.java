@@ -46,10 +46,8 @@ public class CloseRelationshipController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
-                                                            "result": {
-                                                              
-                                                            },
+                                                            "message": "Create close relationship successfully",
+                                                            "result": {},
                                                             "timestamp": "2024-08-13T00:41:22.073430290Z"
                                                         }
                                                     """
@@ -84,11 +82,55 @@ public class CloseRelationshipController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Get close relationship successfully",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 5,
+                                                                    "totalElements": 7,
+                                                                    "totalPages": 2,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": true
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "userId": 1,
+                                                                        "targetUserId": 20,
+                                                                        "targetUsername": "Chi Phan",
+                                                                        "closeRelationshipName": "FATHER",
+                                                                        "createdAt": "2024-08-25T19:38:26Z"
+                                                                    },
+                                                                    {
+                                                                        "userId": 1,
+                                                                        "targetUserId": 21,
+                                                                        "targetUsername": "Ánh Phạm",
+                                                                        "closeRelationshipName": "FATHER",
+                                                                        "createdAt": "2024-08-25T19:38:26Z"
+                                                                    },
+                                                                    {
+                                                                        "userId": 1,
+                                                                        "targetUserId": 31,
+                                                                        "targetUsername": "Hoài Phan",
+                                                                        "closeRelationshipName": "BROTHER",
+                                                                        "createdAt": "2024-08-25T19:38:26Z"
+                                                                    },
+                                                                    {
+                                                                        "userId": 1,
+                                                                        "targetUserId": 38,
+                                                                        "targetUsername": "Hân Đặng",
+                                                                        "closeRelationshipName": "BROTHER",
+                                                                        "createdAt": "2024-08-25T19:38:26Z"
+                                                                    },
+                                                                    {
+                                                                        "userId": 1,
+                                                                        "targetUserId": 39,
+                                                                        "targetUsername": "Bảo Hoàng",
+                                                                        "closeRelationshipName": "FATHER",
+                                                                        "createdAt": "2024-08-25T19:38:26Z"
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:42:37.878277100Z"
                                                         }
                                                     """
                                     )
@@ -127,10 +169,8 @@ public class CloseRelationshipController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
-                                                            "result": {
-                                                              
-                                                            },
+                                                            "message": "Delete close relationship successfully",
+                                                            "result": {},
                                                             "timestamp": "2024-08-13T00:41:22.073430290Z"
                                                         }
                                                     """

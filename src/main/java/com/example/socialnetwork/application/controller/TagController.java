@@ -32,40 +32,40 @@ public class TagController extends BaseController{
     private final TagServicePort tagServicePort;
     private final TagMapper tagMapper;
 
-    @Operation(
-            summary = "Create tag user into post",
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ResultResponse.class),
-                                    examples = @ExampleObject(
-                                            value = """
-                                                        {
-                                                            "status": 200,
-                                                            "message": "",
-                                                            "result": {
-                                                              
-                                                            },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
-                                                        }
-                                                    """
-                                    )
-                            )
-                    ),
-                    @ApiResponse(description = "The access token provided is expired, revoked, malformed, or invalid for other reasons.",
-                            responseCode = "401", content = @Content()),
-                    @ApiResponse(description = "", responseCode = "404", content = @Content()),
-                    @ApiResponse(description = "", responseCode = "400", content = @Content())
-            }
-    )
-    @PostMapping
-    public ResponseEntity<?> createTag(@RequestBody TagRequest tagRequest) {
-        TagDomain tagDomain = tagServicePort.createTag(tagMapper.requestToDomain(tagRequest, null));
-        return buildResponse("Create tag successfully", tagMapper.domainToResponse(tagDomain));
-    }
+//    @Operation(
+//            summary = "Create tag user into post",
+//            responses = {
+//                    @ApiResponse(
+//                            description = "Success",
+//                            responseCode = "200",
+//                            content = @Content(
+//                                    mediaType = "application/json",
+//                                    schema = @Schema(implementation = ResultResponse.class),
+//                                    examples = @ExampleObject(
+//                                            value = """
+//                                                        {
+//                                                            "status": 200,
+//                                                            "message": "",
+//                                                            "result": {
+//
+//                                                            },
+//                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+//                                                        }
+//                                                    """
+//                                    )
+//                            )
+//                    ),
+//                    @ApiResponse(description = "The access token provided is expired, revoked, malformed, or invalid for other reasons.",
+//                            responseCode = "401", content = @Content()),
+//                    @ApiResponse(description = "", responseCode = "404", content = @Content()),
+//                    @ApiResponse(description = "", responseCode = "400", content = @Content())
+//            }
+//    )
+//    @PostMapping
+//    public ResponseEntity<?> createTag(@RequestBody TagRequest tagRequest) {
+//        TagDomain tagDomain = tagServicePort.createTag(tagMapper.requestToDomain(tagRequest, null));
+//        return buildResponse("Create tag successfully", tagMapper.domainToResponse(tagDomain));
+//    }
 
     @Operation(
             summary = "Delete tag from post",
@@ -80,10 +80,8 @@ public class TagController extends BaseController{
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
-                                                            "result": {
-                                                              
-                                                            },
+                                                            "message": "Delete tag successfully",
+                                                            "result": {},
                                                             "timestamp": "2024-08-13T00:41:22.073430290Z"
                                                         }
                                                     """
@@ -115,11 +113,38 @@ public class TagController extends BaseController{
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Get all tags",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 5,
+                                                                    "totalElements": 3,
+                                                                    "totalPages": 1,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": false
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "id": 1,
+                                                                        "userId": 3,
+                                                                        "username": "user3",
+                                                                        "createdAt": "2024-08-26T06:31:10"
+                                                                    },
+                                                                    {
+                                                                        "id": 2,
+                                                                        "userId": 47,
+                                                                        "username": "Hà Lý",
+                                                                        "createdAt": "2024-08-26T06:31:10"
+                                                                    },
+                                                                    {
+                                                                        "id": 3,
+                                                                        "userId": 20,
+                                                                        "username": "Chi Phan",
+                                                                        "createdAt": "2024-08-26T06:31:10"
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T23:31:28.038791600Z"
                                                         }
                                                     """
                                     )

@@ -34,8 +34,10 @@ public class PostReactionServiceImpl implements PostReactionServicePort {
         Long currentUserId = SecurityUtil.getCurrentUserId();
 
         PostReactionDomain postReactionDomainExist = postReactionDatabasePort.findByUserIdAndPostIdAndReactionType(currentUserId,postReactionDomain.getPostId(),postReactionDomain.getReactionType());
-        if (postReactionDomainExist != null) {
-            throw new ClientErrorException("Post reaction already exists");
+        if (postReactionDomainExist != null && postReactionDomainExist.getReactionType().equals(postReactionDomain.getReactionType())) {
+            this.deletePostReaction(postReactionDomainExist.getId());
+            return null;
+//            throw new ClientErrorException("Post reaction already exists");
         }
         PostReactionDomain postReactionDomainUpdate = postReactionDatabasePort.findByUserIdAndPostId(currentUserId,postReactionDomain.getPostId());
         if( postReactionDomainUpdate!= null) {

@@ -41,11 +41,100 @@ public class NewsFeedController extends BaseController{
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Get News Feed successfully",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 5,
+                                                                    "totalElements": 100,
+                                                                    "totalPages": 20,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": true
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "id": 201,
+                                                                        "userId": 21,
+                                                                        "username": "Ánh Phạm",
+                                                                        "avatar": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png",
+                                                                        "content": "Post content 200",
+                                                                        "visibility": "PUBLIC",
+                                                                        "createdAt": "2024-03-06T14:53:59Z",
+                                                                        "updatedAt": "2024-03-06T14:53:59Z",
+                                                                        "photoResponses": null,
+                                                                        "numberOfComments": 20,
+                                                                        "numberOfReacts": 4,
+                                                                        "tagUsers": [],
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "id": 906,
+                                                                        "userId": 2,
+                                                                        "username": "user2",
+                                                                        "avatar": null,
+                                                                        "content": "Post content 905",
+                                                                        "visibility": "PUBLIC",
+                                                                        "createdAt": "2024-08-24T20:56:39Z",
+                                                                        "updatedAt": "2024-08-24T20:56:39Z",
+                                                                        "photoResponses": null,
+                                                                        "numberOfComments": 20,
+                                                                        "numberOfReacts": 5,
+                                                                        "tagUsers": [],
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "id": 729,
+                                                                        "userId": 50,
+                                                                        "username": "Chi Võ",
+                                                                        "avatar": null,
+                                                                        "content": "Post content 728",
+                                                                        "visibility": "FRIEND",
+                                                                        "createdAt": "2024-08-24T14:20:26Z",
+                                                                        "updatedAt": "2024-08-24T14:20:26Z",
+                                                                        "photoResponses": null,
+                                                                        "numberOfComments": 20,
+                                                                        "numberOfReacts": 3,
+                                                                        "tagUsers": [],
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "id": 142,
+                                                                        "userId": 15,
+                                                                        "username": "Hải Võ",
+                                                                        "avatar": null,
+                                                                        "content": "Post content 141",
+                                                                        "visibility": "FRIEND",
+                                                                        "createdAt": "2024-08-24T14:19:54Z",
+                                                                        "updatedAt": "2024-08-24T14:19:54Z",
+                                                                        "photoResponses": null,
+                                                                        "numberOfComments": 20,
+                                                                        "numberOfReacts": 5,
+                                                                        "tagUsers": [],
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "id": 751,
+                                                                        "userId": 26,
+                                                                        "username": "Hiếu Đặng",
+                                                                        "avatar": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png",
+                                                                        "content": "Post content 750",
+                                                                        "visibility": "FRIEND",
+                                                                        "createdAt": "2024-08-24T04:33:51Z",
+                                                                        "updatedAt": "2024-08-24T04:33:51Z",
+                                                                        "photoResponses": [
+                                                                            {
+                                                                                "id": "9b227680-ff92-4bbf-a237-3001cd7f98c1",
+                                                                                "url": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png"
+                                                                            }
+                                                                        ],
+                                                                        "numberOfComments": 20,
+                                                                        "numberOfReacts": 0,
+                                                                        "tagUsers": [],
+                                                                        "isReacted": false
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:52:58.638770700Z"
                                                         }
                                                     """
                                     )

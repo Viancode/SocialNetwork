@@ -17,6 +17,10 @@ public interface SuggestionRepository extends JpaRepository<Suggestion, Long>{
     List<Suggestion> findByUserOrFriend(@Param("userId") long userId);
 
     @Query("SELECT r FROM Suggestion r " +
+            "WHERE (r.user.id = :userId OR r.friend.id = :userId) ")
+    List<Suggestion> getSuggestionsByUserId(@Param("userId") long userId);
+
+    @Query("SELECT r FROM Suggestion r " +
             "WHERE (r.user.id = :user1Id AND r.friend.id = :user2Id) " +
              "OR (r.user.id = :user2Id AND r.friend.id = :user1Id)")
     Suggestion findByUserAndFriend(@Param("user1Id") long user1Id, @Param("user2Id") long user2Id);

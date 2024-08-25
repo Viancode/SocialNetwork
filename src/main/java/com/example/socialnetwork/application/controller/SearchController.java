@@ -45,11 +45,29 @@ public class SearchController extends BaseController{
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Search user successfully",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 3,
+                                                                    "totalElements": 1,
+                                                                    "totalPages": 1,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": false
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "id": 39,
+                                                                        "avatar": null,
+                                                                        "username": "Bảo Hoàng",
+                                                                        "email": "bảo.hoàng1745@example.com",
+                                                                        "mutualFriends": 0,
+                                                                        "status": "FRIEND",
+                                                                        "closeRelationship": "FATHER"
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:56:54.268759400Z"
                                                         }
                                                     """
                                     )
@@ -63,7 +81,7 @@ public class SearchController extends BaseController{
     )
     @GetMapping
     public ResponseEntity<?> search(@RequestParam(value = "page", defaultValue = "1") int page,
-                                    @RequestParam(value = "page_size", defaultValue = "5") int pageSize,
+                                    @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
                                     @RequestParam(value = "keyword") String keyWord) {
         return buildResponse("Search user successfully", relationshipServicePort.searchUser(page, pageSize, keyWord));
     }

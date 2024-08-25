@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -45,11 +46,95 @@ public class CommentController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Get comments successfully",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 5,
+                                                                    "totalElements": 8,
+                                                                    "totalPages": 2,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": true
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "commentId": 459,
+                                                                        "userId": 28,
+                                                                        "username": "Hằng Bùi",
+                                                                        "avatar": null,
+                                                                        "postId": 23,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 18 on post 22",
+                                                                        "createdAt": "2024-06-28T00:09:08Z",
+                                                                        "updatedAt": "2024-06-27T02:21:08Z",
+                                                                        "image": null,
+                                                                        "reactCount": 3,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 454,
+                                                                        "userId": 52,
+                                                                        "username": "Châu Lê",
+                                                                        "avatar": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png",
+                                                                        "postId": 23,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 13 on post 22",
+                                                                        "createdAt": "2024-06-27T19:48:08Z",
+                                                                        "updatedAt": "2024-06-27T20:02:08Z",
+                                                                        "image": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png",
+                                                                        "reactCount": 6,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 453,
+                                                                        "userId": 20,
+                                                                        "username": "Chi Phan",
+                                                                        "avatar": null,
+                                                                        "postId": 23,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 1,
+                                                                        "content": "Comment 12 on post 22",
+                                                                        "createdAt": "2024-06-27T18:17:08Z",
+                                                                        "updatedAt": "2024-06-27T07:05:08Z",
+                                                                        "image": null,
+                                                                        "reactCount": 0,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 448,
+                                                                        "userId": 40,
+                                                                        "username": "Hiếu Ngô",
+                                                                        "avatar": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png",
+                                                                        "postId": 23,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 7 on post 22",
+                                                                        "createdAt": "2024-06-27T17:33:08Z",
+                                                                        "updatedAt": "2024-06-28T00:38:08Z",
+                                                                        "image": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png",
+                                                                        "reactCount": 4,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 450,
+                                                                        "userId": 38,
+                                                                        "username": "Hân Đặng",
+                                                                        "avatar": null,
+                                                                        "postId": 23,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 9 on post 22",
+                                                                        "createdAt": "2024-06-27T16:34:08Z",
+                                                                        "updatedAt": "2024-06-27T22:59:08Z",
+                                                                        "image": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png",
+                                                                        "reactCount": 1,
+                                                                        "isReacted": false
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:44:21.792790600Z"
                                                         }
                                                     """
                                     )
@@ -84,11 +169,95 @@ public class CommentController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Get comments successfully",
                                                             "result": {
-                                                              
+                                                                "pageMeta": {
+                                                                    "page": 1,
+                                                                    "pageSize": 5,
+                                                                    "totalElements": 6,
+                                                                    "totalPages": 2,
+                                                                    "hasPrev": false,
+                                                                    "hasNext": true
+                                                                },
+                                                                "data": [
+                                                                    {
+                                                                        "commentId": 15009,
+                                                                        "userId": 17,
+                                                                        "username": "Dũng Dương",
+                                                                        "avatar": null,
+                                                                        "postId": 751,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 8 on post 750",
+                                                                        "createdAt": "2024-08-25T01:18:51Z",
+                                                                        "updatedAt": "2024-08-24T14:20:51Z",
+                                                                        "image": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png",
+                                                                        "reactCount": 4,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 15015,
+                                                                        "userId": 31,
+                                                                        "username": "Hoài Phan",
+                                                                        "avatar": null,
+                                                                        "postId": 751,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 14 on post 750",
+                                                                        "createdAt": "2024-08-25T00:00:51Z",
+                                                                        "updatedAt": "2024-08-24T12:00:51Z",
+                                                                        "image": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png",
+                                                                        "reactCount": 1,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 15013,
+                                                                        "userId": 48,
+                                                                        "username": "Dũng Phạm",
+                                                                        "avatar": null,
+                                                                        "postId": 751,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 12 on post 750",
+                                                                        "createdAt": "2024-08-24T23:16:51Z",
+                                                                        "updatedAt": "2024-08-24T09:14:51Z",
+                                                                        "image": null,
+                                                                        "reactCount": 4,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 15011,
+                                                                        "userId": 4,
+                                                                        "username": "Hân Ngô",
+                                                                        "avatar": null,
+                                                                        "postId": 751,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 10 on post 750",
+                                                                        "createdAt": "2024-08-24T18:11:51Z",
+                                                                        "updatedAt": "2024-08-24T19:56:51Z",
+                                                                        "image": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png",
+                                                                        "reactCount": 2,
+                                                                        "isReacted": false
+                                                                    },
+                                                                    {
+                                                                        "commentId": 15004,
+                                                                        "userId": 40,
+                                                                        "username": "Hiếu Ngô",
+                                                                        "avatar": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/02282ff2-7a79-4e60-92c4-38fd148c711a.png",
+                                                                        "postId": 751,
+                                                                        "parentCommentId": null,
+                                                                        "numberOfChild": 0,
+                                                                        "content": "Comment 3 on post 750",
+                                                                        "createdAt": "2024-08-24T17:07:51Z",
+                                                                        "updatedAt": "2024-08-24T14:27:51Z",
+                                                                        "image": "https://ghtk-socialnetwork.s3.ap-southeast-2.amazonaws.com/images/9b227680-ff92-4bbf-a237-3001cd7f98c1.png",
+                                                                        "reactCount": 3,
+                                                                        "isReacted": false
+                                                                    }
+                                                                ]
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:45:01.276201100Z"
                                                         }
                                                     """
                                     )
@@ -124,11 +293,25 @@ public class CommentController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Create comment successfully",
                                                             "result": {
-                                                              
+                                                                "data": {
+                                                                    "commentId": 24001,
+                                                                    "userId": 1,
+                                                                    "username": null,
+                                                                    "avatar": null,
+                                                                    "postId": 201,
+                                                                    "parentCommentId": null,
+                                                                    "numberOfChild": 0,
+                                                                    "content": "hello",
+                                                                    "createdAt": "2024-08-25T21:46:12.836585100Z",
+                                                                    "updatedAt": "2024-08-25T21:46:12.836585100Z",
+                                                                    "image": "",
+                                                                    "reactCount": 0,
+                                                                    "isReacted": false
+                                                                }
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:46:12.856738400Z"
                                                         }
                                                     """
                                     )
@@ -159,11 +342,25 @@ public class CommentController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
+                                                            "message": "Update comment successfully",
                                                             "result": {
-                                                              
+                                                                "data": {
+                                                                    "commentId": 24001,
+                                                                    "userId": 1,
+                                                                    "username": "user1",
+                                                                    "avatar": null,
+                                                                    "postId": 201,
+                                                                    "parentCommentId": null,
+                                                                    "numberOfChild": 0,
+                                                                    "content": "manh",
+                                                                    "createdAt": "2024-08-25T21:46:13Z",
+                                                                    "updatedAt": "2024-08-25T21:47:07.029227Z",
+                                                                    "image": "",
+                                                                    "reactCount": 0,
+                                                                    "isReacted": false
+                                                                }
                                                             },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "timestamp": "2024-08-25T21:47:07.070601700Z"
                                                         }
                                                     """
                                     )
@@ -179,12 +376,13 @@ public class CommentController extends BaseController {
     public ResponseEntity<?> updateComment(
             @RequestParam(value = "comment_id") Long commentId,
             @RequestParam("content") String content,
-            @RequestParam("image") String image
+            @RequestParam(value = "image", required = false) MultipartFile[] image,
+            @RequestParam(value = "is_delete", defaultValue = "false") Boolean isDelete
 //            @RequestParam("postId") Long postId
 //            @RequestParam(value = "parent_comment_id", required = false) Long parentComment,
             ) {
 
-        CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image);
+        CommentDomain commentDomain = commentServicePort.updateComment(commentId, content, image, isDelete);
         return buildResponse("Update comment successfully", commentMapper.commentDomainToCommentResponse(commentDomain));
     }
 
@@ -201,11 +399,9 @@ public class CommentController extends BaseController {
                                             value = """
                                                         {
                                                             "status": 200,
-                                                            "message": "",
-                                                            "result": {
-                                                              
-                                                            },
-                                                            "timestamp": "2024-08-13T00:41:22.073430290Z"
+                                                            "message": "Delete comment successfully",
+                                                            "result": {},
+                                                            "timestamp": "2024-08-25T21:48:31.422203900Z"
                                                         }
                                                     """
                                     )

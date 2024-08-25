@@ -5,12 +5,15 @@ import com.example.socialnetwork.application.response.CommentResponse;
 import com.example.socialnetwork.common.constant.ERelationship;
 import com.example.socialnetwork.common.constant.Visibility;
 import com.example.socialnetwork.common.mapper.CommentMapper;
+import com.example.socialnetwork.common.util.HandleFile;
 import com.example.socialnetwork.common.util.SecurityUtil;
 import com.example.socialnetwork.domain.model.CommentDomain;
 import com.example.socialnetwork.domain.model.PostDomain;
 import com.example.socialnetwork.domain.model.RelationshipDomain;
 import com.example.socialnetwork.domain.model.UserDomain;
 import com.example.socialnetwork.domain.port.api.CommentServicePort;
+import com.example.socialnetwork.domain.port.api.S3ServicePort;
+import com.example.socialnetwork.domain.port.api.StorageServicePort;
 import com.example.socialnetwork.domain.port.spi.CommentDatabasePort;
 import com.example.socialnetwork.domain.port.spi.PostDatabasePort;
 import com.example.socialnetwork.domain.port.spi.RelationshipDatabasePort;
@@ -25,12 +28,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServicePort {
@@ -39,6 +45,8 @@ public class CommentServiceImpl implements CommentServicePort {
     private final PostDatabasePort postDatabasePort;
     private final RelationshipDatabasePort relationshipDatabasePort;
     private final CommentMapper commentMapper;
+    private final StorageServicePort storageServicePort;
+    private final S3ServicePort s3ServicePort;
     private Model model;
     private static final double SPAM_THRESHOLD = 0.6;
 
@@ -128,9 +136,9 @@ public class CommentServiceImpl implements CommentServicePort {
     @Override
     public CommentDomain createComment(CommentRequest commentRequest) {
         Long userId = SecurityUtil.getCurrentUserId();
-        if(!checkNumberImage(commentRequest.getImage())){
-            throw new ClientErrorException("The number of photos exceeds the limit");
-        }
+//        if(!checkNumberImage(commentRequest.getImage())){
+//            throw new ClientErrorException("The number of photos exceeds the limit");
+//        }
         checkUserCommentAndUserPost(userId, commentRequest.getPostId());
         checkParentComment(userId, commentRequest.getParentCommentId(), commentRequest.getPostId());
         isSpam(commentRequest.getContent());
@@ -143,11 +151,12 @@ public class CommentServiceImpl implements CommentServicePort {
 
     @Override
     @Transactional
-    public CommentDomain updateComment(Long commentId, String content, String image) {
+    public CommentDomain updateComment(Long commentId, String content, MultipartFile[] images, Boolean isDelete) {
+
         Long userId = SecurityUtil.getCurrentUserId();
-        if(!checkNumberImage(image)){
-            throw new ClientErrorException("The number of photos exceeds the limit");
-        }
+//        if(!checkNumberImage(image)){
+//            throw new ClientErrorException("The number of photos exceeds the limit");
+//        }
         CommentDomain currentComment = commentDatabasePort.findById(commentId);
 
         checkUserCommentAndUserPost(userId, currentComment.getPost().getId());
@@ -160,9 +169,38 @@ public class CommentServiceImpl implements CommentServicePort {
         isSpam(content);
         currentComment.setContent(content);
         currentComment.setUpdatedAt(Instant.now());
-        currentComment.setImage(image);
+
+        //
+//        if(!isDelete){
+//            String image = HandleFile.loadFileImage(images, storageServicePort, 1);
+//            if(image != null){
+//                if(currentComment.getImage() != null){
+//                    s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
+//                }
+//                currentComment.setImage(image);
+//            }
+//        }else{
+//            if(currentComment.getImage() != null){
+//                s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
+//                currentComment.setImage(null);
+//            }
+//        }
+
+        String image = HandleFile.loadFileImage(images, storageServicePort, 1);
+        if(isDelete){
+            if(currentComment.getImage() != null && !currentComment.getImage().isEmpty()) {
+                s3ServicePort.deleteFile(HandleFile.getFilePath(currentComment.getImage()));
+                currentComment.setImage(image);
+            }
+        }else{
+            if(image != null && !image.isEmpty()) {
+                currentComment.setImage(image);
+            }
+        }
+
         return commentDatabasePort.updateComment(currentComment);
     }
+
 
     @Override
     @Transactional
@@ -200,9 +238,9 @@ public class CommentServiceImpl implements CommentServicePort {
                 .toList();
 
         Page<CommentDomain> comments = commentDatabasePort.getAllComments(page, pageSize, sort, userId, postId, blockedUserIds);
-        if (comments == null || comments.isEmpty()) {
-            throw new NotFoundException("This post has no comment");
-        }
+//        if (comments == null || comments.isEmpty()) {
+//            throw new NotFoundException("This post has no comment");
+//        }
 
 
         return comments.map(commentMapper::commentDomainToCommentResponse);

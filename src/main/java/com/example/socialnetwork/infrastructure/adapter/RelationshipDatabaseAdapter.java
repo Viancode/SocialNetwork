@@ -18,6 +18,7 @@ import com.example.socialnetwork.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,16 +59,14 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public Page<UserDomain> getListSendRequest(int page, int pageSize, long userId) {
-        var pageable = PageRequest.of(page - 1, pageSize, Sort.by("friend.createdAt"));
-        return relationshipRepository.findByUser_IdAndRelation(userId, ERelationship.PENDING, pageable).map(userMapper::toUserDomain);
+    public List<UserDomain> getListSendRequest(long userId) {
+        return userMapper.toUserDomains(relationshipRepository.findByUser_IdAndRelation(userId, ERelationship.PENDING));
     }
 
     @Override
     @Transactional
-    public Page<UserDomain> getListReceiveRequest(int page, int pageSize, long userId) {
-        var pageable = PageRequest.of(page - 1, pageSize, Sort.by("friend.createdAt"));
-        return relationshipRepository.findByFriend_IdAndRelation(userId, ERelationship.PENDING, pageable).map(userMapper::toUserDomain);
+    public List<UserDomain> getListReceiveRequest(long userId) {
+        return userMapper.toUserDomains(relationshipRepository.findByFriend_IdAndRelation(userId, ERelationship.PENDING));
     }
 
     @Override
@@ -86,34 +85,13 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public Page<UserDomain> getListFriend(int page, int pageSize, long userId, Sort sort) {
-        var pageable = PageRequest.of(page - 1, pageSize, sort);
-        return relationshipRepository.getListUserWithRelation(userId, ERelationship.FRIEND, pageable).map(userMapper::toUserDomain);
-    }
-
-    @Override
-    @Transactional
     public List<UserDomain> getListFriend(long userId) {
         return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.FRIEND));
     }
 
     @Override
-    @Transactional
-    public Page<UserDomain> getListBlock(int page, int pageSize, long userId, Sort sort) {
-        var pageable = PageRequest.of(page - 1, pageSize, sort);
-        return relationshipRepository.getListBlock(userId, pageable).map(userMapper::toUserDomain);
-    }
-
-    @Override
     public List<UserDomain> getListBlock(long userId) {
-        return userMapper.toUserDomains(relationshipRepository.getListUserWithRelation(userId, ERelationship.BLOCK));
-    }
-
-    @Override
-    @Transactional
-    public Page<UserDomain> findFriendByKeyWord(int page, int pageSize, long userId, String keyWord) {
-        var pageable = PageRequest.of(page - 1, pageSize, Sort.by("username"));
-        return relationshipRepository.getListFriendByKeyWord(userId, keyWord, pageable).map(userMapper::toUserDomain);
+        return userMapper.toUserDomains(relationshipRepository.getListBlock(userId));
     }
 
     @Override
@@ -124,9 +102,18 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public List<SuggestionDomain> getListSuggestionUser(long userId) {
+    public List<UserDomain> getListSuggestionUser(long userId) {
         List<Suggestion> suggestions = suggestionRepository.findByUserOrFriend(userId);
-        return suggestions.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+        List<SuggestionDomain> suggestionDomains = suggestions.stream().map(suggestionMapper::toSuggestionDomain).toList();
+        List<UserDomain> userDomains = new ArrayList<>();
+        for (SuggestionDomain suggestionDomain : suggestionDomains) {
+            if(suggestionDomain.getUser().getId()==userId) {
+                userDomains.add(suggestionDomain.getFriend());
+            }else {
+                userDomains.add(suggestionDomain.getUser());
+            }
+        }
+        return userDomains;
     }
 
     @Override
@@ -144,7 +131,7 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
 
     @Override
     @Transactional
-    public List<SuggestionDomain> searchUserByKeyWord(long userId, String keyWord) {
+    public List<UserDomain> searchUserByKeyWord(long userId, String keyWord) {
 //        User user1 = userRepository.findById(userId).orElseThrow();
         List<Suggestion> searchUsers = suggestionRepository.searchUser(userId);
         List<Suggestion> unsuitableSearchUsers = new ArrayList<>();
@@ -156,7 +143,16 @@ public class RelationshipDatabaseAdapter implements RelationshipDatabasePort {
             }
         }
         searchUsers.removeAll(unsuitableSearchUsers);
-        return searchUsers.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+        List<SuggestionDomain> suggestionDomains = searchUsers.stream().map(suggestionMapper::toSuggestionDomain).collect(Collectors.toList());
+        List<UserDomain> userDomains = new ArrayList<>();
+        for (SuggestionDomain suggestionDomain : suggestionDomains) {
+            if(suggestionDomain.getUser().getId()==userId) {
+                userDomains.add(suggestionDomain.getFriend());
+            }else {
+                userDomains.add(suggestionDomain.getUser());
+            }
+        }
+        return userDomains;
     }
 
 
