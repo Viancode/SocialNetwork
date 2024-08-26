@@ -88,6 +88,7 @@ public class PostServiceImpl implements PostServicePort {
 
         updatePhotos(postDomainExist, postUpdate, resultDelete);
         updateTags(postDomainExist, postUpdate);
+        postDomainExist.setUpdatedAt(Instant.now());
 
         return postDatabasePort.updatePost(postDomainExist);
     }
