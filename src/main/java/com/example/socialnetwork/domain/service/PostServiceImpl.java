@@ -69,9 +69,15 @@ public class PostServiceImpl implements PostServicePort {
     @Override
     public PostDomain updatePost(PostUpdate postUpdate) {
         PostDomain postDomainExist = postDatabasePort.findById(postUpdate.getId());
-        List<String> listFromDB = List.of(postDomainExist.getPhotoLists().split(","));
+        List<String> listFromDB = new ArrayList<>();
+        List<String> listHold = new ArrayList<>();
+        if(postDomainExist.getPhotoLists() != null){
+            listFromDB = List.of(postDomainExist.getPhotoLists().split(","));
+        }
 
-        List<String> listHold = List.of(postUpdate.getPhotoListString().split(","));
+        if(postUpdate.getPhotoListString() != null){
+            listHold = List.of(postUpdate.getPhotoListString().split(","));
+        }
 
         List<String> resultDelete = new ArrayList<>(listFromDB);
         resultDelete.removeAll(listHold);
